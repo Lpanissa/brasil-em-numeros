@@ -660,7 +660,7 @@ function estados(){
   document.getElementById("mapa-leg").innerHTML=grupos.map(x=>`<span><span class="sw" style="background:${corG(x.g)}"></span>${esc(G.rot(x.g))}: <b>${x.us.length}</b></span>`).join("");
   desenharMapa(U,G);
   /* comunicado: os grupos juntam estados de regiões diferentes; o número é a média desses estados, não uma nota do partido */
-  document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Os números de cada grupo são a <b>média dos estados</b> onde aquele partido ganhou${MODO==="pres"?" a eleição para presidente":" o governo do estado"}. Como esses estados ficam em regiões com histórias e economias muito diferentes, a comparação mostra <b>onde</b> cada partido teve mais votos, e não que um partido seja responsável por números bons ou ruins. Riqueza, violência, renda e escolaridade dependem de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.`;
+  document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Cada número é a <b>média dos estados</b> onde o partido venceu. Mostra <b>onde</b> cada partido ganhou, não que ele seja responsável pelos números do estado.`;
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
   const vs=(k,fmt,un,id)=>{const it=grupos.map(x=>({l:rotN(x),v:media(x.us,k),cor:corG(x.g)}));
     const topo=grupos.length===2?`<div class="vs">${grupos.map((x,i)=>`<div class="side"><div class="tag" style="color:${corG(x.g)}">ESTADOS ${esc(x.g).toUpperCase()}</div><div class="big">${fmt(it[i].v)}</div><div class="note">${un}</div></div>`).join("")}</div>`:`<p class="note" style="margin:6px 0 10px">${un}</p>`;
