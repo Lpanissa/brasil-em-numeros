@@ -1112,7 +1112,12 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas()});
+  ["painel","estados","politicos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
+/* volta para a última aba aberta (pelo endereço #aba ou pelo que ficou salvo) e para o ponto da página */
+function voltaAba(){let t=location.hash.slice(1);try{t=t||localStorage.getItem("aba")}catch(e){}const b=t&&document.querySelector(`nav button[data-t="${t}"]`);if(b&&t!=="painel"){b.click()}
+  let y=0;try{y=+sessionStorage.getItem("rolagem")||0}catch(e){}if(y)setTimeout(()=>scrollTo({top:y}),400)}
+addEventListener("pagehide",()=>{try{sessionStorage.setItem("rolagem",String(scrollY))}catch(e){}});
+voltaAba();
 let tBusca;document.getElementById("busca").addEventListener("input",()=>{clearTimeout(tBusca);tBusca=setTimeout(()=>{POLN=30;politicos()},200)});
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
