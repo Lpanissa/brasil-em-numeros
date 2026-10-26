@@ -225,6 +225,11 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   </div>
   <div class="grid c2" id="pol-lista"></div>
   <button id="pol-mais" class="mais hidden">Mostrar mais</button>
+  <h2>Bancadas no Congresso</h2>
+  <div class="grid c2">
+    <div class="card"><h3>Câmara dos Deputados<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos deputados federais em exercício cada partido tem hoje, contados ao vivo na lista oficial da Câmara. São 513 cadeiras; para aprovar um projeto de lei comum basta a maioria dos presentes, e para mudar a Constituição são 308 votos, em dois turnos. Os deputados eleitos em outubro de 2026 tomam posse em 01/02/2027, e a lista muda sozinha nesse dia.</div><p class="note" id="banc-dep-sub"></p><div id="banc-dep"></div></div>
+    <div class="card"><h3>Senado Federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos senadores em exercício cada partido tem hoje, contados ao vivo na lista oficial do Senado. São 81 cadeiras, 3 por estado; para mudar a Constituição são 49 votos, em dois turnos. Os senadores eleitos em outubro de 2026 tomam posse em 01/02/2027.</div><p class="note" id="banc-sen-sub"></p><div id="banc-sen"></div></div>
+  </div>
   <div class="grid c2">
     <div class="card"><h3>Senadores que mais gastaram da cota<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Soma dos reembolsos da Cota para o Exercício da Atividade Parlamentar dos Senadores (CEAPS) no ano, nota a nota, dos dados abertos do Senado. Atualiza sozinho: o Senado publica as notas conforme os senadores pedem o reembolso, então os meses mais recentes ainda podem crescer.</div><p class="note" id="sen-gastos-sub"></p><div id="sen-gastos"></div></div>
     <div class="card"><h3>Salário de cada governador<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Salário bruto mensal (subsídio) fixado pela Assembleia Legislativa de cada estado, que não pode passar do teto de R$ 46.366,19. Não existe uma API oficial única com esses valores, então eles são conferidos na coleta mensal do dia 15. Levantamento de setembro de 2026.</div><p class="note">Por mês, bruto · Assembleias Legislativas, set/2026</p><div id="gov-sal"></div></div>
@@ -279,6 +284,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 <script>
 const SB_URL="https://fyxksvydxwvygjebanno.supabase.co", SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
 const D={ind:[],val:[],uf:[],dcol:[],dind:[],col:[],snap:[]},CMP={a:null,b:null};
+function semAc(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const nf=(v,d=2)=>Number(v).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -305,7 +311,6 @@ const SAL_FED=46366.19; /* presidente, vice, ministros, senadores, deputados fed
 const GOV_SAL={SE:46366.19,AC:41845.49,MG:41845.49,BA:36894.89,SP:36301.53,ES:36165.63,MS:35462.27,RJ:35462.22,RS:35462.22,RO:35462.22,PA:35363.55,PB:35032.58,PI:34774.64,RR:34299.00,AL:34262.58,MT:34100.55,AM:34070.00,PR:33763.00,GO:33428.12,MA:33006.39,AP:33000.00,TO:32518.44,DF:29311.94,SC:25322.25,CE:22878.41,PE:22000.00,RN:21914.76};
 const COD_UF={11:"RO",12:"AC",13:"AM",14:"RR",15:"PA",16:"AP",17:"TO",21:"MA",22:"PI",23:"CE",24:"RN",25:"PB",26:"PE",27:"AL",28:"SE",29:"BA",31:"MG",32:"ES",33:"RJ",35:"SP",41:"PR",42:"SC",43:"RS",50:"MS",51:"MT",52:"GO",53:"DF"};
 const ANO=new Date().getFullYear(),MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-const semAc=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const rs=v=>"R$ "+nf(v,0),rs2=v=>"R$ "+nf(v,2);
 let POL=null,POLT="todos",POLN=30,CEAPS=null;
 
@@ -381,7 +386,15 @@ async function detalhePol(el){
   }
 }
 
-function senadoresGastos(){
+function bancadas(){
+  for(const [t,id,tot] of [["dep","banc-dep",513],["sen","banc-sen",81]]){
+    const el=document.getElementById(id);if(!el)continue;const c={};POL.filter(p=>p.tipo===t).forEach(p=>{const k=p.partido||"Sem partido";c[k]=(c[k]||0)+1});
+    const n=Object.values(c).reduce((a,b)=>a+b,0);if(!n){el.innerHTML=`<p class="note">Lista indisponível no momento.</p>`;continue}
+    document.getElementById(id+"-sub").textContent=`${n} de ${tot} cadeiras · ${Object.keys(c).length} partidos · ao vivo, ${t==="dep"?"Câmara dos Deputados":"Senado Federal"}`;
+    el.innerHTML=barrasH(Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({l:k,v,cor:corG(k)})),{fmt:v=>nf(v,0),w:LARG(id)});
+  }
+}
+function senadoresGastos(){bancadas();
   const el=document.getElementById("sen-gastos");if(!el||!CEAPS)return;
   const info=Object.fromEntries(POL.filter(p=>p.tipo==="sen").map(p=>[String(p.id),p]));
   const it=Object.entries(CEAPS.senadores).filter(([c])=>info[c]).map(([c,s])=>({l:`${info[c].nome} (${info[c].partido}-${info[c].uf})`,v:s.total,cor:css('--acc')})).sort((a,b)=>b.v-a.v).slice(0,15);
@@ -621,7 +634,8 @@ async function desenharMapa(U,G){
 const CORP={PT:"--pt",PL:"--pl",MDB:"#2f9e63",PSD:"#e8912d",União:"#8e6bd8",PSB:"#e0628f",PP:"#1aa59a",Republicanos:"#90a4ae",PSDB:"#d4b106",Novo:"#a1887f",Solidariedade:"#7cb342",Podemos:"#26c6da",
   Norte:"#2f9e63",Nordeste:"#e8912d","Centro-Oeste":"#8e6bd8",Sudeste:"#3fa7e0",Sul:"#e0628f"};
 const SIGLA=p=>({Republicanos:"Rep.",Solidariedade:"SD",Podemos:"Pode"})[p]||p;
-const corG=g=>{const c=CORP[g]||"#8a8f98";return c.startsWith("--")?css(c):c};
+const CORP_N=Object.fromEntries(Object.entries(CORP).map(([k,v])=>[semAc(k),v]));
+const corG=g=>{const n=semAc(g),c=CORP[g]||CORP_N[n]||CORP_N[{pode:"podemos",solid:"solidariedade",uniao:"uniao"}[n]]||"#8a8f98";return c.startsWith("--")?css(c):c};
 const MODOS={
   gov26:{nome:"Governadores eleitos 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
     info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."},
@@ -646,9 +660,7 @@ function estados(){
   document.getElementById("mapa-leg").innerHTML=grupos.map(x=>`<span><span class="sw" style="background:${corG(x.g)}"></span>${esc(G.rot(x.g))}: <b>${x.us.length}</b></span>`).join("");
   desenharMapa(U,G);
   /* comunicado: os grupos juntam estados de regiões diferentes; o número é a média desses estados, não uma nota do partido */
-  const lista=x=>{const ns=x.us.map(u=>u.nome),mx=MODO==="pres"?6:3;return ns.length>mx?ns.slice(0,mx).join(", ")+` e mais ${ns.length-mx}`:ns.join(", ").replace(/, ([^,]*)$/," e $1")};
-  const g2=MODO==="pres"?grupos.slice(0,2):grupos;
-  document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Os números de cada grupo são a <b>média dos estados</b> onde aquele partido ganhou${MODO==="pres"?" a eleição para presidente":" o governo"}. ${g2.map(x=>`<b>${esc(G.rot(x.g))}</b>: ${esc(lista(x))}`).join(". ")}. Como esses estados ficam em regiões com histórias e economias muito diferentes, a comparação mostra <b>onde</b> cada partido teve mais votos, e não que um partido seja responsável por números bons ou ruins. Riqueza, violência, renda e escolaridade dependem de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.`;
+  document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Os números de cada grupo são a <b>média dos estados</b> onde aquele partido ganhou${MODO==="pres"?" a eleição para presidente":" o governo do estado"}. Como esses estados ficam em regiões com histórias e economias muito diferentes, a comparação mostra <b>onde</b> cada partido teve mais votos, e não que um partido seja responsável por números bons ou ruins. Riqueza, violência, renda e escolaridade dependem de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.`;
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
   const vs=(k,fmt,un,id)=>{const it=grupos.map(x=>({l:rotN(x),v:media(x.us,k),cor:corG(x.g)}));
     const topo=grupos.length===2?`<div class="vs">${grupos.map((x,i)=>`<div class="side"><div class="tag" style="color:${corG(x.g)}">ESTADOS ${esc(x.g).toUpperCase()}</div><div class="big">${fmt(it[i].v)}</div><div class="note">${un}</div></div>`).join("")}</div>`:`<p class="note" style="margin:6px 0 10px">${un}</p>`;
