@@ -78,6 +78,9 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .dit .mono{font:500 15px "JetBrains Mono",monospace}
 .strike{color:var(--muted);text-decoration:line-through}
 .badge{font-size:13px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.pizza svg{flex:none}
+.pizza-leg{font-size:15px;display:grid;gap:8px;max-width:100%}
 .anuncio{margin:28px 0 8px;border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;background:var(--card);text-align:center}
 .anuncio small{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .anuncio .adsbygoogle{display:block;min-height:90px}
@@ -225,7 +228,7 @@ function linha(pts,{w=LARG(),h=200,fmt=v=>nf(v),step=false}={}){
   const lab=pts.map((p,i)=>(pts.length<=(w<420?6:10)||i%(w<420?3:2)===0)?`<text x="${X(i)}" y="${h-8}" font-size="14" text-anchor="middle" fill="${css('--muted')}">${esc(p.l)}</text>`:"").join("");
   const dots=pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.v)}" r="4" fill="${css('--acc')}"><title>${esc(p.l)}: ${fmt(p.v)}</title></circle>`).join("");
   const last=pts[pts.length-1];
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${g}<path d="${d}" fill="none" stroke="${css('--acc')}" stroke-width="2.5"/>${dots}<text x="${X(pts.length-1)}" y="${Y(last.v)-10}" font-size="16" font-weight="700" text-anchor="end" fill="${css('--ink')}">${fmt(last.v)}</text>${lab}</svg>`}
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${g}<path d="${d}" fill="none" stroke="${css('--acc')}" stroke-width="2.5"/>${dots}<text x="${X(pts.length-1)-(step?10:0)}" y="${step?Y(last.v)+6:Y(last.v)-12}" font-size="16" font-weight="700" text-anchor="end" fill="${css('--ink')}" stroke="${css('--card')}" stroke-width="5" paint-order="stroke">${fmt(last.v)}</text>${lab}</svg>`}
 function pizza(fatias,{tam=180,centro=""}={}){
   const tot=fatias.reduce((s,f)=>s+f.v,0),R=tam/2-4,r=R*.6,c=tam/2;let a=-Math.PI/2,out="";
   for(const f of fatias){const ang=f.v/tot*2*Math.PI;if(ang<=0)continue;const a2=a+ang,big=ang>Math.PI?1:0;
@@ -233,7 +236,7 @@ function pizza(fatias,{tam=180,centro=""}={}){
     out+= ang>=2*Math.PI-1e-6?`<circle cx="${c}" cy="${c}" r="${(R+r)/2}" fill="none" stroke="${f.cor}" stroke-width="${R-r}"/>`:
       `<path d="M${p(R,a)}A${R},${R} 0 ${big} 1 ${p(R,a2)}L${p(r,a2)}A${r},${r} 0 ${big} 0 ${p(r,a)}Z" fill="${f.cor}"><title>${esc(f.l)}: ${nf(f.v,1)}</title></path>`;a=a2}
   const leg=fatias.map(f=>`<div><span class="sw" style="background:${f.cor}"></span>${esc(f.l)}: <b>${f.txt??nf(f.v/tot*100,0)+"%"}</b></div>`).join("");
-  return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div style="font-size:15px;display:grid;gap:8px">${leg}</div></div>`}
+  return `<div class="pizza"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div class="pizza-leg">${leg}</div></div>`}
 function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
   /* telas estreitas: nome em cima, barra embaixo; telas largas: nome à esquerda */
   const emp=w<340,fs=w<440?14:15,lw=emp?0:(w<440?134:160),vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
