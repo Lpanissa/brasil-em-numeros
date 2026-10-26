@@ -156,6 +156,8 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .placar.mini{height:8px;margin:0;flex:1;min-width:60px}
 .vot-p{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}.vot-p li{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;font-size:14px}
 .vot details summary{cursor:pointer;font-size:14.5px;font-weight:600;margin-top:4px}
+.gov-pl{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px;max-height:520px;overflow:auto}
+.gov-pl li{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:6px 0;font-size:14.5px}.gov-pl small{display:block;color:var(--muted);font-size:13px}.gov-pl a{color:inherit;font-weight:700;white-space:nowrap}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -246,6 +248,8 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 <section id="t-politicos" class="hidden">
   <h2 style="margin-top:4px">Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
+  <h2>Governadores eleitos em 2026: planos de governo</h2>
+  <div class="grid c2" id="gov-planos"></div>
   <h2>Deputados, senadores e governadores</h2>
   <div class="card">
     <h3>Quem são, quanto ganham e quanto gastam<button class="info" aria-label="Sobre esta aba">i</button></h3>
@@ -393,7 +397,7 @@ async function carregarPoliticos(){
 }
 
 async function politicos(){
-  presidente();votacoes();
+  presidente();votacoes();govPlanos();
   const lista=document.getElementById("pol-lista");
   if(!POL){lista.innerHTML=`<p class="note">Buscando deputados, senadores e governadores nas fontes oficiais…</p>`;await carregarPoliticos()}
   const tipos={todos:"Todos",dep:"Deputados federais",sen:"Senadores",gov:"Governadores",ele:"Eleitos para o Congresso em 2026"};
@@ -440,6 +444,7 @@ async function detalhePol(el){
   }else{
     const u=D.uf.find(e=>e.uf===p.uf);
     det.innerHTML=`<p class="note">O salário do governador é fixado pela Assembleia Legislativa de ${esc(u.nome)} e não pode passar do teto de ${rs2(SAL_FED)}.${u.rcl_pc?` O estado arrecadou ${rs(u.rcl_pc)} por habitante nos últimos 12 meses (receita corrente líquida, Tesouro Nacional).`:""}</p>
+      ${p.id.startsWith("e")&&planoGov(p.uf)?`<p><a class="bt" href="${planoGov(p.uf)}" target="_blank" rel="noopener">Plano de governo 2026 (PDF, TSE)</a></p>`:""}
       <p class="fonte">Fontes: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · resultados das eleições</a> · salário: Assembleia Legislativa de ${esc(u.nome)}, conforme <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento de set/2026</a></p>`;
   }
 }
@@ -739,6 +744,34 @@ async function votacoes(){
 }
 async function votosDoDeputado(id){const L=await carregarVot();const r=L.filter(v=>v.votos[id]);if(!r.length)return "";
   return `<div class="pol-gasto" style="margin-top:10px">Como votou nas últimas votações do Plenário:</div><ul class="pol-tipos">${r.slice(0,8).map(v=>`<li>${esc(v.prop||"Votação")} (${v.data.split("-").reverse().join("/")}): <b>${VOTO_N[v.votos[id]]}</b></li>`).join("")}</ul>`}
+
+
+/* ---------- planos de governo dos governadores eleitos em 2026 (TSE, DivulgaCandContas: id do arquivo da proposta) ---------- */
+const GOV_PLANO={AC:"10017029377",AL:"20017121679",AM:"40017124955",AP:"30017105444",BA:"50017113080",CE:"60017034681",DF:"70017118691",ES:"80017115128",GO:"90016999476",MA:"100017102842",MG:"130017111301",MS:"120016868872",MT:"110017098106",PA:"140017085515",PB:"150017105439",PE:"170017115776",PI:"180016838798",PR:"160017127486",RJ:"190017018638",RN:"200016850707",RO:"220017009377",RR:"230017078577",RS:"210017095572",SC:"240017141286",SE:"260017015349",SP:"250017125598",TO:"270017033657"};
+const planoGov=uf=>GOV_PLANO[uf]?`https://divulgacandcontas.tse.jus.br/divulga/rest/arquivo/doc/${GOV_PLANO[uf]}`:null;
+const PROP_SP=[
+  {a:"Educação",t:"Ensino integral: de 61% para 90% das escolas estaduais até 2030",p:20},
+  {a:"Educação",t:"Ensino técnico: de 45% para 60% dos alunos da rede estadual",p:23},
+  {a:"Educação",t:"Mais de 35 mil vagas em tempo integral nas novas Escolas do Futuro",p:25},
+  {a:"Educação",t:"Triplicar a Bolsa Estágio do Ensino Médio, chegando a mais de 50 mil alunos",p:23},
+  {a:"Educação",t:"Ampliar as Escolas Cívico-Militares",p:25},
+  {a:"Saneamento",t:"Água e esgoto para todos até 2029 na área da Sabesp, quatro anos antes da meta nacional",p:42},
+  {a:"Saneamento",t:"Na Grande SP, 75% a mais de capacidade de tratar esgoto e 2.100 km de novas redes",p:44},
+  {a:"Clima",t:"Mais de R$ 25 bilhões até 2029 contra enchentes: drenagem, desassoreamento, reservatórios e parques",p:42},
+  {a:"Moradia",t:"R$ 3 bilhões para melhorar moradias e condomínios na periferia",p:32},
+  {a:"Segurança",t:"Criar o SP CIN (Centro de Inteligência e Inovação) e um centro de monitoramento 24 horas",p:7},
+  {a:"Inclusão",t:"Centros TEA Paulista (autismo) em todas as regiões administrativas",p:31}];
+function govPlanos(){
+  const el=document.getElementById("gov-planos");if(!el||el.dataset.ok)return;el.dataset.ok=1;
+  const sp=D.uf.find(u=>u.uf==="SP");
+  el.innerHTML=`<div class="card"><h3>São Paulo: o que promete ${esc(sp?.gov_2026||"o governador eleito")}<button class="info" aria-label="Sobre esta lista">i</button></h3>
+      <div class="infotxt">Principais propostas concretas do plano de governo 2027–2030 registrado no TSE pelo governador eleito de São Paulo, com a página do documento. Aqui fica o que o plano promete. A partir de 2027, cada item ganha um selo (cumprida, em andamento etc.) conforme os dados oficiais saírem.</div>
+      <div class="prom">${PROP_SP.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="pol-tag">${esc(p.a)}</span></div><p class="fonte">Plano de governo SP 2026, página ${p.p}</p></div>`).join("")}</div>
+      <p class="fonte">Fonte: <a href="${planoGov("SP")}" target="_blank" rel="noopener">TSE · plano de governo registrado (PDF)</a></p></div>
+    <div class="card"><h3>Planos de governo dos 27 eleitos<button class="info" aria-label="Sobre esta lista">i</button></h3>
+      <div class="infotxt">Todo candidato precisa registrar a sua proposta de governo no TSE. Os links abaixo baixam o documento original, direto do sistema DivulgaCandContas do TSE.</div>
+      <ul class="gov-pl">${D.uf.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>`<li><span><b>${esc(u.nome)}</b><small>${esc(u.gov_2026||"—")} (${esc(u.gov_2026_partido||"")})</small></span>${planoGov(u.uf)?`<a href="${planoGov(u.uf)}" target="_blank" rel="noopener">Plano (PDF)</a>`:""}</li>`).join("")}</ul></div>`;
+}
 
 const serie=k=>D.val.filter(v=>v.chave===k);
 /* números com API pública (Banco Central, IBGE e cotações de mercado): busca direto na fonte ao abrir o site.
