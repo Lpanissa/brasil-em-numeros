@@ -76,18 +76,18 @@ ind("bolsa_familia", "Renda e trabalho", "Bolsa Família (benefício médio)", "
     ("2026-10-01", "out/2026", 777, "~R$ 777 (estimativa)")], "Reajuste de 15,04% a partir de outubro/2026; piso de R$ 691.")
 
 # ---------- Mercado e cesta ----------
-ind("cesta_sp", "Mercado e cesta básica", "Cesta básica São Paulo", "R$", "DIEESE / Conab", DIEESE, [
+ind("cesta_sp", "Mercado e cesta básica", "Cesta básica São Paulo (preço médio)", "R$", "DIEESE / Conab", DIEESE, [
     ("2026-05-01", "mai/2026", 952.20, "R$ 952,20"), ("2026-08-01", "ago/2026", 900.59, "R$ 900,59"),
     ("2026-09-01", "set/2026", 922.51, "R$ 922,51")])
 ind("cesta_brasil", "Mercado e cesta básica", "Cesta básica (média das capitais)", "R$", "DIEESE / Conab", DIEESE, [
     ("2026-09-01", "set/2026", 752.91, "R$ 752,91")])
-ind("cesta_procon", "Mercado e cesta básica", "Cesta ampla SP (alimentos, limpeza e higiene)", "R$", "Procon-SP / DIEESE", None, [
+ind("cesta_procon", "Mercado e cesta básica", "Cesta ampla SP (preço médio: alimentos, limpeza e higiene)", "R$", "Procon-SP / DIEESE", None, [
     ("2026-07-01", "jul/2026", 1335.04, "R$ 1.335,04"), ("2026-08-01", "ago/2026", 1338.03, "R$ 1.338,03")])
-ind("carne", "Mercado e cesta básica", "Carne de primeira (kg)", "R$/kg", "Procon-SP / DIEESE", None, [
+ind("carne", "Mercado e cesta básica", "Carne de primeira (preço médio, kg)", "R$/kg", "Procon-SP / DIEESE", None, [
     ("2026-07-01", "jul/2026", 48.54, "R$ 48,54"), ("2026-08-01", "ago/2026", 50.49, "R$ 50,49")])
-ind("arroz", "Mercado e cesta básica", "Arroz (pacote 5 kg)", "R$", "Procon-SP / DIEESE", None, [
+ind("arroz", "Mercado e cesta básica", "Arroz (preço médio, pacote 5 kg)", "R$", "Procon-SP / DIEESE", None, [
     ("2026-07-01", "jul/2026", 19.63, "R$ 19,63"), ("2026-08-01", "ago/2026", 20.59, "R$ 20,59")])
-ind("batata", "Mercado e cesta básica", "Batata (kg)", "R$/kg", "Procon-SP / DIEESE", None, [
+ind("batata", "Mercado e cesta básica", "Batata (preço médio, kg)", "R$/kg", "Procon-SP / DIEESE", None, [
     ("2026-07-01", "jul/2026", 8.20, "R$ 8,20"), ("2026-08-01", "ago/2026", 6.41, "R$ 6,41")])
 var12 = [("feijao", "Feijão carioca", 37.72), ("batata", "Batata", 56.33), ("tomate", "Tomate", 23.54),
          ("carne", "Carne de primeira", 11.85), ("leite", "Leite integral", 6.74), ("pao", "Pão francês", 4.38),
@@ -99,9 +99,9 @@ for k, n, v in var12:
         [("2026-09-01", "set/2026", v, ("+" if v > 0 else "") + br(v) + "%")])
 
 # ---------- Moradia ----------
-ind("aluguel_sp", "Moradia e contas", "Aluguel em São Paulo (m²)", "R$/m²", "FipeZAP", "https://www.fipe.org.br/pt-br/indices/fipezap/", [
+ind("aluguel_sp", "Moradia e contas", "Aluguel médio em São Paulo (m²)", "R$/m²", "FipeZAP", "https://www.fipe.org.br/pt-br/indices/fipezap/", [
     ("2026-09-01", "set/2026", 65.78, "R$ 65,78")])
-ind("aluguel_br", "Moradia e contas", "Aluguel média Brasil (m²)", "R$/m²", "FipeZAP", "https://www.fipe.org.br/pt-br/indices/fipezap/", [
+ind("aluguel_br", "Moradia e contas", "Aluguel médio no Brasil (m²)", "R$/m²", "FipeZAP", "https://www.fipe.org.br/pt-br/indices/fipezap/", [
     ("2026-09-01", "set/2026", 54.77, "R$ 54,77")])
 ind("aluguel_12m", "Moradia e contas", "Alta do aluguel em 12 meses (Brasil)", "%", "FipeZAP", "https://www.fipe.org.br/pt-br/indices/fipezap/", [
     ("2026-09-01", "set/2026", 9.13, "+9,13%")])
@@ -109,7 +109,7 @@ ind("energia", "Moradia e contas", "Energia Enel SP (kWh, sem impostos)", "R$/kW
     ("2026-07-04", "desde 04/07/2026", 0.789, "R$ 0,789 (~R$ 0,98 com impostos)")])
 ind("agua", "Moradia e contas", "Água Sabesp (m³, residencial)", "R$/m³", "Sabesp / Governo de SP", None, [
     ("2026-01-01", "2026", 6.40, "R$ 6,40")])
-ind("gas", "Moradia e contas", "Gás de cozinha (botijão 13 kg)", "R$", "ANP", ANP, [
+ind("gas", "Moradia e contas", "Gás de cozinha (preço médio, botijão 13 kg)", "R$", "ANP", ANP, [
     ("2026-07-04", "04/07/2026", 114.66, "R$ 114,66"), ("2026-07-11", "11/07/2026", 114.41, "R$ 114,41"),
     ("2026-08-14", "14/08/2026", 113.89, "R$ 113,89"), ("2026-09-12", "12/09/2026", 114.28, "R$ 114,28"),
     ("2026-10-10", "10/10/2026", 114.61, "R$ 114,61"), ("2026-10-17", "17/10/2026", 114.73, "R$ 114,73")])
@@ -127,7 +127,7 @@ ind("etanol_sp", "Transporte", "Etanol (média SP)", "R$/L", "ANP", ANP, [
 ind("diesel", "Transporte", "Diesel S-10 (média Brasil)", "R$/L", "ANP", ANP, [
     ("2026-07-04", "04/07/2026", 7.02, "R$ 7,02"), ("2026-07-11", "11/07/2026", 6.97, "R$ 6,97"),
     ("2026-08-14", "ago/2026", 6.949, "R$ 6,95"), ("2026-09-12", "12/09/2026", 6.97, "R$ 6,97")])
-ind("gnv", "Transporte", "GNV (m³)", "R$/m³", "ANP", ANP, [("2026-08-01", "ago/2026", 4.90, "R$ 4,90")])
+ind("gnv", "Transporte", "GNV (preço médio, m³)", "R$/m³", "ANP", ANP, [("2026-08-01", "ago/2026", 4.90, "R$ 4,90")])
 ind("onibus_sp", "Transporte", "Ônibus municipal SP", "R$", "SPTrans", "https://www.sptrans.com.br", [
     ("2025-01-06", "2025", 5.00, "R$ 5,00"), ("2026-01-06", "2026", 5.30, "R$ 5,30")])
 ind("metro_sp", "Transporte", "Metrô / CPTM", "R$", "Governo de SP", "https://www.metro.sp.gov.br", [
@@ -136,10 +136,10 @@ ind("pedagio_ai", "Transporte", "Pedágio Anchieta-Imigrantes", "R$", "ARTESP", 
     ("2025-07-01", "jul/2025", 38.70, "R$ 38,70"), ("2026-07-01", "jul/2026", 40.60, "R$ 40,60")])
 
 # ---------- Crédito e dívidas ----------
-ind("rotativo", "Crédito e dívidas", "Juros do cartão rotativo", "% a.a.", "Banco Central", BCB + "/estatisticas/estatisticasmonetariascredito", [
+ind("rotativo", "Crédito e dívidas", "Juros médios do cartão rotativo", "% a.a.", "Banco Central", BCB + "/estatisticas/estatisticasmonetariascredito", [
     ("2026-02-01", "fev/2026", 435.9, "435,9%"), ("2026-05-01", "mai/2026", 439.8, "439,8%"),
     ("2026-06-01", "jun/2026", 442.4, "442,4%"), ("2026-08-01", "ago/2026", 444.89, "444,9%")])
-ind("credito_pessoal", "Crédito e dívidas", "Empréstimo pessoal (não consignado)", "% a.a.", "Banco Central", BCB, [
+ind("credito_pessoal", "Crédito e dívidas", "Empréstimo pessoal (juro médio, não consignado)", "% a.a.", "Banco Central", BCB, [
     ("2026-08-01", "ago/2026", 110.22, "110,2%")])
 ind("credito_livre", "Crédito e dívidas", "Juro médio para famílias (crédito livre)", "% a.a.", "Banco Central", BCB, [
     ("2026-08-01", "ago/2026", 61.7, "61,7%")])
