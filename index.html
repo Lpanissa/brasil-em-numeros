@@ -78,8 +78,13 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .dit .mono{font:500 15px "JetBrains Mono",monospace}
 .strike{color:var(--muted);text-decoration:line-through}
 .badge{font-size:13px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.anuncio{margin:28px 0 8px;border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;background:var(--card);text-align:center}
+.anuncio small{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.anuncio .adsbygoogle{display:block;min-height:90px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
+<!-- Google AdSense (conta pub-1546406246556926) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="wrap">
@@ -157,6 +162,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </section>
 
 <footer>
+  <div class="anuncio" id="anuncio" hidden><small>Publicidade</small><ins class="adsbygoogle" data-ad-client="ca-pub-1546406246556926" data-ad-format="auto" data-full-width-responsive="true"></ins></div>
   <p>Fontes oficiais: IBGE, Banco Central, ANP, DIEESE, FipeZAP, FBSP, SSP-SP, TSE, MDS, ANS, CMED. Toque em qualquer indicador para ver o histórico e a fonte.</p>
   <p class="note" id="origem"></p>
 </footer>
@@ -180,6 +186,9 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
+  /* anúncio do rodapé: aparece quando houver o número do bloco de anúncio do AdSense */
+  const AD_SLOT="";
+  if(AD_SLOT){const box=document.getElementById("anuncio");box.querySelector("ins").dataset.adSlot=AD_SLOT;box.hidden=false;try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}}
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
 const serie=k=>D.val.filter(v=>v.chave===k);
