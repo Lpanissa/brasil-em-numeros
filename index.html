@@ -181,6 +181,10 @@ nav{top:31px}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .vid-dlg .nd-x{position:absolute;top:-40px;right:0;background:none;border:0;color:#fff;font-size:30px;cursor:pointer}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
+details.abre>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-weight:700;padding:10px 16px;margin:6px 0;border:1px solid var(--line,#ccc);border-radius:999px;user-select:none}
+details.abre>summary::-webkit-details-marker{display:none}
+details.abre>summary::before{content:"";width:0;height:0;border-left:8px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s}
+details.abre[open]>summary::before{transform:rotate(90deg)}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
@@ -596,11 +600,11 @@ function presidente(){
   <div class="card"><h3>Promessas do plano de 2022: o que aconteceu<button class="info" aria-label="Como foi avaliado">i</button></h3>
     <div class="infotxt">Promessas concretas do plano de governo registrado no TSE em 2022 ("Diretrizes para o Programa de Reconstrução e Transformação do Brasil"). O número é o item do documento. Ficam de fora os trechos genéricos, que não dá para medir. <b>Cumprida</b>: lei ou medida aprovada e em vigor. <b>Em parte</b>: só uma parte foi feita. <b>Em andamento</b>: a medida existe, mas a meta ainda não foi atingida. <b>Não cumprida</b>: não foi aprovada até outubro de 2026. O selo diz se a promessa saiu do papel, e não se a política é boa ou ruim. Cada item mostra a fonte oficial.</div>
     <div class="legend">${cont.map(([k,n])=>`<span><span class="sw" style="background:${cor[k]}"></span>${k[0].toUpperCase()+k.slice(1)}: <b>${n}</b></span>`).join("")}</div>
-    <div class="prom">${PROM22.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="badge" style="color:${cor[p.s]};background:color-mix(in srgb,${cor[p.s]} 14%,transparent)"><span class="dot" style="background:${cor[p.s]}"></span>${p.s}</span></div>
-      <p class="note">Item ${p.i} do plano de 2022. ${esc(p.o)}</p><p class="fonte">Fonte: <a href="${p.u}" target="_blank" rel="noopener">${esc(p.f)}</a></p></div>`).join("")}</div></div>
+    <details class="abre"><summary>Ver as ${PROM22.length} promessas</summary><div class="prom">${PROM22.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="badge" style="color:${cor[p.s]};background:color-mix(in srgb,${cor[p.s]} 14%,transparent)"><span class="dot" style="background:${cor[p.s]}"></span>${p.s}</span></div>
+      <p class="note">Item ${p.i} do plano de 2022. ${esc(p.o)}</p><p class="fonte">Fonte: <a href="${p.u}" target="_blank" rel="noopener">${esc(p.f)}</a></p></div>`).join("")}</div></details></div>
   <div class="card"><h3>O que propõe o plano de 2026<button class="info" aria-label="Sobre esta lista">i</button></h3>
     <div class="infotxt">Principais propostas concretas do Programa de Governo 2027–2030 registrado no TSE, com a página do documento. Aqui fica o que o plano promete. A partir de 2027, cada item ganha um selo, como os do plano de 2022, conforme leis e dados oficiais forem saindo.</div>
-    <div class="prom">${PROP26.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="pol-tag">${esc(p.a)}</span></div><p class="fonte">Plano de governo 2026, página ${p.p}</p></div>`).join("")}</div>
+    <details class="abre"><summary>Ver as ${PROP26.length} propostas</summary><div class="prom">${PROP26.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="pol-tag">${esc(p.a)}</span></div><p class="fonte">Plano de governo 2026, página ${p.p}</p></div>`).join("")}</div></details>
     <p class="fonte">Fonte: <a href="${PRES.plano26}" target="_blank" rel="noopener">TSE · Programa de Governo 2026 registrado pela candidatura (PDF)</a></p></div>`;
 }
 
