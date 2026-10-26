@@ -167,6 +167,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <button data-t="painel" class="on">Painel</button>
   <button data-t="estados">Estados</button>
   <button data-t="politicos">Políticos</button>
+  <button data-t="contas">Contas do governo</button>
   <button data-t="calc">Calculadoras</button>
   <button data-t="noticias">Notícias</button>
   <button data-t="dossie">Conferência do dossiê</button>
@@ -274,6 +275,10 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <li>Salário dos governadores (fixado por cada Assembleia): <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
   </ul></div>
   <p class="aviso">A cota parlamentar é uma verba legal para o trabalho do mandato. Gastar mais não quer dizer, por si só, que houve irregularidade: estados mais longe de Brasília, por exemplo, gastam mais com passagens.</p>
+</section>
+
+<section id="t-contas" class="hidden">
+  <div id="contas"></div>
 </section>
 
 <section id="t-calc" class="hidden">
@@ -670,6 +675,41 @@ function calculadoras(){
       sp?`A cesta básica de SP (${rs2(+sp.valor)}) leva ${nf(+sp.valor/sal*100,1)}% de um salário de ${rs2(sal)}.`:"")};
 }
 
+
+/* ---------- contas do governo: dívida e resultado (Banco Central SGS) + gastos da União por área (Tesouro/SICONFI) ---------- */
+const FUNC_NOME={"Previdência Social":"Aposentadorias e pensões (Previdência)","Saúde":"Saúde","Educação":"Educação","Assistência Social":"Assistência social (Bolsa Família, BPC…)","Trabalho":"Trabalho (seguro-desemprego, abono…)","Defesa Nacional":"Defesa (Forças Armadas)","Segurança Pública":"Segurança pública","Judiciária":"Justiça (Judiciário)","Transporte":"Transporte","Agricultura":"Agricultura","Ciência e Tecnologia":"Ciência e tecnologia","Administração":"Administração do governo","Legislativa":"Congresso (Legislativo)","Gestão Ambiental":"Meio ambiente","Urbanismo":"Cidades (urbanismo)","Saneamento":"Saneamento","Habitação":"Habitação","Cultura":"Cultura","Desporto e Lazer":"Esporte e lazer","Essencial à Justiça":"Ministério Público e Defensoria","Relações Exteriores":"Relações exteriores","Organização Agrária":"Reforma agrária","Indústria":"Indústria","Comércio e Serviços":"Comércio e serviços","Comunicações":"Comunicações","Energia":"Energia","Direitos da Cidadania":"Direitos da cidadania"};
+async function contas(){
+  const el=document.getElementById("contas");if(!el||el.dataset.ok)return;el.dataset.ok=1;
+  el.innerHTML=`<p class="note">Buscando no Banco Central e no Tesouro Nacional…</p>`;
+  const sgs=n=>fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${n}/dados/ultimos/36?formato=json`).then(r=>r.json()).catch(()=>[]);
+  const [div,pri,nom,fin]=await Promise.all([sgs(13762),sgs(5793),sgs(5727),
+    fetch("/api/siconfi?rel=rreo&an_exercicio="+ANO+"&nr_periodo="+Math.max(1,Math.floor(new Date().getMonth()/2))+"&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2002&id_ente=1").then(r=>r.json()).catch(()=>null)]);
+  const mes=d=>{const [,m,a]=d.split("/");return MESES[+m-1].slice(0,3)+"/"+a.slice(2)},ul=a=>a[a.length-1];
+  let h=`<div class="grid c3">`;
+  if(div.length){const u=ul(div),a12=div[div.length-13];
+    h+=`<div class="card"><h3>Dívida do governo<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dívida bruta do governo geral (União, estados e municípios) em relação ao PIB, no conceito do Banco Central (série 13762 do SGS). É o quanto o governo deve, comparado com tudo o que o país produz em um ano. Atualiza sozinho todo mês.</div>
+      <div class="big">${nf(+u.valor,1)}% do PIB</div><p class="note">${mes(u.data)}${a12?` · era ${nf(+a12.valor,1)}% um ano antes`:""}</p>
+      <div id="g-div"></div><p class="fonte"><a href="https://www3.bcb.gov.br/sgspub" target="_blank" rel="noopener">Banco Central · SGS 13762</a></p></div>`}
+  if(pri.length&&nom.length){const p=+ul(pri).valor,n=+ul(nom).valor,j=n-p;
+    h+=`<div class="card"><h3>O governo fechou no azul ou no vermelho?<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Resultado do setor público consolidado em 12 meses, em % do PIB (Banco Central, séries 5793 e 5727). <b>Resultado primário</b>: o que o governo arrecada menos o que gasta, sem contar os juros da dívida. <b>Juros</b>: quanto a dívida custou no período. Somando os dois, tem-se o resultado nominal. O Banco Central publica como "necessidade de financiamento": número positivo é déficit.</div>
+      <div class="big" style="color:${p>0?css('--up'):css('--down')}">${p>0?"Déficit":"Superávit"} de ${nf(Math.abs(p),2)}% do PIB</div><p class="note">resultado primário em 12 meses, até ${mes(ul(pri).data)}</p>
+      <p>Juros da dívida: <b>${nf(j,2)}% do PIB</b> em 12 meses.<br>Resultado com juros: <b>${n>0?"déficit":"superávit"} de ${nf(Math.abs(n),2)}% do PIB</b>.</p>
+      <div id="g-pri"></div><p class="fonte"><a href="https://www3.bcb.gov.br/sgspub" target="_blank" rel="noopener">Banco Central · SGS 5793 e 5727</a></p></div>`}
+  let gastos="";
+  if(fin&&fin.items&&fin.items.length){
+    const col="DESPESAS LIQUIDADAS ATÉ O BIMESTRE (d)",it=fin.items.filter(i=>i.coluna===col&&i.cod_conta==="RREO2TotalDespesas"),v=n=>(it.find(i=>i.conta===n)||{}).valor||0;
+    const total=v("DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (I)"),per=fin.items[0].periodo;
+    const lin=Object.entries(FUNC_NOME).map(([k,l])=>({l,v:v(k)})).concat([{l:"Juros e pagamento da dívida",v:v("Serviço da Dívida Interna")+v("Serviço da Dívida Externa")},{l:"Repasses a estados e municípios",v:v("Transferências")+v("Transferências para a Educação Básica")}]).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    const top=lin.slice(0,12),resto=total-top.reduce((s,x)=>s+x.v,0);if(resto>0)top.push({l:"Todo o resto",v:resto});
+    gastos=`<div class="card"><h3>Para onde vai o dinheiro do governo federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Despesas da União já pagas ou prontas para pagar (liquidadas) em ${ANO}, até o ${per}º bimestre, por área. Vem do Relatório Resumido da Execução Orçamentária (Anexo 2), entregue pelo governo ao Tesouro Nacional, pela API do SICONFI. "Juros e pagamento da dívida" é o serviço da dívida interna e externa. "Repasses a estados e municípios" inclui os fundos de participação e o Fundeb. Atualiza sozinho a cada dois meses.</div>
+      <p class="note">${ANO}, até o ${per}º bimestre · total de R$ ${nf(total/1e9,0)} bilhões</p>
+      ${barrasH(top.map(x=>({l:x.l,v:x.v/1e9,cor:/dívida/.test(x.l)?css('--up'):css('--acc')})),{fmt:x=>"R$ "+nf(x,0)+" bi · "+nf(x*1e9/total*100,0)+"%",w:LARG("contas")})}
+      <p class="fonte"><a href="https://siconfi.tesouro.gov.br" target="_blank" rel="noopener">Tesouro Nacional · SICONFI · RREO Anexo 2 da União</a></p></div>`}
+  el.innerHTML=h+`</div>`+gastos;
+  if(div.length)document.getElementById("g-div").innerHTML=linha(div.slice(-24).map(x=>({l:mes(x.data),v:+x.valor})),{fmt:v=>nf(v,1)+"%",w:LARG("g-div"),h:170});
+  if(pri.length)document.getElementById("g-pri").innerHTML=linha(pri.slice(-24).map(x=>({l:mes(x.data),v:-x.valor})),{fmt:v=>nf(v,2)+"%",w:LARG("g-pri"),h:170})+`<p class="note">Resultado primário em 12 meses (acima de zero = superávit)</p>`;
+}
+
 const serie=k=>D.val.filter(v=>v.chave===k);
 /* números com API pública (Banco Central, IBGE e cotações de mercado): busca direto na fonte ao abrir o site.
    O que não tem API (DIEESE, ANP, FipeZAP, Procon etc.) continua pela coleta do dia 15. O histórico mensal fica no banco. */
@@ -958,7 +998,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras()});
+  ["painel","estados","politicos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas()});
 let tBusca;document.getElementById("busca").addEventListener("input",()=>{clearTimeout(tBusca);tBusca=setTimeout(()=>{POLN=30;politicos()},200)});
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
