@@ -297,11 +297,16 @@ details.cat>summary h2{margin-bottom:8px}
   <p class="note" style="margin:-4px 0 8px">Série "Como funciona o Brasil". Toque num vídeo para assistir.</p>
   <div class="vids" id="vids"></div>
 <dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p></dialog>
-  <h2>Presidente eleito</h2>
+  <details class="cat">
+  <summary><h2>Presidente eleito</h2></summary>
   <div class="grid" id="pres" style="gap:10px"></div>
-  <h2>Governadores eleitos em 2026: planos de governo</h2>
+  </details>
+  <details class="cat">
+  <summary><h2>Governadores eleitos em 2026: planos de governo</h2></summary>
   <div class="grid c2" id="gov-planos"></div>
-  <h2>Deputados, senadores e governadores</h2>
+  </details>
+  <details class="cat">
+  <summary><h2>Deputados, senadores e governadores</h2></summary>
   <div class="card">
     <h3>Quem são, quanto ganham e quanto gastam<button class="info" aria-label="Sobre esta aba">i</button></h3>
     <div class="infotxt">Lista ao vivo dos <b>513 deputados federais</b> (Câmara dos Deputados) e dos <b>81 senadores</b> em exercício (Senado Federal), mais os governadores eleitos em 2022 e em 2026 (TSE). Toque em um nome para ver quanto ele gastou da <b>cota parlamentar</b> no ano: é a verba para passagens, aluguel de escritório, combustível, divulgação etc., paga além do salário. O salário bruto de presidente, ministros, senadores, deputados federais e ministros do STF é de <b>R$ 46.366,19</b> desde 2025 (Decreto Legislativo 172/2022). O de cada governador é decidido pela Assembleia do estado.</div>
@@ -311,15 +316,21 @@ details.cat>summary h2{margin-bottom:8px}
   </div>
   <div class="grid c2" id="pol-lista"></div>
   <button id="pol-mais" class="mais hidden">Mostrar mais</button>
-  <h2>Bancadas no Congresso</h2>
+  </details>
+  <details class="cat">
+  <summary><h2>Bancadas no Congresso</h2></summary>
   <div class="grid c2">
     <div class="card"><h3>Câmara dos Deputados<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos deputados federais em exercício cada partido tem hoje, contados ao vivo na lista oficial da Câmara. São 513 cadeiras; para aprovar um projeto de lei comum basta a maioria dos presentes, e para mudar a Constituição são 308 votos, em dois turnos. Os deputados eleitos em outubro de 2026 tomam posse em 01/02/2027, e a lista muda sozinha nesse dia.</div><p class="note" id="banc-dep-sub"></p><div id="banc-dep"></div></div>
     <div class="card"><h3>Senado Federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos senadores em exercício cada partido tem hoje, contados ao vivo na lista oficial do Senado. São 81 cadeiras, 3 por estado; para mudar a Constituição são 49 votos, em dois turnos. Os senadores eleitos em outubro de 2026 tomam posse em 01/02/2027.</div><p class="note" id="banc-sen-sub"></p><div id="banc-sen"></div></div>
   </div>
-  <h2>Últimas votações no Plenário da Câmara<button class="info" aria-label="Sobre as votações" data-alvo="vot-info">i</button></h2>
+  </details>
+  <details class="cat">
+  <summary><h2>Últimas votações no Plenário da Câmara<button class="info" aria-label="Sobre as votações" data-alvo="vot-info">i</button></h2></summary>
   <div class="infotxt" id="vot-info">Votações nominais (com o voto de cada deputado registrado) dos últimos meses, direto dos Dados Abertos da Câmara. Ficam de fora os requerimentos, que são votações de procedimento. Toque em um deputado na busca acima para ver como ele votou. Atualiza sozinho a cada 6 horas.</div>
   <div class="grid c2" id="votacoes"></div>
-  <h2>Como fica o Congresso a partir de 01/02/2027</h2>
+  </details>
+  <details class="cat">
+  <summary><h2>Como fica o Congresso a partir de 01/02/2027</h2></summary>
   <div class="grid c2">
     <div class="card"><h3>Câmara eleita em 2026<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Os 513 deputados federais eleitos em 04/10/2026, pelo partido em que foram eleitos, segundo o resultado oficial do TSE. Tomam posse em 01/02/2027. Depois da posse, alguns podem trocar de partido; aí o gráfico "Câmara dos Deputados" acima passa a mostrar a bancada real do dia.</div><p class="note" id="banc27-dep-sub"></p><div id="banc27-dep"></div></div>
     <div class="card"><h3>Senado a partir de 2027<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Em 2026 foram eleitos 54 senadores (2 por estado), que se juntam aos 27 eleitos em 2022, cujo mandato vai até 2031. Para os de 2022, vale o partido de hoje, pela lista do Senado; se algum estiver licenciado, entra o suplente em exercício. Fontes: TSE e Senado Federal.</div><p class="note" id="banc27-sen-sub"></p><div id="banc27-sen"></div></div>
@@ -328,6 +339,7 @@ details.cat>summary h2{margin-bottom:8px}
     <div class="card"><h3>Senadores que mais gastaram da cota<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Soma dos reembolsos da Cota para o Exercício da Atividade Parlamentar dos Senadores (CEAPS) no ano, nota a nota, dos dados abertos do Senado. Atualiza sozinho: o Senado publica as notas conforme os senadores pedem o reembolso, então os meses mais recentes ainda podem crescer.</div><p class="note" id="sen-gastos-sub"></p><div id="sen-gastos"></div></div>
     <div class="card"><h3>Salário de cada governador<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Salário bruto mensal (subsídio) fixado pela Assembleia Legislativa de cada estado, que não pode passar do teto de R$ 46.366,19. Não existe uma API oficial única com esses valores, então eles são conferidos na coleta mensal do dia 15. Levantamento de setembro de 2026.</div><p class="note">Por mês, bruto · Assembleias Legislativas, set/2026</p><div id="gov-sal"></div></div>
   </div>
+  </details>
   <h2>Fontes desta aba</h2>
   <div class="card fontes"><h3>Ver as fontes</h3><ul>
     <li>Deputados federais e gastos da cota parlamentar (ao vivo): <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados · Dados Abertos</a></li>
@@ -1146,6 +1158,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelecto
   const aplica=()=>{if(t==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;b.innerHTML=IC[t];b.title=b.ariaLabel="Tema: "+NOME[t];try{t==="auto"?localStorage.removeItem("tema"):localStorage.setItem("tema",t)}catch(e){}};
   b.onclick=()=>{t=t==="auto"?"light":t==="light"?"dark":"auto";aplica();setTimeout(()=>location.reload(),150)};aplica();
 })();
+document.addEventListener("click",e=>{if(e.target.closest("summary .info"))e.preventDefault()},true);
 /* blocos recolhidos: cada card com título abre e fecha pela seta; mapa, busca e filtros ficam sempre abertos */
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
