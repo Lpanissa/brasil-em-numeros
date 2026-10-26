@@ -146,6 +146,11 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .cal{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}@media (min-width:760px){.cal{grid-template-columns:repeat(2,1fr)}}
 .cal li{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:12px;padding:8px 12px;font-size:15px}
 .cal small{display:block;font-size:12.5px;color:var(--muted)}.cal small a{color:inherit}.cal-d{min-width:62px}.cal-d b{font-size:17px}
+.calc label{display:block;font-size:14px;color:var(--muted);margin:10px 0 0}
+.calc input,.calc select{display:block;width:100%;box-sizing:border-box;margin-top:4px;font:500 17px Inter,sans-serif;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+.calc .bt{margin-top:12px;border:0;cursor:pointer;font:700 15px Inter,sans-serif;width:100%}
+.calc-res{margin-top:10px;font-size:15.5px;line-height:1.5}.calc-t{width:100%;border-collapse:collapse;font-size:15px}.calc-t td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.comp-t{margin-top:6px;font:600 14px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -162,6 +167,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <button data-t="painel" class="on">Painel</button>
   <button data-t="estados">Estados</button>
   <button data-t="politicos">Políticos</button>
+  <button data-t="calc">Calculadoras</button>
   <button data-t="noticias">Notícias</button>
   <button data-t="dossie">Conferência do dossiê</button>
 </nav>
@@ -268,6 +274,11 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <li>Salário dos governadores (fixado por cada Assembleia): <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
   </ul></div>
   <p class="aviso">A cota parlamentar é uma verba legal para o trabalho do mandato. Gastar mais não quer dizer, por si só, que houve irregularidade: estados mais longe de Brasília, por exemplo, gastam mais com passagens.</p>
+</section>
+
+<section id="t-calc" class="hidden">
+  <p class="note" style="margin:0 2px 10px">Faça a conta com os números oficiais de hoje. Nada do que você digita sai do seu aparelho.</p>
+  <div class="grid c3" id="calcs"></div>
 </section>
 
 <section id="t-noticias" class="hidden">
@@ -603,6 +614,62 @@ async function calendario(){
     <ul class="cal">${ev.map(e=>`<li><span class="cal-d"><b>${e.d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}</b><small>${falta(e.d)}</small></span><span>${esc(e.t)}<small><a href="${e.u}" target="_blank" rel="noopener">${e.f}</a></small></span></li>`).join("")}</ul>`;
 }
 
+
+/* ---------- calculadoras (Banco Central SGS ao vivo + dados do site) ---------- */
+const sgsSerie=async(n,ini)=>{const d=`${String(ini.getDate()).padStart(2,"0")}/${String(ini.getMonth()+1).padStart(2,"0")}/${ini.getFullYear()}`;
+  return (await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${n}/dados?formato=json&dataInicial=${d}`)).json()};
+const numBR=s=>+String(s||"").replace(/[^\d,]/g,"").replace(",",".")||0;
+function compTexto(t){const url=location.origin+"/";const txt=t+` Faça a sua conta no Raio-X do Brasil: ${url}`;
+  if(navigator.share)navigator.share({text:txt}).catch(()=>{});else open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener")}
+function calculadoras(){
+  const el=document.getElementById("calcs");if(!el||el.dataset.ok)return;el.dataset.ok=1;
+  const hoje=new Date(),mesAnt=new Date(hoje.getFullYear()-1,hoje.getMonth(),1).toISOString().slice(0,7);
+  el.innerHTML=`
+  <div class="card calc"><h3>Meu salário perdeu para a inflação?<button class="info" aria-label="Como é calculado">i</button></h3>
+    <div class="infotxt">Soma a inflação de cada mês, desde o mês do seu último reajuste até o último dado divulgado, com o IPCA (inflação oficial) ou o INPC (usado nos reajustes de salários e aposentadorias). Os dados vêm ao vivo do Banco Central (séries 433 e 188 do SGS, que reproduzem os índices do IBGE).</div>
+    <label>Seu salário hoje<input id="c1-sal" inputmode="decimal" placeholder="R$ 2.500,00"></label>
+    <label>Mês do último reajuste<input id="c1-mes" type="month" value="${mesAnt}" max="${hoje.toISOString().slice(0,7)}"></label>
+    <label>Índice<select id="c1-ind"><option value="433">IPCA (inflação oficial)</option><option value="188">INPC (salários)</option></select></label>
+    <button class="bt" id="c1-ok">Calcular</button><div class="calc-res" id="c1-res"></div></div>
+  <div class="card calc"><h3>Quanto rende meu dinheiro?<button class="info" aria-label="Como é calculado">i</button></h3>
+    <div class="infotxt">Simulação com as taxas de hoje mantidas pelo período. <b>Poupança</b>: rendimento do último mês divulgado pelo Banco Central, sem imposto. <b>CDB a 100% do CDI</b>: CDI de hoje (Banco Central), descontado o Imposto de Renda da tabela regressiva (22,5% até 6 meses, 20% até 1 ano, 17,5% até 2 anos e 15% depois). As taxas mudam com o tempo, então o resultado é uma estimativa, não uma promessa de ganho.</div>
+    <label>Valor guardado<input id="c2-val" inputmode="decimal" placeholder="R$ 1.000,00"></label>
+    <label>Por quantos meses<input id="c2-mes" type="number" min="1" max="360" value="12"></label>
+    <button class="bt" id="c2-ok">Calcular</button><div class="calc-res" id="c2-res"></div></div>
+  <div class="card calc"><h3>Quanto do meu salário vai na cesta básica?<button class="info" aria-label="Como é calculado">i</button></h3>
+    <div class="infotxt">Compara o seu salário com o preço médio da cesta básica medido pelo DIEESE (cesta de São Paulo e média das capitais), no último mês da coleta deste site.</div>
+    <label>Seu salário (líquido)<input id="c3-sal" inputmode="decimal" placeholder="R$ 2.000,00"></label>
+    <button class="bt" id="c3-ok">Calcular</button><div class="calc-res" id="c3-res"></div></div>`;
+  const res=(id,html,txt)=>{document.getElementById(id).innerHTML=html+(txt?`<button class="comp-t" data-t="${esc(txt)}">Compartilhar resultado</button>`:"");
+    const b=document.querySelector(`#${id} .comp-t`);if(b)b.onclick=()=>compTexto(b.dataset.t)};
+  document.getElementById("c1-ok").onclick=async()=>{
+    const sal=numBR(document.getElementById("c1-sal").value),m=document.getElementById("c1-mes").value,ind=document.getElementById("c1-ind").value;
+    if(!sal||!m)return res("c1-res",`<p class="note">Preencha o salário e o mês.</p>`);
+    res("c1-res",`<p class="note">Buscando a inflação no Banco Central…</p>`);
+    try{const [a,mm]=m.split("-").map(Number),lst=await sgsSerie(ind,new Date(a,mm,1));
+      if(!lst.length)return res("c1-res",`<p class="note">Ainda não há inflação divulgada depois desse mês.</p>`);
+      const f=lst.reduce((p,x)=>p*(1+ +x.valor/100),1),acum=(f-1)*100,ate=lst[lst.length-1].data.slice(3),nome=ind==="433"?"IPCA":"INPC",prec=sal*f;
+      res("c1-res",`<p>A inflação (${nome}) acumulada de ${MESES[mm%12]}/${mm===12?a+1:a} até ${ate} foi de <b>${nf(acum,2)}%</b>.</p>
+        <p>Para comprar hoje o mesmo que comprava no reajuste, seu salário precisaria ser <b>${rs2(prec)}</b>: uma perda de <b>${rs2(prec-sal)}</b> por mês se não houve aumento desde então.</p>
+        <p class="fonte">Fonte: Banco Central, SGS ${ind} (${nome}, IBGE)</p>`,
+        `Desde ${MESES[mm%12]}/${mm===12?a+1:a}, a inflação (${nome}) foi de ${nf(acum,2)}%. Um salário de ${rs2(sal)} precisaria ser ${rs2(prec)} para valer o mesmo.`)}
+    catch(e){res("c1-res",`<p class="note">Não consegui falar com o Banco Central agora. Tente de novo em instantes.</p>`)}};
+  document.getElementById("c2-ok").onclick=()=>{
+    const v=numBR(document.getElementById("c2-val").value),n=Math.max(1,Math.min(360,+document.getElementById("c2-mes").value||12));
+    const pp=ult("poupanca"),cdi=ult("cdi");if(!v)return res("c2-res",`<p class="note">Preencha o valor.</p>`);
+    if(!pp||!cdi)return res("c2-res",`<p class="note">Taxas indisponíveis no momento.</p>`);
+    const pm=+pp.valor/100,cm=Math.pow(1+ +cdi.valor/100,1/12)-1,dias=n*30,ir=dias<=180?.225:dias<=360?.2:dias<=720?.175:.15;
+    const vp=v*Math.pow(1+pm,n),bruto=v*Math.pow(1+cm,n),vc=v+(bruto-v)*(1-ir);
+    res("c2-res",`<table class="calc-t"><tr><td>Poupança</td><td><b>${rs2(vp)}</b></td><td>+${rs2(vp-v)}</td></tr><tr><td>CDB 100% do CDI (já sem IR de ${nf(ir*100,1)}%)</td><td><b>${rs2(vc)}</b></td><td>+${rs2(vc-v)}</td></tr></table>
+      <p class="note">Em ${n} ${n===1?"mês":"meses"}, com a poupança a ${nf(pm*100,2)}% ao mês e o CDI a ${nf(+cdi.valor,2)}% ao ano (${esc(cdi.periodo)}).</p><p class="fonte">Fonte: Banco Central (CDI, SGS 4389; poupança)</p>`,
+      `${rs2(v)} guardados por ${n} meses: poupança ${rs2(vp)} × CDB 100% do CDI ${rs2(vc)} (já com IR).`)};
+  document.getElementById("c3-ok").onclick=()=>{
+    const sal=numBR(document.getElementById("c3-sal").value),sp=ult("cesta_sp"),br=ult("cesta_brasil");if(!sal)return res("c3-res",`<p class="note">Preencha o salário.</p>`);
+    const l=[sp&&["Cesta básica de São Paulo",+sp.valor,sp.periodo],br&&["Média das capitais",+br.valor,br.periodo]].filter(Boolean);
+    res("c3-res",l.map(([n,c,p])=>`<p>${n} (${esc(p)}): <b>${rs2(c)}</b>, que é <b>${nf(c/sal*100,1)}%</b> do seu salário. Dá para comprar <b>${nf(sal/c,1)}</b> cestas.</p>`).join("")+`<p class="fonte">Fonte: DIEESE, preço médio da cesta básica</p>`,
+      sp?`A cesta básica de SP (${rs2(+sp.valor)}) leva ${nf(+sp.valor/sal*100,1)}% de um salário de ${rs2(sal)}.`:"")};
+}
+
 const serie=k=>D.val.filter(v=>v.chave===k);
 /* números com API pública (Banco Central, IBGE e cotações de mercado): busca direto na fonte ao abrir o site.
    O que não tem API (DIEESE, ANP, FipeZAP, Procon etc.) continua pela coleta do dia 15. O histórico mensal fica no banco. */
@@ -891,7 +958,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias()});
+  ["painel","estados","politicos","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras()});
 let tBusca;document.getElementById("busca").addEventListener("input",()=>{clearTimeout(tBusca);tBusca=setTimeout(()=>{POLN=30;politicos()},200)});
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
