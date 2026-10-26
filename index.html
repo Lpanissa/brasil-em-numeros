@@ -208,6 +208,10 @@ details.cat>summary h2{margin-bottom:8px}
 .fav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
 .fav.on{color:#e0a800}.fav.on svg{fill:currentColor}
 .card.pol .pol-top{padding-right:38px}
+.uf-head{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;margin-top:8px;font-size:14px;font-weight:600;color:var(--muted)}
+.uf-head select{font:600 14px Inter,sans-serif;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 30px 6px 12px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-position:calc(100% - 11px) 50%;background-size:11px 8px;background-repeat:no-repeat;cursor:pointer}
+.vgrade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.vgrade .vcard{flex:none;width:auto}.vgrade .vthumb{width:100%;height:auto;aspect-ratio:1}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
@@ -218,7 +222,8 @@ details.cat>summary h2{margin-bottom:8px}
 <div class="infotxt" id="impm-info">Estimativa ao vivo dos impostos e contribuições federais arrecadados no ano (Receita Federal e Previdência). Parte do total oficial publicado pelo <b>Tesouro Nacional</b> até o último bimestre (Relatório Resumido da Execução Orçamentária da União, via API do SICONFI) e soma, segundo a segundo, o ritmo médio desse bimestre. Não inclui impostos de estados e municípios, como ICMS e IPTU. O valor oficial é corrigido sozinho a cada novo bimestre.</div>
 <header>
   <svg class="logo" viewBox="0 0 44 44" role="img" aria-label="Raio-X do Brasil"><clipPath id="lc"><rect width="44" height="44" rx="12"/></clipPath><g clip-path="url(#lc)"><rect width="44" height="44" fill="#009c3b"/><polygon points="0,5 39,22 0,39" fill="#ffdf00"/><circle cx="0" cy="22" r="13" fill="#002776"/></g></svg>
-  <div><h1>Raio-X do Brasil</h1><p class="sub" id="sub">Custo de vida, economia e estados, guardados para comparar ao longo do tempo</p></div>
+  <div><h1>Raio-X do Brasil</h1><p class="sub" id="sub">Custo de vida, economia e estados, guardados para comparar ao longo do tempo</p>
+    <label class="uf-head">Seu estado <select id="uf-head" aria-label="Escolher o seu estado"></select></label></div>
   <button class="tema" id="tema" aria-label="Tema: automático" title="Tema: automático"></button>
 </header>
 <div class="faixa hidden" id="faixa" aria-label="Últimas notícias"><div class="faixa-tit">Últimas notícias</div><div class="faixa-trilho" id="faixa-trilho"></div></div>
@@ -226,6 +231,7 @@ details.cat>summary h2{margin-bottom:8px}
   <button data-t="painel" class="on">Painel</button>
   <button data-t="estados">Estados</button>
   <button data-t="politicos">Políticos</button>
+  <button data-t="videos">Vídeos</button>
   <button data-t="contas">Contas do governo</button>
   <button data-t="calc">Calculadoras</button>
   <button data-t="noticias">Notícias</button>
@@ -299,7 +305,7 @@ details.cat>summary h2{margin-bottom:8px}
 
 <section id="t-politicos" class="hidden">
   <h2 style="margin-top:4px">Entenda em 1 minuto</h2>
-  <p class="note" style="margin:-4px 0 8px">Série "Como funciona o Brasil". Toque num vídeo para assistir.</p>
+  <p class="note" style="margin:-4px 0 8px">Série "Como funciona o Brasil". Toque num vídeo para assistir, ou veja todos na aba <a href="#videos" onclick="document.querySelector('nav button[data-t=videos]').click();return false">Vídeos</a>.</p>
   <div class="vids" id="vids"></div>
 <dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p></dialog>
   <h2>Presidente eleito</h2>
@@ -343,6 +349,12 @@ details.cat>summary h2{margin-bottom:8px}
     <li>Salário dos governadores (fixado por cada Assembleia): <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
   </ul></div>
   <p class="aviso">A cota parlamentar é uma verba legal para o trabalho do mandato. Gastar mais não quer dizer, por si só, que houve irregularidade: estados mais longe de Brasília, por exemplo, gastam mais com passagens.</p>
+</section>
+
+<section id="t-videos" class="hidden">
+  <h2 style="margin-top:4px">Como funciona o Brasil</h2>
+  <p class="note" style="margin:-4px 0 12px">Série de vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número. Toque num vídeo para assistir.</p>
+  <div class="vgrade" id="vids-todos"></div>
 </section>
 
 <section id="t-contas" class="hidden">
@@ -656,7 +668,7 @@ async function seuEstado(){
   const opts=D.uf.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>`<option value="${u.uf}" ${u.uf===UFSEL?"selected":""}>${esc(u.nome)}</option>`).join("");
   const u=D.uf.find(e=>e.uf===UFSEL)||D.uf.find(e=>e.uf==="SP");
   el.innerHTML=`<div class="uf-top"><h3>Ver números de</h3><select id="uf-sel" class="sel-uf" aria-label="Escolher estado">${opts}</select></div><div class="grid uf-grid" id="uf-cards"><p class="note">Buscando no IBGE…</p></div>`;
-  document.getElementById("uf-sel").onchange=e=>{UFSEL=e.target.value;try{localStorage.setItem("raiox-uf",UFSEL)}catch(x){}seuEstado()};
+  document.getElementById("uf-sel").onchange=e=>{UFSEL=e.target.value;try{localStorage.setItem("raiox-uf",UFSEL)}catch(x){}const h=document.getElementById("uf-head");if(h)h.value=UFSEL;seuEstado()};
   const d=await dadosUF().catch(()=>({des:{},ren:{},ipca:{}}));
   const il=IPCA_LOCAL[u.uf],ip=il&&d.ipca[il[1]];
   const c=(l,v,p,f,url)=>`<div class="uf-c"><div class="l">${l}</div><div class="v">${v}</div><div class="note">${p}</div><p class="fonte">${url?`<a href="${url}" target="_blank" rel="noopener">${f}</a>`:f}</p></div>`;
@@ -1119,7 +1131,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
+  ["painel","estados","politicos","videos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
 /* volta para a última aba aberta (pelo endereço #aba ou pelo que ficou salvo) e para o ponto da página */
 function voltaAba(){let t=location.hash.slice(1);try{t=t||localStorage.getItem("aba")}catch(e){}const b=t&&document.querySelector(`nav button[data-t="${t}"]`);if(b&&t!=="painel"){b.click()}
   let y=0;try{y=+sessionStorage.getItem("rolagem")||0}catch(e){}if(y)setTimeout(()=>scrollTo({top:y}),400)}
@@ -1139,10 +1151,20 @@ const VIDEOS=[
   {id:"zwyQoc7BElc",ep:6,titulo:"Quem escolhe os 11 do Supremo?",fonte:"Constituição Federal, arts. 40, 52, 101 e 102"},
   {id:"DMNdroUA8z4",ep:7,titulo:"Para onde vai o seu imposto?",fonte:"Tesouro Nacional (RREO da União); Constituição Federal, arts. 153 a 159"},
 ];
-function listaVideos(){const el=document.getElementById("vids");if(!el)return;el.innerHTML=VIDEOS.slice().reverse().map(v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(https://i.ytimg.com/vi/${v.id}/hqdefault.jpg)"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`).join("")}
+function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(https://i.ytimg.com/vi/${v.id}/hqdefault.jpg)"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`;
+  const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
+  const t=document.getElementById("vids-todos");if(t)t.innerHTML=VIDEOS.map(card).join("")}
 listaVideos();
 function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelector(".yt").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;document.getElementById("vid-yt").href="https://youtube.com/shorts/"+id;d.showModal()}
 
+/* estado da pessoa, escolhido no topo do site: vale para o Painel e para os destaques de Políticos */
+(function(){const sel=document.getElementById("uf-head");if(!sel)return;
+  const UFS={AC:"Acre",AL:"Alagoas",AP:"Amapá",AM:"Amazonas",BA:"Bahia",CE:"Ceará",DF:"Distrito Federal",ES:"Espírito Santo",GO:"Goiás",MA:"Maranhão",MT:"Mato Grosso",MS:"Mato Grosso do Sul",MG:"Minas Gerais",PA:"Pará",PB:"Paraíba",PR:"Paraná",PE:"Pernambuco",PI:"Piauí",RJ:"Rio de Janeiro",RN:"Rio Grande do Norte",RS:"Rio Grande do Sul",RO:"Rondônia",RR:"Roraima",SC:"Santa Catarina",SP:"São Paulo",SE:"Sergipe",TO:"Tocantins"};
+  sel.innerHTML=Object.entries(UFS).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,n])=>`<option value="${k}" ${k===UFSEL?"selected":""}>${n}</option>`).join("");
+  sel.onchange=()=>{UFSEL=sel.value;try{localStorage.setItem("raiox-uf",UFSEL)}catch(x){}
+    try{if(D&&D.uf&&D.uf.length)seuEstado()}catch(x){}
+    try{if(POL&&!document.getElementById("t-politicos").classList.contains("hidden"))politicos()}catch(x){}};
+})();
 /* tema: automático (segue o celular), claro ou escuro */
 (function(){const b=document.getElementById("tema");if(!b)return;
   const IC={auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
