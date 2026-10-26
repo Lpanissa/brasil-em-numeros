@@ -82,6 +82,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .agr-tit{font-weight:700;font-size:16px;margin-bottom:10px}
 .chips.agr{display:flex;flex-wrap:wrap;gap:8px}
 .chips.agr button{font:600 15px Inter,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 16px;cursor:pointer}
+.chips.agr button.so2{border-style:dashed}
 .chips.agr button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
 .pizza svg{flex:none}
@@ -289,10 +290,10 @@ async function desenharMapa(U,G){
   const el=document.getElementById("mapa");
   let M;try{M=window.__MAPA||(window.__MAPA=await (await fetch("mapa-br.json")).json())}catch(e){el.innerHTML='<p class="note">Não foi possível carregar o mapa.</p>';return}
   const por=Object.fromEntries(U.map(u=>[u.uf,u]));
-  const forma=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
+  const forma=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return `<path d="${g.d}" fill="${css('--soft')}" stroke="${css('--card')}" stroke-width="1.2"/>`;
     const op=G.opac?G.opac(u):.9;
     return `<path d="${g.d}" data-uf="${uf}" fill="${G.cor(G.grupo(u))}" fill-opacity="${op.toFixed(2)}" stroke="${css('--card')}" stroke-width="1.2" style="cursor:pointer"><title>${esc(u.nome)}: ${esc(G.grupo(u))}</title></path>`}).join("");
-  const rot=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
+  const rot=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return FORA[uf]?"":`<text x="${g.cx+(PEQ[uf]||[0])[0]}" y="${g.cy+(PEQ[uf]||[0,0])[1]}" text-anchor="middle" font-size="15" fill="${css('--muted')}" pointer-events="none">${uf}</text>`;
     if(FORA[uf]){const [lx,ly]=FORA[uf];return `<line x1="${g.cx}" y1="${g.cy}" x2="${lx-4}" y2="${ly-6}" stroke="${css('--muted')}" stroke-width="1"/><text x="${lx}" y="${ly}" font-size="19" font-weight="700" fill="${G.cor(G.grupo(u))}" stroke="${css('--card')}" stroke-width="3" paint-order="stroke" pointer-events="none">${uf}</text>`}
     const [dx,dy,fs]=PEQ[uf]||[0,0,21];const sub=G.sub?G.sub(u):"";
     return `<text x="${g.cx+dx}" y="${g.cy+dy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3.5" paint-order="stroke" pointer-events="none">${uf}${fs>=21&&sub?`<tspan x="${g.cx+dx}" dy="19" font-size="15" font-weight="700">${esc(sub)}</tspan>`:""}</text>`}).join("");
@@ -307,7 +308,7 @@ const CORP={PT:"--pt",PL:"--pl",MDB:"#2f9e63",PSD:"#e8912d",União:"#8e6bd8",PSB
 const SIGLA=p=>({Republicanos:"Rep.",Solidariedade:"SD",Podemos:"Pode"})[p]||p;
 const corG=g=>{const c=CORP[g]||"#8a8f98";return c.startsWith("--")?css(c):c};
 const MODOS={
-  pres:{nome:"Voto para presidente 2026",grupo:u=>u.vencedor_2026,tit:"Quem venceu em cada estado: 2º turno de 2026",
+  pres:{nome:"PT × PL (presidente 2026)",grupo:u=>u.vencedor_2026,tit:"Quem venceu em cada estado: 2º turno de 2026",
     rot:g=>g==="PT"?"PT (Lula)":"PL (Flávio Bolsonaro)",opac:u=>.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45,sub:u=>nf(u.pct_vencedor_2026,0)+"%",
     info:"Resultado oficial do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE. Percentual do vencedor nos votos válidos de cada estado.",nota:"Cor mais forte = vitória com mais folga. Fonte: TSE."},
   gov22:{nome:"Governador 2023–2026",grupo:u=>u.gov_2022_partido,tit:"Partido do governador (mandato 2023–2026)",rot:g=>g,sub:u=>SIGLA(u.gov_2022_partido),
@@ -316,13 +317,17 @@ const MODOS={
     info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."},
   regiao:{nome:"Região",grupo:u=>u.regiao,tit:"Regiões do Brasil",rot:g=>g,
     info:"As 5 grandes regiões do IBGE. Ajuda a ver quanto das diferenças entre estados vem da história e da economia de cada região.",nota:"Divisão regional do IBGE."}};
-let MODO="pres";
+let MODO="pres",SO2=false;
 function estados(){
-  const U=D.uf,G={...MODOS[MODO],cor:corG};
-  document.getElementById("agr").innerHTML=Object.entries(MODOS).map(([k,m])=>`<button data-m="${k}" class="${k===MODO?"on":""}">${m.nome}</button>`).join("");
-  document.querySelectorAll("#agr button").forEach(b=>b.onclick=()=>{MODO=b.dataset.m;estados()});
+  const gov=MODO==="gov22"||MODO==="gov26",G0={...MODOS[MODO],cor:corG};
+  /* opção "só PT × PL" nos modos de governador: compara apenas os estados governados por PT ou PL */
+  const U=gov&&SO2?D.uf.filter(u=>["PT","PL"].includes(G0.grupo(u))):D.uf,G=G0;
+  document.getElementById("agr").innerHTML=Object.entries(MODOS).map(([k,m])=>`<button data-m="${k}" class="${k===MODO?"on":""}">${m.nome}</button>`).join("")+
+    (gov?`<button data-so2="1" class="so2 ${SO2?"on":""}">${SO2?"Mostrando só PT × PL":"Só governadores do PT × PL"}</button>`:"");
+  document.querySelectorAll("#agr button[data-m]").forEach(b=>b.onclick=()=>{MODO=b.dataset.m;estados()});
+  const b2=document.querySelector("#agr button[data-so2]");if(b2)b2.onclick=()=>{SO2=!SO2;estados()};
   /* grupos com nº de estados, do maior para o menor */
-  const grupos=[...new Set(U.map(G.grupo))].map(g=>({g,us:U.filter(u=>G.grupo(u)===g)})).sort((a,b)=>b.us.length-a.us.length||a.g.localeCompare(b.g));
+  const grupos=[...new Set(U.map(G.grupo))].map(g=>({g,us:U.filter(u=>G.grupo(u)===g)})).sort((a,b)=>(a.g==="PT"?-1:b.g==="PT"?1:0)||(a.g==="PL"?-1:b.g==="PL"?1:0)||b.us.length-a.us.length||a.g.localeCompare(b.g));
   const rotN=x=>`${G.rot(x.g)} · ${x.us.length} ${x.us.length===1?"estado":"estados"}`;
   document.getElementById("mapa-tit").textContent=G.tit;
   document.getElementById("mapa-info-txt").innerHTML=G.info;
