@@ -204,10 +204,31 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
+  aoVivo();
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
 const serie=k=>D.val.filter(v=>v.chave===k);
+/* números que o Banco Central publica todo dia: busca direto na fonte ao abrir o site
+   (dólar oficial do dia, com a hora do boletim, e inflação em 12 meses). O histórico mensal continua no banco. */
+async function aoVivo(){
+  const hoje=new Date(),d2=x=>String(x).padStart(2,"0"),us=x=>`${d2(x.getMonth()+1)}-${d2(x.getDate())}-${x.getFullYear()}`;
+  const ini=new Date(hoje-12*864e5);let mudou=false;
+  const poe=(k,data,per,v,txt)=>{const s=serie(k),u=s[s.length-1];if(u&&(u.data_ref>data||(u.data_ref===data&&+u.valor===v)))return;
+    if(u&&u.data_ref===data){u.valor=v;u.valor_texto=txt;u.periodo=per}else D.val.push({chave:k,data_ref:data,periodo:per,valor:v,valor_texto:txt,aoVivo:true});mudou=true};
+  const moeda=async(k,cod)=>{try{const url=`https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda='${cod}'&@dataInicial='${us(ini)}'&@dataFinalCotacao='${us(hoje)}'&$format=json`;
+      const j=await (await fetch(url)).json();const L=j.value;if(!L.length)return;const dia=L[L.length-1].dataHoraCotacao.slice(0,10),doDia=L.filter(x=>x.dataHoraCotacao.startsWith(dia));
+      const f=doDia.find(x=>x.tipoBoletim==="Fechamento")||doDia[doDia.length-1];
+      const dt=f.dataHoraCotacao.slice(0,10),hm=f.dataHoraCotacao.slice(11,16).replace(":","h"),v=+f.cotacaoVenda;
+      const per=`${dt.split("-").reverse().join("/")}, ${f.tipoBoletim==="Fechamento"?"fechamento às "+hm:"parcial das "+hm}`;
+      poe(k,dt,per,Math.round(v*100)/100,"R$ "+nf(v,2))}catch(e){}};
+  const sgs=async(k,n,fmt,mensal)=>{try{const j=await (await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${n}/dados/ultimos/1?formato=json`)).json();const x=j[0];if(!x)return;
+      const [dd,mm,aa]=x.data.split("/"),v=+x.valor,MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      const data=mensal?`${aa}-${mm}-01`:`${aa}-${mm}-${dd}`;if(!mensal&&data>hoje.toISOString().slice(0,10))return;
+      poe(k,data,mensal?`${MES[+mm-1]}/${aa}`:x.data,v,fmt(v))}catch(e){}};
+  await Promise.all([moeda("dolar","USD"),sgs("ipca_12m",13522,v=>nf(v,2)+"%",true)]);
+  if(mudou){D.val.sort((a,b)=>a.chave<b.chave?-1:a.chave>b.chave?1:a.data_ref<b.data_ref?-1:1);painel()}
+}
 const cmp=()=>CMP.a&&CMP.b&&CMP.a!==CMP.b;
 const snap=(d,k)=>D.snap.find(x=>x.data_coleta===d&&x.chave===k);
 const ult=k=>{if(cmp()){const x=snap(CMP.b,k);if(x)return x}const s=serie(k);return s[s.length-1]};
