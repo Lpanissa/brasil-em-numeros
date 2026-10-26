@@ -4,7 +4,7 @@
 const UA = { "User-Agent": "Mozilla/5.0 (compatible; RaioXdoBrasil/1.0; +https://raioxdobrasil.com.br)" };
 
 async function yahoo() {
-  const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?interval=1d&range=5d", { headers: UA });
+  const r = await fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?interval=1d&range=1d", { headers: UA });
   if (!r.ok) throw new Error("yahoo " + r.status);
   const m = (await r.json()).chart.result[0].meta;
   const v = m.regularMarketPrice, ant = m.chartPreviousClose ?? m.previousClose;

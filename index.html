@@ -248,7 +248,7 @@ async function aoVivo(){
       if(j.BTCBRL){const b=j.BTCBRL,v=Math.round(+b.ask);poe("bitcoin",b.create_date.slice(0,10),quando(b.create_date),v,"R$ "+nf(v,0))}}catch(e){}};
   /* Ibovespa: vem da nossa ponte no Cloudflare (/api/ibov), que lê a bolsa no servidor */
   const ibov=async()=>{try{const j=await (await fetch("/api/ibov")).json();if(!j.v)return;const d=new Date(j.t),dISO=d.toLocaleDateString("sv-SE",{timeZone:"America/Sao_Paulo"}),hm=d.toLocaleTimeString("pt-BR",{timeZone:"America/Sao_Paulo",hour:"2-digit",minute:"2-digit"}).replace(":","h");
-      window.IBOV={v:j.v,p:j.p==null?NaN:+j.p,h:(dISO===hojeISO?"hoje":dISO.split("-").reverse().join("/"))+" às "+hm,fonte:j.fonte};mudou=true}catch(e){}};
+      window.IBOV={v:j.v,p:j.p==null?NaN:+j.p,h:(dISO===hojeISO?"hoje":dISO.split("-").reverse().join("/"))+" às "+hm,fonte:j.fonte};mudou=true;poe("ibovespa",dISO,(dISO===hojeISO?"hoje":dISO.split("-").reverse().join("/"))+" às "+hm,Math.round(j.v*100)/100,nf(j.v,0))}catch(e){}};
   await Promise.all([mercado(),ibov(),moeda("dolar","USD"),
     sgs("cdi",4389,pct(2)),sgs("ipca_mes",433,pct(2),true),sgs("ipca_12m",13522,pct(2),true),
     sgs("inpc_12m",188,pct(2),true,true),sgs("igpm_12m",189,pct(2),true,true),
