@@ -87,6 +87,8 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .comp{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
 .comp:hover{color:var(--ink)}
 .kpi .l,.item .top{padding-right:40px}
+.comerc{font-size:14px;color:var(--muted);margin-top:6px;border-top:1px solid var(--line);padding-top:6px}
+.comerc b{color:var(--ink)}
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
 .pizza svg{flex:none}
 .pizza-leg{font-size:15px;display:grid;gap:8px;max-width:100%}
@@ -226,7 +228,10 @@ async function aoVivo(){
       const [dd,mm,aa]=x.data.split("/"),v=+x.valor,MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
       const data=mensal?`${aa}-${mm}-01`:`${aa}-${mm}-${dd}`;if(!mensal&&data>hoje.toISOString().slice(0,10))return;
       poe(k,data,mensal?`${MES[+mm-1]}/${aa}`:x.data,v,fmt(v))}catch(e){}};
-  await Promise.all([moeda("dolar","USD"),sgs("ipca_12m",13522,v=>nf(v,2)+"%",true)]);
+  /* dólar comercial (mercado, muda a cada minuto): AwesomeAPI, gratuita; não é número oficial, por isso aparece só como linha extra */
+  const comercial=async()=>{try{const j=(await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL")).json()).USDBRL;
+      const c=j.create_date,[dt,hr]=c.split(" ");window.COMERCIAL={v:+j.ask,p:+j.pctChange,h:(dt===hoje.toISOString().slice(0,10)?"hoje":dt.split("-").reverse().join("/"))+" às "+hr.slice(0,5).replace(":","h")};mudou=true}catch(e){}};
+  await Promise.all([comercial(),moeda("dolar","USD"),sgs("ipca_12m",13522,v=>nf(v,2)+"%",true)]);
   if(mudou){D.val.sort((a,b)=>a.chave<b.chave?-1:a.chave>b.chave?1:a.data_ref<b.data_ref?-1:1);painel()}
 }
 const cmp=()=>CMP.a&&CMP.b&&CMP.a!==CMP.b;
@@ -251,6 +256,7 @@ function montarFiltro(){
   document.getElementById("cB").onchange=e=>{CMP.b=e.target.value;painel()};
 }
 
+const ICONE_COMP=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg>`;
 /* ---------- compartilhar um número (imagem + texto) ---------- */
 function cartaoImagem(t){
   const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
@@ -272,12 +278,14 @@ function cartaoImagem(t){
   return new Promise(r=>c.toBlob(r,"image/png"));
 }
 async function compartilhar(k){
-  const i=D.ind.find(x=>x.chave===k),u=ult(k);if(!i||!u)return;
+  const i0=D.ind.find(x=>x.chave===k),u0=ult(k);if(!i0||!u0)return;let i=i0,u=u0;
+  if(k==="dolar"&&window.COMERCIAL){i={...i0,nome:"Dólar comercial",fonte:"mercado (AwesomeAPI); oficial PTAX "+u0.valor_texto+" pelo Banco Central"};u={...u0,valor_texto:"R$ "+nf(COMERCIAL.v,2),periodo:COMERCIAL.h}}
   const tmp=document.createElement("div");tmp.innerHTML=delta(k);const el=tmp.firstElementChild,cl=el?(el.classList.contains("up")?"up":el.classList.contains("down")?"down":"eq"):"";
-  const dt=el?el.textContent.trim().replace(/^[▲▼=]\s*/,"").replace(/^igual/,"Igual").replace(/^(?=\d)/,cl==="up"?"Subiu ":cl==="down"?"Caiu ":""):"",dc=cl==="up"?css('--up'):cl==="down"?css('--down'):null;
+  const dt=el?el.textContent.trim().replace(/^[▲▼=]\s*/,"").replace(/^igual/,"Igual").replace(/^(?=\d)/,cl==="up"?"Subiu ":cl==="down"?"Caiu ":""):"",dc0=cl==="up"?css('--up'):cl==="down"?css('--down'):null;
+  let dtx=dt,dc=dc0;if(k==="dolar"&&window.COMERCIAL&&!isNaN(COMERCIAL.p)){const p=COMERCIAL.p;dtx=Math.abs(p)<0.005?"Igual a ontem":(p>0?"Subiu ":"Caiu ")+nf(Math.abs(p),1)+"% hoje";dc=p>0?css('--up'):p<0?css('--down'):null}
   const url=location.origin+"/";
-  const texto=`${i.nome}: ${u.valor_texto} (${u.periodo}).${dt?" "+dt+".":""} Fonte: ${i.fonte}. Compare mês a mês no Raio-X do Brasil: ${url}`;
-  try{const blob=await cartaoImagem({nome:i.nome,valor:u.valor_texto,periodo:u.periodo,delta:dt,cor:dc||null,fonte:i.fonte});
+  const texto=`${i.nome}: ${u.valor_texto} (${u.periodo}).${dtx?" "+dtx+".":""} Fonte: ${i.fonte}. Compare mês a mês no Raio-X do Brasil: ${url}`;
+  try{const blob=await cartaoImagem({nome:i.nome,valor:u.valor_texto,periodo:u.periodo,delta:dtx,cor:dc||null,fonte:i.fonte});
     const arq=new File([blob],`raio-x-${k}.png`,{type:"image/png"});
     if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
     if(navigator.share){await navigator.share({text:texto,url});return}
@@ -321,7 +329,9 @@ function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
 const KPI=["selic","salario_minimo","cesta_sp","desemprego","gasolina","dolar"];
 function painel(){
   const ind=Object.fromEntries(D.ind.map(i=>[i.chave,i]));
-  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>`<div class="card kpi"><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("");
+  const kpiDolar=()=>{const c=window.COMERCIAL,u=ult("dolar"),cl=Math.abs(c.p)<0.005?"eq":c.p>0?"up":"down";
+    return `<div class="card kpi"><button class="comp" data-k="dolar" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Dólar comercial</div><div class="v">R$ ${nf(c.v,2)}</div><div class="p note">${esc(c.h)}</div>${isNaN(c.p)?"":`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`}<div class="comerc">Oficial (PTAX): <b>${esc(u.valor_texto)}</b> · ${esc((u.periodo.split(", ")[1]||u.periodo).replace("fechamento às","fechou às"))}</div></div>`};
+  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>k==="dolar"&&window.COMERCIAL&&!cmp()?kpiDolar():`<div class="card kpi"><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("");
   const mesL=p=>p.periodo.split("/")[0];
   document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%",w:LARG("g-ipca")});
   document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true,w:LARG("g-selic")});
