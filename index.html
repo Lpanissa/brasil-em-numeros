@@ -143,6 +143,9 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .uf-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}@media (min-width:760px){.uf-grid{grid-template-columns:repeat(4,1fr)}}
 .uf-c{background:var(--soft);border-radius:12px;padding:10px 12px}.uf-c .l{font-size:13.5px;color:var(--muted)}.uf-c .v{font-size:20px;font-weight:800;margin:2px 0}.uf-c .fonte{margin:4px 0 0;font-size:12px}
 .uf-obs{grid-column:1/-1}
+.cal{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}@media (min-width:760px){.cal{grid-template-columns:repeat(2,1fr)}}
+.cal li{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:12px;padding:8px 12px;font-size:15px}
+.cal small{display:block;font-size:12.5px;color:var(--muted)}.cal small a{color:inherit}.cal-d{min-width:62px}.cal-d b{font-size:17px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -168,6 +171,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <div class="grid kpis" id="kpis"></div>
   <p class="note media-aviso">Preços, aluguéis, juros e salários mostrados aqui são <b>médias</b> das pesquisas oficiais (por exemplo, a média dos postos pesquisados pela ANP ou dos mercados pesquisados pelo DIEESE). O valor no seu bairro ou no seu banco pode ser diferente.</p>
   <div class="card seu-uf" id="seu-uf"></div>
+  <div class="card" id="cal" style="margin-top:12px"></div>
   <div class="grid c2">
     <div class="card"><h3>Inflação em 12 meses</h3><p class="note">Quanto os preços subiram em 12 meses, mês a mês em 2026 · IPCA, IBGE</p><div id="g-ipca"></div></div>
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
@@ -321,7 +325,7 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
-  aoVivo();extrasEstados().then(seuEstado);seuEstado();noticias();setInterval(noticias,15*60000);
+  aoVivo();extrasEstados().then(seuEstado);seuEstado();calendario();noticias();setInterval(noticias,15*60000);
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
@@ -579,6 +583,24 @@ async function seuEstado(){
     c("Mortes violentas",nf(u.mvi_2025,1),"por 100 mil habitantes, 2025","Fórum Brasileiro de Segurança Pública"),
     c("Governador",esc(u.gov_2022||"—"),`${esc(u.gov_2022_partido||"")} · salário ${GOV_SAL[u.uf]?rs(GOV_SAL[u.uf]):"—"} · eleito(a) em 2026: ${esc(u.gov_2026||"—")} (${esc(u.gov_2026_partido||"")})`,"TSE e Assembleia Legislativa")].filter(Boolean);
   document.getElementById("uf-cards").innerHTML=cards.join("")+`<p class="note uf-obs">Gasolina e cesta básica de cada estado entram na coleta automática do dia 15. Até lá, os destaques acima mostram a média do Brasil e São Paulo.</p>`;
+}
+
+
+/* ---------- próximas divulgações: calendário do IBGE (API) + reuniões do Copom (calendário oficial do Banco Central) ---------- */
+const COPOM=["2026-01-28","2026-03-18","2026-04-29","2026-06-17","2026-08-05","2026-09-16","2026-11-04","2026-12-09"];
+const CAL_IBGE={"Índice Nacional de Preços ao Consumidor Amplo":"Inflação oficial (IPCA)","Índice Nacional de Preços ao Consumidor Amplo 15":"Prévia da inflação (IPCA-15)","Índice Nacional de Preços ao Consumidor":"Inflação dos salários (INPC)","Divulgação mensal#pnadc1":"Desemprego e renda (PNAD Contínua)","Sistema de Contas Nacionais Trimestrais":"PIB do trimestre"};
+async function calendario(){
+  const el=document.getElementById("cal");if(!el)return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);const fim=new Date(+hoje+75*864e5),us=d=>`${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}-${d.getFullYear()}`;
+  let ev=COPOM.map(d=>({d:new Date(d+"T18:30:00-03:00"),t:"Decisão da Selic (Copom)",f:"Banco Central",u:"https://www.bcb.gov.br/publicacoes/calendarioreunioescopom"})).filter(e=>e.d>=hoje&&e.d<=fim);
+  try{const j=await (await fetch(`https://servicodados.ibge.gov.br/api/v3/calendario/?qtd=200&de=${us(hoje)}&ate=${us(fim)}`)).json();
+    for(const x of (j.items||[])){const t=CAL_IBGE[x.nome_produto];if(!t)continue;const [d,h]=x.data_divulgacao.split(" "),[dd,mm,aa]=d.split("/");
+      ev.push({d:new Date(`${aa}-${mm}-${dd}T${h}-03:00`),t,f:"IBGE",u:"https://www.ibge.gov.br/calendario-de-divulgacoes.html"})}}catch(e){}
+  const vistos=new Set();ev=ev.sort((a,b)=>a.d-b.d).filter(e=>{const k=e.t+e.d.toDateString();return !vistos.has(k)&&vistos.add(k)}).slice(0,8);
+  if(!ev.length){el.classList.add("hidden");return}
+  const falta=d=>{const n=Math.round((new Date(d).setHours(0,0,0,0)-hoje)/864e5);return n===0?"hoje":n===1?"amanhã":`em ${n} dias`};
+  el.innerHTML=`<h3>Próximas divulgações<button class="info" aria-label="Sobre o calendário">i</button></h3><div class="infotxt">Datas oficiais em que os números mudam. As do IBGE vêm ao vivo do calendário de divulgações do IBGE. As do Copom vêm do calendário de reuniões publicado pelo Banco Central; a decisão sai no segundo dia da reunião, depois das 18h30.</div>
+    <ul class="cal">${ev.map(e=>`<li><span class="cal-d"><b>${e.d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}</b><small>${falta(e.d)}</small></span><span>${esc(e.t)}<small><a href="${e.u}" target="_blank" rel="noopener">${e.f}</a></small></span></li>`).join("")}</ul>`;
 }
 
 const serie=k=>D.val.filter(v=>v.chave===k);
