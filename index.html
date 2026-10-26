@@ -92,6 +92,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .comp{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
 .comp:hover{color:var(--ink)}
 .kpi .l,.item .top{padding-right:40px}
+.kpi.ibov{grid-column:1/-1}
 .comerc{font-size:14px;color:var(--muted);margin-top:6px;border-top:1px solid var(--line);padding-top:6px}
 .comerc b{color:var(--ink)}
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
@@ -245,7 +246,10 @@ async function aoVivo(){
       if(j.USDBRL){const u=j.USDBRL;window.COMERCIAL={v:+u.ask,p:+u.pctChange,h:quando(u.create_date)};mudou=true}
       if(j.EURBRL){const e=j.EURBRL,v=Math.round(+e.ask*100)/100;poe("euro",e.create_date.slice(0,10),quando(e.create_date),v,"R$ "+nf(v,2))}
       if(j.BTCBRL){const b=j.BTCBRL,v=Math.round(+b.ask);poe("bitcoin",b.create_date.slice(0,10),quando(b.create_date),v,"R$ "+nf(v,0))}}catch(e){}};
-  await Promise.all([mercado(),moeda("dolar","USD"),
+  /* Ibovespa: vem da nossa ponte no Cloudflare (/api/ibov), que lê a bolsa no servidor */
+  const ibov=async()=>{try{const j=await (await fetch("/api/ibov")).json();if(!j.v)return;const d=new Date(j.t),dISO=d.toLocaleDateString("sv-SE",{timeZone:"America/Sao_Paulo"}),hm=d.toLocaleTimeString("pt-BR",{timeZone:"America/Sao_Paulo",hour:"2-digit",minute:"2-digit"}).replace(":","h");
+      window.IBOV={v:j.v,p:j.p==null?NaN:+j.p,h:(dISO===hojeISO?"hoje":dISO.split("-").reverse().join("/"))+" às "+hm,fonte:j.fonte};mudou=true}catch(e){}};
+  await Promise.all([mercado(),ibov(),moeda("dolar","USD"),
     sgs("cdi",4389,pct(2)),sgs("ipca_mes",433,pct(2),true),sgs("ipca_12m",13522,pct(2),true),
     sgs("inpc_12m",188,pct(2),true,true),sgs("igpm_12m",189,pct(2),true,true),
     sgs("rotativo",22022,pct(1),true),sgs("credito_pessoal",20742,pct(1),true),sgs("inadimplencia",21084,pct(1),true),sgs("endividamento",29037,pct(1),true),
@@ -296,6 +300,13 @@ function cartaoImagem(t){
   return new Promise(r=>c.toBlob(r,"image/png"));
 }
 async function compartilhar(k){
+  if(k==="ibov"&&window.IBOV){const c=IBOV,dt=isNaN(c.p)?"":Math.abs(c.p)<0.005?"Igual a ontem":(c.p>0?"Subiu ":"Caiu ")+nf(Math.abs(c.p),1)+"% hoje",v=nf(c.v,0)+" pontos";
+    const texto=`Ibovespa: ${v} (${c.h}).${dt?" "+dt+".":""} Fonte: ${c.fonte}. Compare mês a mês no Raio-X do Brasil: ${location.origin}/`;
+    try{const blob=await cartaoImagem({nome:"Ibovespa (bolsa de valores)",valor:v,periodo:c.h,delta:dt,cor:isNaN(c.p)||Math.abs(c.p)<0.005?null:c.p>0?css('--up'):css('--down'),fonte:c.fonte}),arq=new File([blob],"raio-x-ibovespa.png",{type:"image/png"});
+      if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
+      if(navigator.share){await navigator.share({text:texto});return}
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click();open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+    catch(e){if(e&&e.name!=="AbortError")open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}return}
   const i0=D.ind.find(x=>x.chave===k),u0=ult(k);if(!i0||!u0)return;let i=i0,u=u0;
   if(k==="dolar"&&window.COMERCIAL){i={...i0,nome:"Dólar comercial",fonte:"mercado (AwesomeAPI); oficial PTAX "+u0.valor_texto+" pelo Banco Central"};u={...u0,valor_texto:"R$ "+nf(COMERCIAL.v,2),periodo:COMERCIAL.h}}
   const tmp=document.createElement("div");tmp.innerHTML=delta(k);const el=tmp.firstElementChild,cl=el?(el.classList.contains("up")?"up":el.classList.contains("down")?"down":"eq"):"";
@@ -349,7 +360,9 @@ function painel(){
   const ind=Object.fromEntries(D.ind.map(i=>[i.chave,i]));
   const kpiDolar=()=>{const c=window.COMERCIAL,u=ult("dolar"),cl=Math.abs(c.p)<0.005?"eq":c.p>0?"up":"down";
     return `<div class="card kpi"><button class="comp" data-k="dolar" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Dólar comercial</div><div class="v">R$ ${nf(c.v,2)}</div><div class="p note">${esc(c.h)}</div>${isNaN(c.p)?"":`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`}<div class="comerc">Oficial (PTAX): <b>${esc(u.valor_texto)}</b> · ${esc((u.periodo.split(", ")[1]||u.periodo).replace("fechamento às","fechou às"))}</div></div>`};
-  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>k==="dolar"&&window.COMERCIAL&&!cmp()?kpiDolar():`<div class="card kpi"><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("");
+  const kpiIbov=()=>{const c=window.IBOV,cl=isNaN(c.p)?"":Math.abs(c.p)<0.005?"eq":c.p>0?"up":"down";
+    return `<div class="card kpi ibov"><button class="comp" data-k="ibov" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Ibovespa (bolsa de valores)</div><div class="v">${nf(c.v,0)} pontos</div><div class="p note">${esc(c.h)} · fonte: ${esc(c.fonte)}</div>${cl?`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`:""}</div>`};
+  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>k==="dolar"&&window.COMERCIAL&&!cmp()?kpiDolar():`<div class="card kpi"><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("")+(window.IBOV&&!cmp()?kpiIbov():"");
   const mesL=p=>p.periodo.split("/")[0];
   document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%",w:LARG("g-ipca")});
   document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true,w:LARG("g-selic")});
