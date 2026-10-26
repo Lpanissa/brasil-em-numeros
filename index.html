@@ -111,7 +111,24 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .pol-sal{margin-top:10px;font-size:15px}
 .pol-det,.pol .pol-ver{font-size:15px}.pol.open .pol-ver{display:none}.pol:not(.open) .pol-det{display:none}
 .pol-gasto{margin-top:8px}.pol-tipos{margin:6px 0;padding-left:20px;display:grid;gap:4px;font-size:14.5px}
-.mais{display:block;margin:12px auto;font:600 15px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 22px;cursor:pointer}
+.mais.hidden{display:none}.mais{display:block;margin:12px auto;font:600 15px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 22px;cursor:pointer}
+.faixa{margin:4px 0 14px}
+.faixa-tit{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.faixa-trilho{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.faixa-trilho::-webkit-scrollbar{display:none}
+.nt{flex:0 0 min(340px,82%);scroll-snap-align:start;display:flex;gap:10px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer;min-height:76px}
+.nt img{width:60px;height:60px;border-radius:8px;object-fit:cover;flex:none;background:var(--soft)}
+.nt-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.nt-tit{font-size:14.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nt-meta{font-size:12.5px;color:var(--muted)}
+.nt-g{flex:none;width:100%;min-height:96px}.nt-g img{width:84px;height:84px}.nt-g .nt-tit{-webkit-line-clamp:3;font-size:15.5px}
+.sel-uf{margin-top:10px;font:500 16px Inter,sans-serif;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);width:100%;max-width:320px}
+.not-dlg{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:18px;max-width:560px;width:calc(100% - 32px)}
+.not-dlg::backdrop{background:rgba(0,0,0,.55)}
+.not-dlg img{width:100%;max-height:280px;object-fit:cover;border-radius:10px;margin-bottom:8px}
+.not-dlg h3{font-size:19px;line-height:1.3;margin:6px 0 8px}.not-dlg p{font-size:15.5px;line-height:1.5}
+.nd-x{position:absolute;right:10px;top:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
+.nd-ler{display:block;text-align:center;margin:12px 0 6px;padding:12px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -123,10 +140,12 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <svg class="logo" viewBox="0 0 44 44" role="img" aria-label="Raio-X do Brasil"><clipPath id="lc"><rect width="44" height="44" rx="12"/></clipPath><g clip-path="url(#lc)"><rect width="44" height="44" fill="#009c3b"/><polygon points="0,5 39,22 0,39" fill="#ffdf00"/><circle cx="0" cy="22" r="13" fill="#002776"/></g></svg>
   <div><h1>Raio-X do Brasil</h1><p class="sub" id="sub">Custo de vida, economia e estados, guardados para comparar ao longo do tempo</p></div>
 </header>
+<div class="faixa hidden" id="faixa" aria-label="Últimas notícias"><div class="faixa-tit">Últimas notícias</div><div class="faixa-trilho" id="faixa-trilho"></div></div>
 <nav>
   <button data-t="painel" class="on">Painel</button>
   <button data-t="estados">Estados</button>
   <button data-t="politicos">Políticos</button>
+  <button data-t="noticias">Notícias</button>
   <button data-t="dossie">Conferência do dossiê</button>
 </nav>
 
@@ -217,6 +236,24 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <p class="aviso">A cota parlamentar é uma verba legal para o trabalho do mandato. Gastar mais não quer dizer, por si só, que houve irregularidade: estados mais longe de Brasília, por exemplo, gastam mais com passagens.</p>
 </section>
 
+<section id="t-noticias" class="hidden">
+  <div class="card">
+    <h3>Notícias de fontes oficiais<button class="info" aria-label="Sobre as notícias">i</button></h3>
+    <div class="infotxt">Últimas notícias publicadas pelo <b>IBGE</b>, pela <b>Agência Brasil</b> (EBC, empresa pública), pela <b>Agência Senado</b> e pela <b>Agência Câmara</b>. Atualiza sozinho a cada 15 minutos. O título é o da própria fonte; aqui aparece só um resumo curto, e o texto completo fica no site de origem. O estado é marcado quando o título ou o resumo cita o nome dele.</div>
+    <div class="chips agr" id="not-fontes" style="margin-top:6px"></div>
+    <select id="not-uf" class="sel-uf" aria-label="Filtrar por estado"></select>
+  </div>
+  <div class="grid c2" id="not-lista" style="margin-top:10px"></div>
+  <h2>Fontes desta aba</h2>
+  <div class="card fontes"><ul>
+    <li><a href="https://servicodados.ibge.gov.br/api/docs/noticias?versao=3" target="_blank" rel="noopener">IBGE · API de notícias</a></li>
+    <li><a href="https://agenciabrasil.ebc.com.br" target="_blank" rel="noopener">Agência Brasil (EBC) · feed de últimas notícias</a></li>
+    <li><a href="https://www12.senado.leg.br/noticias" target="_blank" rel="noopener">Agência Senado · feed de notícias</a></li>
+    <li><a href="https://www.camara.leg.br/noticias" target="_blank" rel="noopener">Agência Câmara de Notícias · feed de últimas notícias</a></li>
+  </ul></div>
+</section>
+<dialog id="not-dlg" class="not-dlg"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="nd-corpo"></div></dialog>
+
 <section id="t-dossie" class="hidden">
   <div class="card">
     <h3>Conferência do Dossiê Socioeconômico e Eleitoral</h3>
@@ -252,7 +289,7 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
-  aoVivo();extrasEstados();
+  aoVivo();extrasEstados();noticias();setInterval(noticias,15*60000);
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
@@ -320,9 +357,11 @@ async function detalhePol(el){
   if(tipo==="dep"){
     det.innerHTML=`<p class="note">Somando as notas da cota parlamentar na Câmara…</p>`;
     try{let tot=0,tp={},ult=0;
-      for(let pg=1;pg<=20;pg++){const j=await (await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?ano=${ANO}&itens=100&pagina=${pg}`)).json();
-        for(const n of j.dados){const v=+n.valorLiquido||0;tot+=v;tp[n.tipoDespesa]=(tp[n.tipoDespesa]||0)+v;if(n.mes>ult)ult=n.mes}
-        if(j.dados.length<100)break}
+      /* o filtro "ano" da API da Câmara não está funcionando: busca a legislatura atual, das notas mais novas para as mais antigas, até sair do ano */
+      const leg=ANO<2027?57:57+Math.floor((ANO-2023)/4);
+      for(let pg=1;pg<=25;pg++){const j=await (await fetch(`https://dadosabertos.camara.leg.br/api/v2/deputados/${id}/despesas?idLegislatura=${leg}&ordenarPor=dataDocumento&ordem=DESC&itens=100&pagina=${pg}`)).json();
+        let velho=false;for(const n of j.dados){if(n.ano!==ANO){if(n.ano<ANO)velho=true;continue}const v=+n.valorLiquido||0;tot+=v;tp[n.tipoDespesa]=(tp[n.tipoDespesa]||0)+v;if(n.mes>ult)ult=n.mes}
+        if(j.dados.length<100||velho)break}
       det.innerHTML=`<div class="pol-gasto">Gastou <b>${rs(tot)}</b> da cota parlamentar em ${ANO}${ult?` (até ${MESES[ult-1]})`:""}</div><ul class="pol-tipos">${tiposHTML(tot,tp)}</ul>
         <p class="fonte">Fonte: <a href="${esc(p.url)}" target="_blank" rel="noopener">Câmara dos Deputados · página oficial</a> e <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Dados Abertos da Câmara</a> · salário: Decreto Legislativo 172/2022</p>`}
     catch(e){det.innerHTML=`<p class="note">Não consegui falar com a Câmara agora. <a href="${esc(p.url)}" target="_blank" rel="noopener">Ver na página oficial</a></p>`}
@@ -345,6 +384,47 @@ function senadoresGastos(){
   el.innerHTML=barrasH(it,{fmt:v=>"R$ "+nf(v/1000,0)+" mil",w:LARG("sen-gastos")});
   const g=document.getElementById("gov-sal");
   g.innerHTML=barrasH(D.uf.map(u=>({l:u.nome,v:GOV_SAL[u.uf],cor:u.uf==="SE"?css('--up'):css('--acc')})).sort((a,b)=>b.v-a.v),{fmt:v=>"R$ "+nf(v/1000,1)+" mil",w:LARG("gov-sal")});
+}
+
+
+/* ---------- notícias: IBGE, Agência Brasil, Agência Senado, Agência Câmara (pela ponte /api/noticias) ---------- */
+let NOT=[],NOTF={fonte:"todas",uf:""};
+const quando=t=>{if(!t)return "";const m=Math.round((Date.now()-t)/60000);if(m<60)return m<=1?"agora":`há ${m} min`;const h=Math.round(m/60);if(h<24)return `há ${h} h`;
+  return new Date(t).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};
+async function noticias(){
+  try{const j=await (await fetch("/api/noticias")).json();NOT=(j.itens||[]).filter(n=>n.titulo)}catch(e){NOT=[]}
+  faixa();if(!document.getElementById("t-noticias").classList.contains("hidden"))abaNoticias();
+}
+function cardNot(n,i,cls){return `<button class="${cls}" data-n="${i}">${n.img?`<img src="${esc(n.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}<span class="nt-txt"><span class="nt-tit">${esc(n.titulo)}</span><span class="nt-meta">${esc(n.fonte)} · ${quando(n.data)}${n.uf&&n.uf.length?" · "+n.uf.slice(0,3).join(", "):""}</span></span></button>`}
+let tFaixa;
+function faixa(){
+  const el=document.getElementById("faixa"),tr=document.getElementById("faixa-trilho");
+  if(!NOT.length){el.classList.add("hidden");return}
+  el.classList.remove("hidden");tr.innerHTML=NOT.slice(0,12).map((n,i)=>cardNot(n,i,"nt")).join("");
+  tr.querySelectorAll(".nt").forEach(b=>b.onclick=()=>abrirNot(NOT[+b.dataset.n]));
+  /* passa sozinho a cada 5 s; para 12 s quando a pessoa toca ou passa o mouse */
+  let pausa=0;const parar=()=>{pausa=Date.now()+12000};["pointerdown","wheel","touchstart","mouseenter"].forEach(ev=>tr.addEventListener(ev,parar,{passive:true}));
+  clearInterval(tFaixa);tFaixa=setInterval(()=>{if(Date.now()<pausa||document.hidden)return;const c=tr.firstElementChild;if(!c)return;const passo=c.offsetWidth+10;
+    tr.scrollTo({left:tr.scrollLeft+passo>=tr.scrollWidth-tr.clientWidth+4?0:tr.scrollLeft+passo,behavior:"smooth"})},5000);
+}
+function abrirNot(n){
+  const d=document.getElementById("not-dlg");
+  d.querySelector(".nd-corpo").innerHTML=`${n.img?`<img src="${esc(n.img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
+    <p class="nt-meta">${esc(n.fonte)} · ${n.data?new Date(n.data).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):""}</p>
+    <h3>${esc(n.titulo)}</h3><p>${esc(n.resumo||"")}</p>
+    <a class="nd-ler" href="${esc(n.link)}" target="_blank" rel="noopener">Ler a notícia completa em ${esc(n.fonte)}</a>
+    <p class="fonte">Título e resumo reproduzidos da fonte oficial, com link, conforme a Lei 9.610/98, art. 46.</p>`;
+  d.showModal();
+}
+function abaNoticias(){
+  const fontes=["todas",...new Set(NOT.map(n=>n.fonte))];
+  document.getElementById("not-fontes").innerHTML=fontes.map(f=>`<button data-f="${esc(f)}" class="${f===NOTF.fonte?"on":""}">${f==="todas"?"Todas":esc(f)}</button>`).join("");
+  document.querySelectorAll("#not-fontes button").forEach(b=>b.onclick=()=>{NOTF.fonte=b.dataset.f;abaNoticias()});
+  const sel=document.getElementById("not-uf");if(!sel.options.length){sel.innerHTML=`<option value="">Todos os estados</option>`+D.uf.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>`<option value="${u.uf}">${esc(u.nome)}</option>`).join("");sel.onchange=()=>{NOTF.uf=sel.value;abaNoticias()}}
+  const r=NOT.map((n,i)=>[n,i]).filter(([n])=>(NOTF.fonte==="todas"||n.fonte===NOTF.fonte)&&(!NOTF.uf||(n.uf||[]).includes(NOTF.uf)));
+  const l=document.getElementById("not-lista");
+  l.innerHTML=r.length?r.map(([n,i])=>cardNot(n,i,"nt nt-g")).join(""):`<p class="note">Nenhuma notícia recente${NOTF.uf?" citando esse estado":""}. As fontes publicam ao longo do dia.</p>`;
+  l.querySelectorAll(".nt").forEach(b=>b.onclick=()=>abrirNot(NOT[+b.dataset.n]));
 }
 
 const serie=k=>D.val.filter(v=>v.chave===k);
@@ -621,7 +701,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos()});
+  ["painel","estados","politicos","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias()});
 let tBusca;document.getElementById("busca").addEventListener("input",()=>{clearTimeout(tBusca);tBusca=setTimeout(()=>{POLN=30;politicos()},200)});
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
