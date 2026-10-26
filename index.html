@@ -139,6 +139,10 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .bt{display:inline-block;padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none;font-size:14.5px}
 .prom{display:grid;gap:10px;margin-top:10px}.prom-i{border-top:1px solid var(--line);padding-top:10px}
 .prom-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;font-size:15.5px}
+.seu-uf{margin-top:12px}.uf-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.uf-top h3{margin:0}.uf-top .sel-uf{margin-top:0;max-width:260px}
+.uf-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}@media (min-width:760px){.uf-grid{grid-template-columns:repeat(4,1fr)}}
+.uf-c{background:var(--soft);border-radius:12px;padding:10px 12px}.uf-c .l{font-size:13.5px;color:var(--muted)}.uf-c .v{font-size:20px;font-weight:800;margin:2px 0}.uf-c .fonte{margin:4px 0 0;font-size:12px}
+.uf-obs{grid-column:1/-1}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -163,6 +167,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <div class="card" id="filtro" style="margin-bottom:10px"></div>
   <div class="grid kpis" id="kpis"></div>
   <p class="note media-aviso">Preços, aluguéis, juros e salários mostrados aqui são <b>médias</b> das pesquisas oficiais (por exemplo, a média dos postos pesquisados pela ANP ou dos mercados pesquisados pelo DIEESE). O valor no seu bairro ou no seu banco pode ser diferente.</p>
+  <div class="card seu-uf" id="seu-uf"></div>
   <div class="grid c2">
     <div class="card"><h3>Inflação em 12 meses</h3><p class="note">Quanto os preços subiram em 12 meses, mês a mês em 2026 · IPCA, IBGE</p><div id="g-ipca"></div></div>
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
@@ -316,7 +321,7 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
-  aoVivo();extrasEstados();noticias();setInterval(noticias,15*60000);
+  aoVivo();extrasEstados().then(seuEstado);seuEstado();noticias();setInterval(noticias,15*60000);
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
@@ -536,6 +541,44 @@ function presidente(){
     <div class="infotxt">Principais propostas concretas do Programa de Governo 2027–2030 registrado no TSE, com a página do documento. Aqui fica o que o plano promete. A partir de 2027, cada item ganha um selo, como os do plano de 2022, conforme leis e dados oficiais forem saindo.</div>
     <div class="prom">${PROP26.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="pol-tag">${esc(p.a)}</span></div><p class="fonte">Plano de governo 2026, página ${p.p}</p></div>`).join("")}</div>
     <p class="fonte">Fonte: <a href="${PRES.plano26}" target="_blank" rel="noopener">TSE · Programa de Governo 2026 registrado pela candidatura (PDF)</a></p></div>`;
+}
+
+
+/* ---------- seu estado: números do estado escolhido (IBGE ao vivo + dados do estado) ---------- */
+const IPCA_LOCAL={PA:["n7",1501,"Belém"],CE:["n7",2301,"Fortaleza"],PE:["n7",2601,"Recife"],BA:["n7",2901,"Salvador"],MG:["n7",3101,"Belo Horizonte"],ES:["n7",3201,"Grande Vitória"],RJ:["n7",3301,"Rio de Janeiro"],SP:["n7",3501,"São Paulo"],PR:["n7",4101,"Curitiba"],RS:["n7",4301,"Porto Alegre"],
+  AC:["n6",1200401,"Rio Branco"],MA:["n6",2111300,"São Luís"],SE:["n6",2800308,"Aracaju"],MS:["n6",5002704,"Campo Grande"],GO:["n6",5208707,"Goiânia"],DF:["n6",5300108,"Brasília"]};
+const UF_COD=Object.fromEntries(Object.entries(COD_UF).map(([c,u])=>[u,c]));
+let UFSEL=(()=>{try{return localStorage.getItem("raiox-uf")||"SP"}catch(e){return "SP"}})(),UFDADOS=null;
+async function dadosUF(){
+  if(UFDADOS)return UFDADOS;const S="https://apisidra.ibge.gov.br/values/t/",ok=r=>r.ok?r.json():Promise.reject();
+  const [des,ren,i7,i6]=await Promise.all([
+    fetch(S+"4099/n3/all/v/4099/p/last%201").then(ok).catch(()=>null),
+    fetch(S+"5436/n3/all/v/5933/p/last%201").then(ok).catch(()=>null),
+    fetch(S+"7060/n7/all/v/2265/p/last%201/c315/7169").then(ok).catch(()=>null),
+    fetch(S+"7060/n6/all/v/2265/p/last%201/c315/7169").then(ok).catch(()=>null)]);
+  const porUF=(j)=>j?Object.fromEntries(j.slice(1).map(x=>[COD_UF[x.D1C],{v:+x.V,p:x.D3N}])):{};
+  const ipca={};for(const j of [i7,i6])if(j)for(const x of j.slice(1))ipca[x.D1C]={v:+x.V,p:x.D3N};
+  return UFDADOS={des:porUF(des),ren:porUF(ren),ipca};
+}
+async function seuEstado(){
+  const el=document.getElementById("seu-uf");if(!el||!D.uf.length)return;
+  const opts=D.uf.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(u=>`<option value="${u.uf}" ${u.uf===UFSEL?"selected":""}>${esc(u.nome)}</option>`).join("");
+  const u=D.uf.find(e=>e.uf===UFSEL)||D.uf.find(e=>e.uf==="SP");
+  el.innerHTML=`<div class="uf-top"><h3>Ver números de</h3><select id="uf-sel" class="sel-uf" aria-label="Escolher estado">${opts}</select></div><div class="grid uf-grid" id="uf-cards"><p class="note">Buscando no IBGE…</p></div>`;
+  document.getElementById("uf-sel").onchange=e=>{UFSEL=e.target.value;try{localStorage.setItem("raiox-uf",UFSEL)}catch(x){}seuEstado()};
+  const d=await dadosUF().catch(()=>({des:{},ren:{},ipca:{}}));
+  const il=IPCA_LOCAL[u.uf],ip=il&&d.ipca[il[1]];
+  const c=(l,v,p,f,url)=>`<div class="uf-c"><div class="l">${l}</div><div class="v">${v}</div><div class="note">${p}</div><p class="fonte">${url?`<a href="${url}" target="_blank" rel="noopener">${f}</a>`:f}</p></div>`;
+  const cards=[
+    d.des[u.uf]&&c("Desemprego",nf(d.des[u.uf].v,1)+"%",esc(d.des[u.uf].p),"IBGE · PNAD Contínua (ao vivo)","https://sidra.ibge.gov.br/tabela/4099"),
+    d.ren[u.uf]&&c("Salário médio de quem trabalha",rs(d.ren[u.uf].v),"por mês, média · "+esc(d.ren[u.uf].p),"IBGE · PNAD Contínua (ao vivo)","https://sidra.ibge.gov.br/tabela/5436"),
+    ip?c(`Inflação em 12 meses (${il[2]})`,nf(ip.v,2)+"%","até "+esc(ip.p),"IBGE · IPCA por região (ao vivo)","https://sidra.ibge.gov.br/tabela/7060")
+      :c("Inflação em 12 meses",esc(ult("ipca_12m")?.valor_texto||"—"),"média do Brasil: o IBGE não mede a inflação separada deste estado","IBGE · IPCA","https://sidra.ibge.gov.br/tabela/7060"),
+    c("Renda por pessoa na casa",rs(u.renda_pc_2025),"por mês, média de 2025","IBGE · PNAD Contínua"),
+    u.rcl_pc&&c("Dinheiro do estado por habitante",rs(u.rcl_pc),"arrecadado em 12 meses","Tesouro Nacional · SICONFI (ao vivo)","https://siconfi.tesouro.gov.br"),
+    c("Mortes violentas",nf(u.mvi_2025,1),"por 100 mil habitantes, 2025","Fórum Brasileiro de Segurança Pública"),
+    c("Governador",esc(u.gov_2022||"—"),`${esc(u.gov_2022_partido||"")} · salário ${GOV_SAL[u.uf]?rs(GOV_SAL[u.uf]):"—"} · eleito(a) em 2026: ${esc(u.gov_2026||"—")} (${esc(u.gov_2026_partido||"")})`,"TSE e Assembleia Legislativa")].filter(Boolean);
+  document.getElementById("uf-cards").innerHTML=cards.join("")+`<p class="note uf-obs">Gasolina e cesta básica de cada estado entram na coleta automática do dia 15. Até lá, os destaques acima mostram a média do Brasil e São Paulo.</p>`;
 }
 
 const serie=k=>D.val.filter(v=>v.chave===k);
