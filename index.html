@@ -185,6 +185,12 @@ details.abre>summary{list-style:none;cursor:pointer;display:inline-flex;align-it
 details.abre>summary::-webkit-details-marker{display:none}
 details.abre>summary::before{content:"";width:0;height:0;border-left:8px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s}
 details.abre[open]>summary::before{transform:rotate(90deg)}
+.card.fecha>*:not(h3){display:none!important}
+.card>h3.tog{cursor:pointer;position:relative;padding-left:26px;user-select:none}
+.card>h3.tog::before{content:"";position:absolute;left:4px;top:.45em;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s}
+.card:not(.fecha)>h3.tog::before{transform:rotate(90deg)}
+.card.fecha{padding-bottom:14px}
+.card.fecha>h3.tog{margin-bottom:0}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
@@ -1111,6 +1117,17 @@ const VIDEOS=[
 function listaVideos(){const el=document.getElementById("vids");if(!el)return;el.innerHTML=VIDEOS.slice().reverse().map(v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(https://i.ytimg.com/vi/${v.id}/hqdefault.jpg)"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`).join("")}
 listaVideos();
 function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelector(".yt").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;document.getElementById("vid-yt").href="https://youtube.com/shorts/"+id;d.showModal()}
+
+/* blocos recolhidos: cada card com título abre e fecha pela seta; mapa, busca e filtros ficam sempre abertos */
+function dobra(card){
+  if(card.dataset.dobra)return;const h=card.querySelector(":scope>h3");if(!h)return;
+  if(card.querySelector("input,select,#mapa")||card.closest("#filtro"))return;
+  card.dataset.dobra=1;card.classList.add("fecha");h.classList.add("tog");h.setAttribute("role","button");h.setAttribute("aria-expanded","false");h.tabIndex=0;
+  const alterna=e=>{if(e.target.closest(".info,a"))return;const ab=card.classList.toggle("fecha")===false;h.setAttribute("aria-expanded",ab)};
+  h.addEventListener("click",alterna);h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();alterna(e)}});
+}
+document.querySelectorAll(".card").forEach(dobra);
+new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes){if(n.nodeType!==1)continue;if(n.classList.contains("card"))dobra(n);n.querySelectorAll&&n.querySelectorAll(".card").forEach(dobra)}}).observe(document.body,{childList:true,subtree:true});
 /* impostômetro federal: total oficial do Tesouro até o último bimestre + ritmo médio por segundo */
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
