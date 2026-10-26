@@ -1127,7 +1127,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelecto
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
   const h=card.querySelector(":scope>h3");if(!h)return;
-  if(card.querySelector("input,select,#mapa")||card.id==="filtro"){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
+  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar")||card.id==="filtro"){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
   if(!card.dataset.dobra){card.dataset.dobra=1;card.classList.add("fecha")}
   if(!h.classList.contains("tog")){h.classList.add("tog");h.setAttribute("role","button");h.tabIndex=0}
   h.setAttribute("aria-expanded",!card.classList.contains("fecha"));
