@@ -230,6 +230,11 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <div class="card"><h3>Câmara dos Deputados<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos deputados federais em exercício cada partido tem hoje, contados ao vivo na lista oficial da Câmara. São 513 cadeiras; para aprovar um projeto de lei comum basta a maioria dos presentes, e para mudar a Constituição são 308 votos, em dois turnos. Os deputados eleitos em outubro de 2026 tomam posse em 01/02/2027, e a lista muda sozinha nesse dia.</div><p class="note" id="banc-dep-sub"></p><div id="banc-dep"></div></div>
     <div class="card"><h3>Senado Federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos senadores em exercício cada partido tem hoje, contados ao vivo na lista oficial do Senado. São 81 cadeiras, 3 por estado; para mudar a Constituição são 49 votos, em dois turnos. Os senadores eleitos em outubro de 2026 tomam posse em 01/02/2027.</div><p class="note" id="banc-sen-sub"></p><div id="banc-sen"></div></div>
   </div>
+  <h2>Como fica o Congresso a partir de 01/02/2027</h2>
+  <div class="grid c2">
+    <div class="card"><h3>Câmara eleita em 2026<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Os 513 deputados federais eleitos em 04/10/2026, pelo partido em que foram eleitos, segundo o resultado oficial do TSE. Tomam posse em 01/02/2027. Depois da posse, alguns podem trocar de partido; aí o gráfico "Câmara dos Deputados" acima passa a mostrar a bancada real do dia.</div><p class="note" id="banc27-dep-sub"></p><div id="banc27-dep"></div></div>
+    <div class="card"><h3>Senado a partir de 2027<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Em 2026 foram eleitos 54 senadores (2 por estado), que se juntam aos 27 eleitos em 2022, cujo mandato vai até 2031. Para os de 2022, vale o partido de hoje, pela lista do Senado; se algum estiver licenciado, entra o suplente em exercício. Fontes: TSE e Senado Federal.</div><p class="note" id="banc27-sen-sub"></p><div id="banc27-sen"></div></div>
+  </div>
   <div class="grid c2">
     <div class="card"><h3>Senadores que mais gastaram da cota<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Soma dos reembolsos da Cota para o Exercício da Atividade Parlamentar dos Senadores (CEAPS) no ano, nota a nota, dos dados abertos do Senado. Atualiza sozinho: o Senado publica as notas conforme os senadores pedem o reembolso, então os meses mais recentes ainda podem crescer.</div><p class="note" id="sen-gastos-sub"></p><div id="sen-gastos"></div></div>
     <div class="card"><h3>Salário de cada governador<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Salário bruto mensal (subsídio) fixado pela Assembleia Legislativa de cada estado, que não pode passar do teto de R$ 46.366,19. Não existe uma API oficial única com esses valores, então eles são conferidos na coleta mensal do dia 15. Levantamento de setembro de 2026.</div><p class="note">Por mês, bruto · Assembleias Legislativas, set/2026</p><div id="gov-sal"></div></div>
@@ -331,7 +336,7 @@ async function extrasEstados(){
 async function carregarPoliticos(){
   const dep=fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1000&ordem=ASC&ordenarPor=nome").then(r=>r.json()).then(j=>j.dados.map(d=>({tipo:"dep",id:d.id,nome:d.nome,partido:d.siglaPartido,uf:d.siglaUf,foto:d.urlFoto,cargo:"Deputado(a) federal",sal:SAL_FED,url:`https://www.camara.leg.br/deputados/${d.id}`}))).catch(()=>[]);
   const sen=fetch("https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json").then(r=>r.json()).then(j=>j.ListaParlamentarEmExercicio.Parlamentares.Parlamentar.map(p=>{const i=p.IdentificacaoParlamentar;
-    return {tipo:"sen",id:i.CodigoParlamentar,nome:i.NomeParlamentar,partido:i.SiglaPartidoParlamentar,uf:i.UfParlamentar,foto:(i.UrlFotoParlamentar||"").replace(/^http:/,"https:"),cargo:"Senador(a)",sal:SAL_FED,url:(i.UrlPaginaParlamentar||"").replace(/^http:/,"https:")}})).catch(()=>[]);
+    return {tipo:"sen",leg1:p.Mandato?.PrimeiraLegislaturaDoMandato?.NumeroLegislatura,id:i.CodigoParlamentar,nome:i.NomeParlamentar,partido:i.SiglaPartidoParlamentar,uf:i.UfParlamentar,foto:(i.UrlFotoParlamentar||"").replace(/^http:/,"https:"),cargo:"Senador(a)",sal:SAL_FED,url:(i.UrlPaginaParlamentar||"").replace(/^http:/,"https:")}})).catch(()=>[]);
   /* eleitos em 2026 para a Câmara e o Senado (resultado final do TSE, gravado no banco) */
   const ele=sb("eleitos_2026?select=cargo,uf,nome,partido,votos,pct,situacao&order=votos.desc").then(l=>l.map(e=>({tipo:"ele",id:e.cargo+e.uf+e.nome,nome:e.nome.toLowerCase().replace(/(^|[\s.'-])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()),partido:e.partido,uf:e.uf,
     cargo:`Eleito(a) ${e.cargo==="dep"?"deputado(a) federal":"senador(a)"} em 2026 · ${nf(e.votos,0)} votos (${e.pct}%) · posse em 01/02/2027`,sal:SAL_FED,url:"https://resultados.tse.jus.br",votos:e.votos,situacao:e.situacao}))).catch(()=>[]);
@@ -398,7 +403,19 @@ function bancadas(){
     const el=document.getElementById(id);if(!el)continue;const c={};POL.filter(p=>p.tipo===t).forEach(p=>{const k=p.partido||"Sem partido";c[k]=(c[k]||0)+1});
     const n=Object.values(c).reduce((a,b)=>a+b,0);if(!n){el.innerHTML=`<p class="note">Lista indisponível no momento.</p>`;continue}
     document.getElementById(id+"-sub").textContent=`${n} de ${tot} cadeiras · ${Object.keys(c).length} partidos · ao vivo, ${t==="dep"?"Câmara dos Deputados":"Senado Federal"}`;
-    el.innerHTML=barrasH(Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({l:k,v,cor:corG(k)})),{fmt:v=>nf(v,0),w:LARG(id)});
+    const it=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({l:k,v,cor:corG(k)}));
+    el.innerHTML=hemiciclo(it,{w:LARG(id)})+barrasH(it,{fmt:v=>nf(v,0),w:LARG(id)});
+  }
+  /* como fica a partir de 01/02/2027: deputados eleitos em 2026; no Senado, os 54 eleitos em 2026 mais os 27 eleitos em 2022 que continuam */
+  const ele=POL.filter(p=>p.tipo==="ele");
+  if(ele.length){
+    const dep=ele.filter(p=>p.id.startsWith("dep")),sen=[...ele.filter(p=>p.id.startsWith("sen")),...POL.filter(p=>p.tipo==="sen"&&p.leg1==="57")];
+    for(const [lst,id,tot] of [[dep,"banc27-dep",513],[sen,"banc27-sen",81]]){
+      const el=document.getElementById(id);if(!el)continue;const c={};lst.forEach(p=>{const k=p.partido||"Sem partido";c[k]=(c[k]||0)+1});
+      const it=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({l:k,v,cor:corG(k)}));
+      document.getElementById(id+"-sub").textContent=`${lst.length} de ${tot} cadeiras · ${it.length} partidos · ${id.endsWith("dep")?"eleitos em 04/10/2026 (TSE)":"eleitos em 2026 (TSE) + senadores eleitos em 2022 que seguem até 2031"}`;
+      el.innerHTML=hemiciclo(it,{w:LARG(id)})+barrasH(it,{fmt:v=>nf(v,0),w:LARG(id)});
+    }
   }
 }
 function senadoresGastos(){bancadas();
@@ -580,6 +597,17 @@ function pizza(fatias,{tam=180,centro=""}={}){
       `<path d="M${p(R,a)}A${R},${R} 0 ${big} 1 ${p(R,a2)}L${p(r,a2)}A${r},${r} 0 ${big} 0 ${p(r,a)}Z" fill="${f.cor}"><title>${esc(f.l)}: ${nf(f.v,1)}</title></path>`;a=a2}
   const leg=fatias.map(f=>`<div><span class="sw" style="background:${f.cor}"></span>${esc(f.l)}: <b>${f.txt??nf(f.v/tot*100,0)+"%"}</b></div>`).join("");
   return `<div class="pizza"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div class="pizza-leg">${leg}</div></div>`}
+function hemiciclo(itens,{w=LARG(),total}={}){
+  /* plenário em meia-lua: uma bolinha por cadeira, partidos da esquerda para a direita do maior para o menor (ordem por tamanho, não por ideologia) */
+  const N=itens.reduce((t,i)=>t+i.v,0);if(!N)return "";const rows=N>300?13:N>150?9:N>60?5:4,ini=.38;
+  const rr=[...Array(rows)].map((_,i)=>ini+(1-ini)*(i+.5)/rows),sr=rr.reduce((a,b)=>a+b,0);
+  let ns=rr.map(r=>Math.round(N*r/sr));ns[rows-1]+=N-ns.reduce((a,b)=>a+b,0);
+  const pos=[];rr.forEach((r,i)=>{const n=ns[i];for(let k=0;k<n;k++){const t=Math.PI*(1-(n===1?.5:k/(n-1)));pos.push({t,r})}});
+  pos.sort((a,b)=>b.t-a.t||a.r-b.r);
+  const cores=[];itens.forEach(i=>{for(let k=0;k<i.v;k++)cores.push(i.cor)});
+  const W=Math.min(w,560),esc=W/2-8,h=esc+18,cx=W/2,cy=esc+8,dot=Math.max(1.6,(1-ini)/rows*esc*.4);
+  const c=pos.map((p,i)=>`<circle cx="${(cx+Math.cos(p.t)*p.r*esc).toFixed(1)}" cy="${(cy-Math.sin(p.t)*p.r*esc).toFixed(1)}" r="${dot.toFixed(1)}" fill="${cores[i]||css('--soft')}"/>`).join("");
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" style="max-width:${W}px;display:block;margin:6px auto 10px">${c}<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="${Math.round(esc*.2)}" font-weight="800" fill="${css('--ink')}">${total??N}</text><text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="13" fill="${css('--muted')}">cadeiras</text></svg>`}
 function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
   /* telas estreitas: nome em cima, barra embaixo; telas largas: nome à esquerda */
   const fs=w<440?14:15,lwN=Math.max(80,Math.max(...itens.map(i=>[...String(i.l)].reduce((t,c)=>t+(c>="A"&&c<="Z"||"ÁÃÂÉÊÍÓÔÕÚÇ".includes(c)?.7:.56),0)))*fs+14),emp=w<340||lwN>w*.5,lw=emp?0:lwN,vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
