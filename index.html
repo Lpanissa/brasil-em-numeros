@@ -169,7 +169,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <div class="card comunicado" id="comunicado"></div>
   <div class="card agrupar">
     <div class="agr-tit">Comparar os estados por<button class="info" aria-label="Sobre os agrupamentos">i</button></div>
-    <div class="infotxt">Escolha como juntar os 27 estados. <b>PT × PL</b>: quem venceu o 2º turno para presidente em 25/10/2026 no estado. <b>Governadores 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). <b>Governadores eleitos 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. Fonte das eleições: TSE.</div>
+    <div class="infotxt">Escolha como juntar os 27 estados. <b>Governadores eleitos 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. <b>PT × PL</b>: quem venceu o 2º turno para presidente em 25/10/2026 no estado. <b>Governadores 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). Fonte das eleições: TSE.</div>
     <div class="chips agr" id="agr"></div>
   </div>
   <div class="grid mapgrid" style="margin-top:0">
@@ -212,7 +212,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <li>Salário dos governadores: Assembleias Legislativas, conforme <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
     <li>Fronteiras do mapa: <a href="https://github.com/giuliano-oliveira/geodata-br-states" target="_blank" rel="noopener">geodata-br-states</a> (licença MIT)</li>
   </ul></div>
-  <p class="aviso">As cores mostram apenas quem venceu a eleição presidencial em cada estado. Elas não indicam que um partido causou a riqueza, a violência ou qualquer outro número do lugar: esses números vêm de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.</p>
+  <p class="aviso">As cores mostram apenas qual partido venceu em cada estado (para governador ou para presidente, conforme o filtro escolhido). Elas não indicam que um partido causou a riqueza, a violência ou qualquer outro número do lugar: esses números vêm de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.</p>
 </section>
 
 <section id="t-politicos" class="hidden">
@@ -623,14 +623,14 @@ const CORP={PT:"--pt",PL:"--pl",MDB:"#2f9e63",PSD:"#e8912d",União:"#8e6bd8",PSB
 const SIGLA=p=>({Republicanos:"Rep.",Solidariedade:"SD",Podemos:"Pode"})[p]||p;
 const corG=g=>{const c=CORP[g]||"#8a8f98";return c.startsWith("--")?css(c):c};
 const MODOS={
+  gov26:{nome:"Governadores eleitos 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
+    info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."},
   pres:{nome:"PT × PL (presidente 2026)",grupo:u=>u.vencedor_2026,tit:"Quem venceu em cada estado: 2º turno de 2026",
     rot:g=>g==="PT"?"PT (Lula)":"PL (Flávio Bolsonaro)",opac:u=>.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45,sub:u=>nf(u.pct_vencedor_2026,0)+"%",
     info:"Resultado oficial do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE. Percentual do vencedor nos votos válidos de cada estado.",nota:"Cor mais forte = vitória com mais folga. Fonte: TSE."},
   gov22:{nome:"Governadores 2023–2026",grupo:u=>u.gov_2022_partido,tit:"Partido do governador (mandato 2023–2026)",rot:g=>g,sub:u=>SIGLA(u.gov_2022_partido),
-    info:"Partido pelo qual cada governador foi eleito em <b>2022</b> (fonte: TSE). Foi quem governou enquanto a maior parte dos números do site foi medida. Alguns trocaram de partido depois (por exemplo, Eduardo Leite e Raquel Lyra foram para o PSD, Eduardo Riedel para o PP) e outros deixaram o cargo em abril de 2026 para disputar outra eleição.",nota:"Partido na eleição de 2022. Fonte: TSE."},
-  gov26:{nome:"Governadores eleitos 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
-    info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."}};
-let MODO="pres";
+    info:"Partido pelo qual cada governador foi eleito em <b>2022</b> (fonte: TSE). Foi quem governou enquanto a maior parte dos números do site foi medida. Alguns trocaram de partido depois (por exemplo, Eduardo Leite e Raquel Lyra foram para o PSD, Eduardo Riedel para o PP) e outros deixaram o cargo em abril de 2026 para disputar outra eleição.",nota:"Partido na eleição de 2022. Fonte: TSE."}};
+let MODO="gov26";
 function estados(){
   const G0={...MODOS[MODO],cor:corG};
   const U=D.uf,G=G0;
@@ -646,8 +646,8 @@ function estados(){
   document.getElementById("mapa-leg").innerHTML=grupos.map(x=>`<span><span class="sw" style="background:${corG(x.g)}"></span>${esc(G.rot(x.g))}: <b>${x.us.length}</b></span>`).join("");
   desenharMapa(U,G);
   /* comunicado: os grupos juntam estados de regiões diferentes; o número é a média desses estados, não uma nota do partido */
-  const lista=x=>{const ns=x.us.map(u=>u.nome);return ns.length>6?ns.slice(0,6).join(", ")+` e mais ${ns.length-6}`:ns.join(", ").replace(/, ([^,]*)$/," e $1")};
-  const g2=grupos.slice(0,2);
+  const lista=x=>{const ns=x.us.map(u=>u.nome),mx=MODO==="pres"?6:3;return ns.length>mx?ns.slice(0,mx).join(", ")+` e mais ${ns.length-mx}`:ns.join(", ").replace(/, ([^,]*)$/," e $1")};
+  const g2=MODO==="pres"?grupos.slice(0,2):grupos;
   document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Os números de cada grupo são a <b>média dos estados</b> onde aquele partido ganhou${MODO==="pres"?" a eleição para presidente":" o governo"}. ${g2.map(x=>`<b>${esc(G.rot(x.g))}</b>: ${esc(lista(x))}`).join(". ")}. Como esses estados ficam em regiões com histórias e economias muito diferentes, a comparação mostra <b>onde</b> cada partido teve mais votos, e não que um partido seja responsável por números bons ou ruins. Riqueza, violência, renda e escolaridade dependem de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.`;
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
   const vs=(k,fmt,un,id)=>{const it=grupos.map(x=>({l:rotN(x),v:media(x.us,k),cor:corG(x.g)}));
