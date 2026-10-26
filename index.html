@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brasil em Números</title>
 <meta name="description" content="Painel do custo de vida e da economia no Brasil: juros, inflação, salários, preços, contas e estados, guardados para comparar ao longo do tempo.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 42'%3E%3CclipPath id='c'%3E%3Crect width='42' height='42' rx='9'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='42' height='42' fill='%23009c3b'/%3E%3Cpolygon points='0,5 37,21 0,37' fill='%23ffdf00'/%3E%3Ccircle cx='0' cy='21' r='12.5' fill='%23002776'/%3E%3Cpath d='M-12,18 Q2,15 12,21' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -17,7 +18,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px 64px}
 header{padding:24px 0 8px;display:flex;gap:12px;align-items:center}
-.logo{width:42px;height:42px;border-radius:11px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:700 18px "JetBrains Mono",monospace;flex:none}
+.logo{width:44px;height:44px;flex:none;display:block}
 h1{font-size:22px;margin:0;letter-spacing:-.01em}
 .sub{color:var(--muted);font-size:13px;margin:0}
 nav{display:flex;gap:6px;margin:14px 0 18px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
@@ -72,7 +73,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid va
 <body>
 <div class="wrap">
 <header>
-  <div class="logo">BR</div>
+  <svg class="logo" viewBox="0 0 42 42" role="img" aria-label="Brasil em Números"><clipPath id="lc"><rect width="42" height="42" rx="11"/></clipPath><g clip-path="url(#lc)"><rect width="42" height="42" fill="#009c3b"/><polygon points="0,5 37,21 0,37" fill="#ffdf00"/><circle cx="0" cy="21" r="12.5" fill="#002776"/><path d="M-12,18 Q2,15 12,21" fill="none" stroke="#fff" stroke-width="2.2"/></g></svg>
   <div><h1>Brasil em Números</h1><p class="sub" id="sub">Custo de vida, economia e estados, guardados para comparar ao longo do tempo</p></div>
 </header>
 <nav>
