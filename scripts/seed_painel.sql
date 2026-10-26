@@ -3,7 +3,7 @@ insert into public.painel_indicadores (chave,categoria,nome,unidade,fonte,fonte_
 ('selic','Juros e câmbio','Taxa Selic','% a.a.','Banco Central (Copom)','https://www.bcb.gov.br/controleinflacao/taxaselic',null,0),
 ('cdi','Juros e câmbio','CDI','% a.a.','B3 / Banco Central','https://www.bcb.gov.br',null,1),
 ('poupanca','Juros e câmbio','Poupança (rendimento no mês)','% a.m.','Banco Central','https://www.bcb.gov.br',null,2),
-('dolar','Juros e câmbio','Dólar PTAX','R$','Banco Central','https://www.bcb.gov.br/estabilidadefinanceira/historicocotacoes',null,3),
+('dolar','Juros e câmbio','Dólar (cotação oficial)','R$','Banco Central','https://www.bcb.gov.br/estabilidadefinanceira/historicocotacoes',null,3),
 ('euro','Juros e câmbio','Euro comercial','R$','Banco Central / mercado (fechamento)',null,null,4),
 ('ibovespa','Juros e câmbio','Ibovespa','pontos','B3','https://www.b3.com.br',null,5),
 ('bitcoin','Juros e câmbio','Bitcoin','R$','Mercado (corretoras)',null,null,6),

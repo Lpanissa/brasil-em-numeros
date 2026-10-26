@@ -20,7 +20,7 @@ ind("cdi", "Juros e câmbio", "CDI", "% a.a.", "B3 / Banco Central", BCB, [
     ("2026-08-14", "14/08/2026", 13.90, "13,90%"), ("2026-10-09", "09/10/2026", 13.65, "13,65%")])
 ind("poupanca", "Juros e câmbio", "Poupança (rendimento no mês)", "% a.m.", "Banco Central", BCB, [
     ("2026-10-01", "out/2026", 0.6698, "0,67% (≈ 8,3% ao ano)")])
-ind("dolar", "Juros e câmbio", "Dólar PTAX", "R$", "Banco Central", BCB + "/estabilidadefinanceira/historicocotacoes", [
+ind("dolar", "Juros e câmbio", "Dólar (cotação oficial)", "R$", "Banco Central", BCB + "/estabilidadefinanceira/historicocotacoes", [
     ("2026-01-02", "02/01/2026", 5.4372, "R$ 5,44"), ("2026-05-11", "11/05/2026", 4.8973, "R$ 4,90"),
     ("2026-09-28", "28/09/2026", 5.2132, "R$ 5,21"), ("2026-10-02", "02/10/2026", 5.2238, "R$ 5,22"),
     ("2026-10-09", "09/10/2026", 4.9892, "R$ 4,99"), ("2026-10-16", "16/10/2026", 5.0826, "R$ 5,08"),
