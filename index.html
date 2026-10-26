@@ -78,6 +78,11 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .dit .mono{font:500 15px "JetBrains Mono",monospace}
 .strike{color:var(--muted);text-decoration:line-through}
 .badge{font-size:13px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.agrupar{margin-bottom:14px}
+.agr-tit{font-weight:700;font-size:16px;margin-bottom:10px}
+.chips.agr{display:flex;flex-wrap:wrap;gap:8px}
+.chips.agr button{font:600 15px Inter,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 16px;cursor:pointer}
+.chips.agr button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
 .pizza svg{flex:none}
 .pizza-leg{font-size:15px;display:grid;gap:8px;max-width:100%}
@@ -97,7 +102,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </header>
 <nav>
   <button data-t="painel" class="on">Painel</button>
-  <button data-t="estados">Estados: PT × PL</button>
+  <button data-t="estados">Estados</button>
   <button data-t="dossie">Conferência do dossiê</button>
 </nav>
 
@@ -114,23 +119,28 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </section>
 
 <section id="t-estados" class="hidden">
+  <div class="card agrupar">
+    <div class="agr-tit">Comparar os estados por<button class="info" aria-label="Sobre os agrupamentos">i</button></div>
+    <div class="infotxt">Escolha como juntar os 27 estados. <b>Voto para presidente</b>: quem venceu o 2º turno de 25/10/2026 no estado. <b>Governador 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). <b>Governador eleito 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. <b>Região</b>: as 5 regiões do IBGE. Fonte das eleições: TSE.</div>
+    <div class="chips agr" id="agr"></div>
+  </div>
   <div class="grid mapgrid" style="margin-top:0">
     <div class="card">
-      <h3>Quem venceu em cada estado: 2º turno 2026<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Resultado do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE na mesma noite. Os percentuais por estado vêm da imprensa a partir do painel do TSE; alguns estão arredondados.</div>
-      <div class="legend"><span><span class="sw" style="background:var(--pt)"></span>PT (Lula): <b id="nPT"></b></span><span><span class="sw" style="background:var(--pl)"></span>PL (Flávio Bolsonaro): <b id="nPL"></b></span></div>
+      <h3><span id="mapa-tit"></span><button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt" id="mapa-info-txt"></div>
+      <div class="legend" id="mapa-leg"></div>
       <div id="mapa"></div>
-      <p class="note">Cor mais forte = vitória com mais folga. Percentuais de alguns estados vêm arredondados pela imprensa.</p>
+      <p class="note" id="mapa-nota"></p>
     </div>
     <div class="lado">
-      <div class="card"><h3>Riqueza: PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">Média dos estados de cada lado · IBGE, dado de 2023, divulgado em 14/11/2025</p><div id="vs-pib"></div></div>
-      <div class="card"><h3>Renda por pessoa na casa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">Por mês, média dos estados de cada lado · IBGE, dado de 2025, divulgado em 27/02/2026</p><div id="vs-renda"></div></div>
-      <div class="card"><h3>Violência: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">Por 100 mil habitantes, média de cada lado · FBSP, dado de 2025, divulgado em 23/07/2026</p><div id="vs-mvi"></div></div>
+      <div class="card"><h3>Riqueza: PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">Média dos estados de cada grupo · IBGE, dado de 2023, divulgado em 14/11/2025</p><div id="vs-pib"></div></div>
+      <div class="card"><h3>Renda por pessoa na casa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">Por mês, média dos estados de cada grupo · IBGE, dado de 2025, divulgado em 27/02/2026</p><div id="vs-renda"></div></div>
+      <div class="card"><h3>Violência: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">Por 100 mil habitantes, média de cada grupo · FBSP, dado de 2025, divulgado em 23/07/2026</p><div id="vs-mvi"></div></div>
     </div>
   </div>
   <div class="grid c3">
-    <div class="card"><h3>Os 10 maiores PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">De que lado ficaram</p><div id="pz-ricos"></div></div>
-    <div class="card"><h3>As 10 maiores rendas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">De que lado ficaram</p><div id="pz-renda"></div></div>
-    <div class="card"><h3>Os 10 estados mais violentos<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">De que lado ficaram</p><div id="pz-violentos"></div></div>
+    <div class="card"><h3>Os 10 maiores PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">De que grupo são</p><div id="pz-ricos"></div></div>
+    <div class="card"><h3>As 10 maiores rendas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">De que grupo são</p><div id="pz-renda"></div></div>
+    <div class="card"><h3>Os 10 estados mais violentos<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">De que grupo são</p><div id="pz-violentos"></div></div>
   </div>
   <div class="grid c3">
     <div class="card"><h3>Ranking: PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="fonte">IBGE · dado de 2023 · divulgado em 14/11/2025</p><div id="rk-pib"></div></div>
@@ -141,7 +151,8 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
   <div class="grid c2" id="mais-comp"></div>
   <h2>Fontes desta aba</h2>
   <div class="card fontes"><ul>
-    <li>Eleição 2026, 2º turno (25/10/2026): <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · Resultados</a></li>
+    <li>Presidente 2026 (2º turno em 25/10/2026) e governadores eleitos em 2026 (04/10 e 25/10/2026): <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · Resultados</a></li>
+    <li>Governadores eleitos em 2022 (mandato 2023–2026): <a href="https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/100-das-secoes-totalizadas-confira-como-ficou-o-quadro-eleitoral-apos-o-1o-turno" target="_blank" rel="noopener">TSE · 1º turno 2022</a> e <a href="https://www.tse.jus.br/comunicacao/noticias/2022/Outubro/eleicoes-2022-confira-os-12-governadores-eleitos-no-2o-turno" target="_blank" rel="noopener">TSE · 2º turno 2022</a></li>
     <li>PIB por pessoa, 2023 (divulgado em 14/11/2025): <a href="https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9054-contas-regionais-do-brasil.html" target="_blank" rel="noopener">IBGE · Contas Regionais</a></li>
     <li>Renda por pessoa, 2025 (divulgado em 27/02/2026): <a href="https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/45942-ibge-divulga-rendimento-domiciliar-per-capita-2025-para-brasil-e-unidades-da-federacao" target="_blank" rel="noopener">IBGE · PNAD Contínua, renda domiciliar por pessoa</a></li>
     <li>Mortes violentas, 2025 (divulgado em 23/07/2026): <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener">Fórum Brasileiro de Segurança Pública · Anuário</a></li>
@@ -240,7 +251,7 @@ function pizza(fatias,{tam=180,centro=""}={}){
   return `<div class="pizza"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div class="pizza-leg">${leg}</div></div>`}
 function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
   /* telas estreitas: nome em cima, barra embaixo; telas largas: nome à esquerda */
-  const emp=w<340,fs=w<440?14:15,lw=emp?0:(w<440?134:160),vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
+  const fs=w<440?14:15,lwN=Math.max(80,Math.max(...itens.map(i=>String(i.l).length))*fs*.56+14),emp=w<340||lwN>w*.5,lw=emp?0:lwN,vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
   const mx=Math.max(...itens.map(i=>Math.abs(i.v)))||1;
   const temNeg=itens.some(i=>i.v<0),area=w-lw-vw-(temNeg?vw:0),zero=lw+(temNeg?vw+area/2:0),esc2=(temNeg?area/2:area)/mx;
   const rows=itens.map((it,i)=>{const y0=i*passo,y=y0+lh,bw=Math.abs(it.v)*esc2,x=it.v<0?zero-bw:zero;
@@ -274,39 +285,62 @@ function cartao(i){const u=ult(i.chave);if(!u)return "";const s=serie(i.chave);
 const PEQ={DF:[6,2,15],GO:[-16,8,21]};
 /* estados pequenos: nome fora do mapa, ligado por uma linha */
 const FORA={RN:[595,146],PB:[595,174],PE:[595,202],AL:[595,230],SE:[595,258],ES:[512,392],RJ:[478,452]};
-async function desenharMapa(U,cor){
+async function desenharMapa(U,G){
   const el=document.getElementById("mapa");
-  let M;try{M=await (await fetch("mapa-br.json")).json()}catch(e){el.innerHTML='<p class="note">Não foi possível carregar o mapa.</p>';return}
+  let M;try{M=window.__MAPA||(window.__MAPA=await (await fetch("mapa-br.json")).json())}catch(e){el.innerHTML='<p class="note">Não foi possível carregar o mapa.</p>';return}
   const por=Object.fromEntries(U.map(u=>[u.uf,u]));
   const forma=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
-    const op=.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45;
-    return `<path d="${g.d}" data-uf="${uf}" fill="${cor(u.vencedor_2026)}" fill-opacity="${op.toFixed(2)}" stroke="${css('--card')}" stroke-width="1.2" style="cursor:pointer"><title>${esc(u.nome)}: ${u.vencedor_2026} ${nf(u.pct_vencedor_2026,1)}%</title></path>`}).join("");
+    const op=G.opac?G.opac(u):.9;
+    return `<path d="${g.d}" data-uf="${uf}" fill="${G.cor(G.grupo(u))}" fill-opacity="${op.toFixed(2)}" stroke="${css('--card')}" stroke-width="1.2" style="cursor:pointer"><title>${esc(u.nome)}: ${esc(G.grupo(u))}</title></path>`}).join("");
   const rot=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
-    if(FORA[uf]){const [lx,ly]=FORA[uf];return `<line x1="${g.cx}" y1="${g.cy}" x2="${lx-4}" y2="${ly-6}" stroke="${css('--muted')}" stroke-width="1"/><text x="${lx}" y="${ly}" font-size="19" font-weight="700" fill="${cor(u.vencedor_2026)}" pointer-events="none">${uf}</text>`}
-    const [dx,dy,fs]=PEQ[uf]||[0,0,21];
-    return `<text x="${g.cx+dx}" y="${g.cy+dy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3.5" paint-order="stroke" pointer-events="none">${uf}${fs>=21?`<tspan x="${g.cx+dx}" dy="20" font-size="17" font-weight="700">${nf(u.pct_vencedor_2026,0)}%</tspan>`:""}</text>`}).join("");
+    if(FORA[uf]){const [lx,ly]=FORA[uf];return `<line x1="${g.cx}" y1="${g.cy}" x2="${lx-4}" y2="${ly-6}" stroke="${css('--muted')}" stroke-width="1"/><text x="${lx}" y="${ly}" font-size="19" font-weight="700" fill="${G.cor(G.grupo(u))}" stroke="${css('--card')}" stroke-width="3" paint-order="stroke" pointer-events="none">${uf}</text>`}
+    const [dx,dy,fs]=PEQ[uf]||[0,0,21];const sub=G.sub?G.sub(u):"";
+    return `<text x="${g.cx+dx}" y="${g.cy+dy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3.5" paint-order="stroke" pointer-events="none">${uf}${fs>=21&&sub?`<tspan x="${g.cx+dx}" dy="19" font-size="15" font-weight="700">${esc(sub)}</tspan>`:""}</text>`}).join("");
   el.innerHTML=`<svg viewBox="0 0 ${M.w+60} ${M.h}" width="100%" style="max-width:600px;display:block;margin:auto">${forma}${rot}</svg><div id="mapa-info" class="note" style="text-align:center;min-height:20px">Toque num estado para ver os números.</div>`;
   el.querySelectorAll("path[data-uf]").forEach(p=>p.onclick=()=>{const u=por[p.dataset.uf];
     el.querySelectorAll("path[data-uf]").forEach(q=>q.setAttribute("stroke-width",q===p?"3":"1.2"));
-    document.getElementById("mapa-info").innerHTML=`<b style="color:${cor(u.vencedor_2026)}">${esc(u.nome)}</b>: ${u.vencedor_2026==="PT"?"Lula (PT)":"Flávio Bolsonaro (PL)"} com ${nf(u.pct_vencedor_2026,2)}% · PIB por pessoa R$ ${nf(u.pib_pc_2023,0)} · renda R$ ${nf(u.renda_pc_2025,0)}/mês · ${nf(u.mvi_2025,1)} mortes violentas por 100 mil`});
+    document.getElementById("mapa-info").innerHTML=`<b style="color:${G.cor(G.grupo(u))}">${esc(u.nome)}</b> · presidente 2026: ${u.vencedor_2026==="PT"?"Lula (PT)":"Flávio Bolsonaro (PL)"} com ${nf(u.pct_vencedor_2026,2)}% · governador 2023–2026: ${esc(u.gov_2022||"—")} (${esc(u.gov_2022_partido||"—")}) · eleito 2026: ${esc(u.gov_2026||"—")} (${esc(u.gov_2026_partido||"—")})<br>PIB por pessoa R$ ${nf(u.pib_pc_2023,0)} · renda R$ ${nf(u.renda_pc_2025,0)}/mês · ${nf(u.mvi_2025,1)} mortes violentas por 100 mil`});
 }
+/* cores dos partidos e regiões (PT e PL mantêm o vermelho e o azul) */
+const CORP={PT:"--pt",PL:"--pl",MDB:"#2f9e63",PSD:"#e8912d",União:"#8e6bd8",PSB:"#e0628f",PP:"#1aa59a",Republicanos:"#90a4ae",PSDB:"#d4b106",Novo:"#a1887f",Solidariedade:"#7cb342",Podemos:"#26c6da",
+  Norte:"#2f9e63",Nordeste:"#e8912d","Centro-Oeste":"#8e6bd8",Sudeste:"#3fa7e0",Sul:"#e0628f"};
+const SIGLA=p=>({Republicanos:"Rep.",Solidariedade:"SD",Podemos:"Pode"})[p]||p;
+const corG=g=>{const c=CORP[g]||"#8a8f98";return c.startsWith("--")?css(c):c};
+const MODOS={
+  pres:{nome:"Voto para presidente 2026",grupo:u=>u.vencedor_2026,tit:"Quem venceu em cada estado: 2º turno de 2026",
+    rot:g=>g==="PT"?"PT (Lula)":"PL (Flávio Bolsonaro)",opac:u=>.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45,sub:u=>nf(u.pct_vencedor_2026,0)+"%",
+    info:"Resultado oficial do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE. Percentual do vencedor nos votos válidos de cada estado.",nota:"Cor mais forte = vitória com mais folga. Fonte: TSE."},
+  gov22:{nome:"Governador 2023–2026",grupo:u=>u.gov_2022_partido,tit:"Partido do governador (mandato 2023–2026)",rot:g=>g,sub:u=>SIGLA(u.gov_2022_partido),
+    info:"Partido pelo qual cada governador foi eleito em <b>2022</b> (fonte: TSE). Foi quem governou enquanto a maior parte dos números do site foi medida. Alguns trocaram de partido depois (por exemplo, Eduardo Leite e Raquel Lyra foram para o PSD, Eduardo Riedel para o PP) e outros deixaram o cargo em abril de 2026 para disputar outra eleição.",nota:"Partido na eleição de 2022. Fonte: TSE."},
+  gov26:{nome:"Governador eleito 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
+    info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."},
+  regiao:{nome:"Região",grupo:u=>u.regiao,tit:"Regiões do Brasil",rot:g=>g,
+    info:"As 5 grandes regiões do IBGE. Ajuda a ver quanto das diferenças entre estados vem da história e da economia de cada região.",nota:"Divisão regional do IBGE."}};
+let MODO="pres";
 function estados(){
-  const U=D.uf,cor=p=>p==="PT"?css('--pt'):css('--pl');
-  const pt=U.filter(u=>u.vencedor_2026==="PT"),pl=U.filter(u=>u.vencedor_2026==="PL");
-  document.getElementById("nPT").textContent=pt.length+" estados";document.getElementById("nPL").textContent=pl.length+" estados (com o DF)";
-  desenharMapa(U,cor);
+  const U=D.uf,G={...MODOS[MODO],cor:corG};
+  document.getElementById("agr").innerHTML=Object.entries(MODOS).map(([k,m])=>`<button data-m="${k}" class="${k===MODO?"on":""}">${m.nome}</button>`).join("");
+  document.querySelectorAll("#agr button").forEach(b=>b.onclick=()=>{MODO=b.dataset.m;estados()});
+  /* grupos com nº de estados, do maior para o menor */
+  const grupos=[...new Set(U.map(G.grupo))].map(g=>({g,us:U.filter(u=>G.grupo(u)===g)})).sort((a,b)=>b.us.length-a.us.length||a.g.localeCompare(b.g));
+  const rotN=x=>`${G.rot(x.g)} · ${x.us.length} ${x.us.length===1?"estado":"estados"}`;
+  document.getElementById("mapa-tit").textContent=G.tit;
+  document.getElementById("mapa-info-txt").innerHTML=G.info;
+  document.getElementById("mapa-nota").textContent=G.nota;
+  document.getElementById("mapa-leg").innerHTML=grupos.map(x=>`<span><span class="sw" style="background:${corG(x.g)}"></span>${esc(G.rot(x.g))}: <b>${x.us.length}</b></span>`).join("");
+  desenharMapa(U,G);
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
-  const vs=(k,fmt,un,id)=>{const a=media(pt,k),b=media(pl,k),mx=Math.max(a,b);
-    return `<div class="vs"><div class="side"><div class="tag" style="color:var(--pt)">ESTADOS PT</div><div class="big">${fmt(a)}</div><div class="note">${un}</div></div><div class="side"><div class="tag" style="color:var(--pl)">ESTADOS PL</div><div class="big">${fmt(b)}</div><div class="note">${un}</div></div></div>`+
-    barrasH([{l:"Estados PT",v:a,cor:css('--pt')},{l:"Estados PL",v:b,cor:css('--pl')}],{fmt,w:LARG(id)})};
+  const vs=(k,fmt,un,id)=>{const it=grupos.map(x=>({l:rotN(x),v:media(x.us,k),cor:corG(x.g)}));
+    const topo=grupos.length===2?`<div class="vs">${grupos.map((x,i)=>`<div class="side"><div class="tag" style="color:${corG(x.g)}">ESTADOS ${esc(x.g).toUpperCase()}</div><div class="big">${fmt(it[i].v)}</div><div class="note">${un}</div></div>`).join("")}</div>`:`<p class="note" style="margin:6px 0 10px">${un}</p>`;
+    return topo+barrasH(grupos.length===2?it:it.slice().sort((a,b)=>b.v-a.v),{fmt,w:LARG(id)})};
   document.getElementById("vs-pib").innerHTML=vs("pib_pc_2023",v=>"R$ "+nf(v,0),"PIB por pessoa por ano","vs-pib");
   document.getElementById("vs-renda").innerHTML=vs("renda_pc_2025",v=>"R$ "+nf(v,0),"por pessoa, por mês","vs-renda");
   document.getElementById("vs-mvi").innerHTML=vs("mvi_2025",v=>nf(v,1),"mortes por 100 mil hab.","vs-mvi");
   const top=(k)=>U.slice().sort((a,b)=>b[k]-a[k]).slice(0,10);
-  const pz=(k,el)=>{const t=top(k),a=t.filter(u=>u.vencedor_2026==="PT"),b=t.filter(u=>u.vencedor_2026==="PL");
-    document.getElementById(el).innerHTML=pizza([{l:"PT",v:a.length,cor:css('--pt'),txt:a.length+(a.length?" ("+a.map(u=>u.uf).join(", ")+")":"")},{l:"PL",v:b.length,cor:css('--pl'),txt:b.length+(b.length?" ("+b.map(u=>u.uf).join(", ")+")":"")}],{centro:"10"})};
+  const pz=(k,el)=>{const t=top(k);const fat=grupos.map(x=>{const a=t.filter(u=>G.grupo(u)===x.g);return {l:G.rot(x.g),v:a.length,cor:corG(x.g),txt:a.length+(a.length?" ("+a.map(u=>u.uf).join(", ")+")":"")}}).filter(f=>f.v>0);
+    document.getElementById(el).innerHTML=pizza(fat,{centro:"10"})};
   pz("pib_pc_2023","pz-ricos");pz("renda_pc_2025","pz-renda");pz("mvi_2025","pz-violentos");
-  const rk=(k,fmt,id)=>barrasH(U.slice().sort((a,b)=>b[k]-a[k]).map(u=>({l:u.nome,v:+u[k],cor:cor(u.vencedor_2026)})),{fmt,w:LARG(id)});
+  const rk=(k,fmt,id)=>barrasH(U.slice().sort((a,b)=>b[k]-a[k]).map(u=>({l:u.nome,v:+u[k],cor:corG(G.grupo(u))})),{fmt,w:LARG(id)});
   document.getElementById("rk-pib").innerHTML=rk("pib_pc_2023",v=>"R$ "+nf(v/1000,1)+" mil","rk-pib");
   document.getElementById("rk-renda").innerHTML=rk("renda_pc_2025",v=>"R$ "+nf(v,0),"rk-renda");
   document.getElementById("rk-mvi").innerHTML=rk("mvi_2025",v=>nf(v,1),"rk-mvi");
@@ -324,7 +358,7 @@ function estados(){
     {k:"expectativa_2024",id:"expec",t:"Expectativa de vida",un:"anos, ao nascer",dec:1,suf:"",pior:false,top:"As 10 maiores expectativas de vida",
      fonte:"IBGE · Projeções da População · dado de 2024 · divulgado em 22/08/2024",url:"https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html",
      info:"Quantos anos, em média, vive quem nasce hoje no estado. Dado de <b>2024</b> das Projeções da População do IBGE (revisão 2024), divulgadas em <b>22/08/2024</b> (Brasil: 76,6 anos, confirmado nas Tábuas de Mortalidade de 28/11/2025). Aqui, número <b>maior é melhor</b>."}];
-  document.getElementById("mais-comp").innerHTML=MAIS.map(m=>`<div class="card"><h3>${m.t}<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">${m.info}</div><p class="fonte"><a href="${m.url}" target="_blank" rel="noopener">${m.fonte}</a></p><div id="vs-${m.id}"></div><h3 style="margin-top:16px">${m.top}</h3><p class="note">De que lado ficaram</p><div id="pz-${m.id}"></div><details class="rk"><summary>Ver os 27 estados</summary><div id="rk-${m.id}"></div></details></div>`).join("");
+  document.getElementById("mais-comp").innerHTML=MAIS.map(m=>`<div class="card"><h3>${m.t}<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">${m.info}</div><p class="fonte"><a href="${m.url}" target="_blank" rel="noopener">${m.fonte}</a></p><div id="vs-${m.id}"></div><h3 style="margin-top:16px">${m.top}</h3><p class="note">De que grupo são</p><div id="pz-${m.id}"></div><details class="rk"><summary>Ver os 27 estados</summary><div id="rk-${m.id}"></div></details></div>`).join("");
   for(const m of MAIS){const f=v=>nf(v,m.dec)+m.suf;
     document.getElementById("vs-"+m.id).innerHTML=vs(m.k,f,m.un,"vs-"+m.id);pz(m.k,"pz-"+m.id);
     const d=document.querySelector("#rk-"+m.id).parentElement;

@@ -185,11 +185,33 @@ UFS = {
  "PR": ("Paraná", "Sul", 3, 5), "SP": ("São Paulo", "Sudeste", 4, 5), "RJ": ("Rio de Janeiro", "Sudeste", 5, 5),
  "SC": ("Santa Catarina", "Sul", 3, 6), "RS": ("Rio Grande do Sul", "Sul", 2, 6)}
 # vencedor e % do vencedor no 2º turno 2026 (TSE, via imprensa; arredondado onde a fonte arredondou)
-ELE = {"RR": ("PL", 72), "AP": ("PT", 52.88), "TO": ("PL", 51), "AM": ("PT", 54.02), "RO": ("PL", 69), "AC": ("PL", 66),
-       "PA": ("PT", 55.02), "SE": ("PT", 69), "CE": ("PT", 68), "PB": ("PT", 67), "AL": ("PT", 60), "RN": ("PT", 65),
-       "PE": ("PT", 69), "BA": ("PT", 71), "MA": ("PT", 69), "PI": ("PT", 75.88), "DF": ("PL", 54), "MS": ("PL", 59),
-       "MT": ("PL", 66), "GO": ("PL", 59), "MG": ("PT", 50.43), "RJ": ("PL", 53.10), "SP": ("PL", 53.85), "ES": ("PL", 56),
-       "PR": ("PL", 62.58), "SC": ("PL", 69.42), "RS": ("PL", 69.2)}
+# vencedor e % do vencedor no 2º turno de 25/10/2026, por UF (TSE, resultados oficiais, eleição 6258)
+ELE = {"AC": ("PL", 66.57), "AL": ("PT", 60.77), "AM": ("PT", 54.02), "AP": ("PT", 52.88), "BA": ("PT", 71.31),
+       "CE": ("PT", 68.93), "DF": ("PL", 54.28), "ES": ("PL", 56.37), "GO": ("PL", 59.66), "MA": ("PT", 69.54),
+       "MG": ("PT", 50.43), "MS": ("PL", 59.60), "MT": ("PL", 66.06), "PA": ("PT", 55.02), "PB": ("PT", 67.46),
+       "PE": ("PT", 69.20), "PI": ("PT", 75.88), "PR": ("PL", 62.58), "RJ": ("PL", 53.10), "RN": ("PT", 65.72),
+       "RO": ("PL", 69.61), "RR": ("PL", 72.46), "RS": ("PL", 57.84), "SC": ("PL", 69.42), "SE": ("PT", 69.53),
+       "SP": ("PL", 53.85), "TO": ("PL", 51.37)}
+# governadores eleitos em 2022 (mandato 2023-2026), partido pelo qual foram eleitos (TSE)
+GOV22 = {"AC": ("Gladson Cameli", "PP"), "AL": ("Paulo Dantas", "MDB"), "AP": ("Clécio Luís", "Solidariedade"),
+         "AM": ("Wilson Lima", "União"), "BA": ("Jerônimo Rodrigues", "PT"), "CE": ("Elmano de Freitas", "PT"),
+         "DF": ("Ibaneis Rocha", "MDB"), "ES": ("Renato Casagrande", "PSB"), "GO": ("Ronaldo Caiado", "União"),
+         "MA": ("Carlos Brandão", "PSB"), "MT": ("Mauro Mendes", "União"), "MS": ("Eduardo Riedel", "PSDB"),
+         "MG": ("Romeu Zema", "Novo"), "PA": ("Helder Barbalho", "MDB"), "PB": ("João Azevêdo", "PSB"),
+         "PR": ("Ratinho Júnior", "PSD"), "PE": ("Raquel Lyra", "PSDB"), "PI": ("Rafael Fonteles", "PT"),
+         "RJ": ("Cláudio Castro", "PL"), "RN": ("Fátima Bezerra", "PT"), "RS": ("Eduardo Leite", "PSDB"),
+         "RO": ("Marcos Rocha", "União"), "RR": ("Antonio Denarium", "PP"), "SC": ("Jorginho Mello", "PL"),
+         "SP": ("Tarcísio de Freitas", "Republicanos"), "SE": ("Fábio Mitidieri", "PSD"), "TO": ("Wanderlei Barbosa", "Republicanos")}
+# governadores eleitos em 2026 (posse em 01/01/2027), partido do candidato (TSE, eleições 6259 e 6260)
+GOV26 = {"AC": ("Mailza Assis", "PP"), "AL": ("JHC", "PSDB"), "AP": ("Dr. Furlan", "PSD"), "AM": ("Omar Aziz", "PSD"),
+         "BA": ("Jerônimo Rodrigues", "PT"), "CE": ("Elmano de Freitas", "PT"), "DF": ("Celina Leão", "PP"),
+         "ES": ("Lorenzo Pazolini", "Republicanos"), "GO": ("Daniel Vilela", "MDB"), "MA": ("Eduardo Braide", "PSD"),
+         "MT": ("Otaviano Pivetta", "Republicanos"), "MS": ("Eduardo Riedel", "PP"), "MG": ("Cleitinho", "Republicanos"),
+         "PA": ("Dr. Daniel", "Podemos"), "PB": ("Lucas Ribeiro", "PP"), "PR": ("Sergio Moro", "PL"),
+         "PE": ("Raquel Lyra", "PSD"), "PI": ("Rafael Fonteles", "PT"), "RJ": ("Douglas Ruas", "PL"),
+         "RN": ("Cadu de Lula", "PT"), "RS": ("Zucco", "PL"), "RO": ("Marcos Rogério", "PL"), "RR": ("Arthur Henrique", "PL"),
+         "SC": ("Jorginho Mello", "PL"), "SP": ("Tarcísio", "Republicanos"), "SE": ("Fábio Mitidieri", "PSD"),
+         "TO": ("Vicentinho Júnior", "PSDB")}
 PIB = {"DF": 129790.44, "SP": 77566.27, "MT": 74620.05, "RJ": 73052.55, "SC": 67459.74, "MS": 66884.75, "RS": 59736.20,
        "PR": 58624.33, "ES": 54732.78, "RO": 48353.38, "GO": 47721.56, "MG": 47321.23, "TO": 42553.36, "AM": 41047.91,
        "RR": 39460.54, "AP": 38187.09, "AC": 31675.60, "PA": 31347.59, "RN": 30804.91, "BA": 30476.54, "PE": 29857.27,
@@ -227,7 +249,8 @@ for uf, (nome, reg, x, y) in UFS.items():
     v, pct = ELE[uf]
     ESTADOS.append(dict(uf=uf, nome=nome, regiao=reg, x=x, y=y, vencedor_2026=v, pct_vencedor_2026=pct,
                         pib_pc_2023=PIB[uf], mvi_2025=MVI[uf], renda_pc_2025=RENDA[uf], desemprego_2026t2=DESEMP[uf],
-                        analfabetismo_2025=ANALF[uf], bolsa_familia_dom_2025=BF[uf], expectativa_2024=EXPEC[uf]))
+                        analfabetismo_2025=ANALF[uf], bolsa_familia_dom_2025=BF[uf], expectativa_2024=EXPEC[uf],
+                        gov_2022=GOV22[uf][0], gov_2022_partido=GOV22[uf][1], gov_2026=GOV26[uf][0], gov_2026_partido=GOV26[uf][1]))
 
 def q(s):
     return "null" if s is None else "'" + str(s).replace("'", "''") + "'"
@@ -246,8 +269,8 @@ def gerar(raiz):
         for v in d["valores"]:
             rows.append(f"({q(k)},{q(v['data_ref'])},{q(v['periodo'])},{n(v['valor'])},{q(v['valor_texto'])})")
     sql.append("insert into public.painel_valores (chave,data_ref,periodo,valor,valor_texto) values\n" + ",\n".join(rows) + ";")
-    rows = [f"({q(e['uf'])},{q(e['nome'])},{q(e['regiao'])},{e['x']},{e['y']},{q(e['vencedor_2026'])},{n(e['pct_vencedor_2026'])},{n(e['pib_pc_2023'])},{n(e['mvi_2025'])},{n(e['renda_pc_2025'])},{n(e['desemprego_2026t2'])},{n(e['analfabetismo_2025'])},{n(e['bolsa_familia_dom_2025'])},{n(e['expectativa_2024'])})" for e in ESTADOS]
-    sql.append("insert into public.painel_estados (uf,nome,regiao,x,y,vencedor_2026,pct_vencedor_2026,pib_pc_2023,mvi_2025,renda_pc_2025,desemprego_2026t2,analfabetismo_2025,bolsa_familia_dom_2025,expectativa_2024) values\n" + ",\n".join(rows) + ";")
+    rows = [f"({q(e['uf'])},{q(e['nome'])},{q(e['regiao'])},{e['x']},{e['y']},{q(e['vencedor_2026'])},{n(e['pct_vencedor_2026'])},{n(e['pib_pc_2023'])},{n(e['mvi_2025'])},{n(e['renda_pc_2025'])},{n(e['desemprego_2026t2'])},{n(e['analfabetismo_2025'])},{n(e['bolsa_familia_dom_2025'])},{n(e['expectativa_2024'])},{q(e['gov_2022'])},{q(e['gov_2022_partido'])},{q(e['gov_2026'])},{q(e['gov_2026_partido'])})" for e in ESTADOS]
+    sql.append("insert into public.painel_estados (uf,nome,regiao,x,y,vencedor_2026,pct_vencedor_2026,pib_pc_2023,mvi_2025,renda_pc_2025,desemprego_2026t2,analfabetismo_2025,bolsa_familia_dom_2025,expectativa_2024,gov_2022,gov_2022_partido,gov_2026,gov_2026_partido) values\n" + ",\n".join(rows) + ";")
     (raiz / "scripts" / "seed_painel.sql").write_text("\n".join(sql), encoding="utf-8")
     js = dict(indicadores=[dict(chave=k, **{a: b for a, b in d.items() if a != "valores"}, ordem=i) for i, (k, d) in enumerate(IND.items())],
               valores=[dict(chave=k, **v) for k, d in IND.items() for v in d["valores"]], estados=ESTADOS,
