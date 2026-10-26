@@ -1,4 +1,4 @@
-# Brasil em Números
+# Raio-X do Brasil
 
 Site com dashboard do custo de vida e da economia no Brasil: juros, inflação, salários, cesta básica, contas da casa,
 transporte, crédito, saúde e comparação entre estados (mapa PT × PL do 2º turno de 2026, PIB por pessoa e violência).
