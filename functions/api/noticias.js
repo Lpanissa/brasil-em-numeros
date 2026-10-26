@@ -45,7 +45,8 @@ async function rss({ fonte, url, peso }) {
   const xml = await r.text();
   return [...xml.matchAll(/<item[\s>][\s\S]*?<\/item>/gi)].slice(0, 15).map(([it]) => {
     const desc = tag(it, "description"), cont = tag(it, "content:encoded");
-    const img = (it.match(/<enclosure[^>]+url="([^"]+)"/i) || it.match(/<media:(?:content|thumbnail)[^>]+url="([^"]+)"/i) || ent(desc + cont).match(/<img[^>]+src="([^"]+)"/i) || [])[1] || null;
+    let img = (it.match(/<enclosure[^>]+url="([^"]+)"/i) || it.match(/<media:(?:content|thumbnail)[^>]+url="([^"]+)"/i) || ent(desc + cont).match(/<img[^>]+src="([^"]+)"/i) || [])[1] || null;
+    if (img && /logo|\.svg(\?|$)/i.test(img)) img = null; // logotipo da agência não é foto da notícia
     const titulo = limpa(tag(it, "title")), resumo = corta(limpa(desc), 260);
     const data = Date.parse(limpa(tag(it, "pubDate")) || limpa(tag(it, "dc:date"))) || 0;
     const n = { fonte, titulo, resumo, link: limpa(tag(it, "link")), img, data, uf: estados(titulo + " " + resumo) };
@@ -70,7 +71,7 @@ async function ibge() {
 }
 
 export async function onRequestGet(ctx) {
-  const cache = caches.default, chave = new Request("https://cache.raiox/noticias/v2");
+  const cache = caches.default, chave = new Request("https://cache.raiox/noticias/v3");
   const guardado = await cache.match(chave);
   if (guardado) return guardado;
   const listas = await Promise.all([ibge(), ...FEEDS.map(rss)].map(p => p.catch(() => [])));
@@ -78,6 +79,16 @@ export async function onRequestGet(ctx) {
   const vistos = new Set(), agora = Date.now();
   const itens = listas.flat().filter(n => n.rel >= 2 && !vistos.has(n.link) && vistos.add(n.link))
     .sort((a, b) => ((agora - b.data < 48 * 36e5) - (agora - a.data < 48 * 36e5)) || (b.rel - a.rel) || (b.data - a.data)).slice(0, 60);
+  // notícias sem foto no feed: busca a imagem de capa (og:image) na própria página da notícia
+  await Promise.all(itens.filter(n => !n.img).slice(0, 25).map(async n => {
+    try {
+      const r = await fetch(n.link, { headers: UA, cf: { cacheTtl: 3600 } });
+      if (!r.ok) return;
+      const h = (await r.text()).slice(0, 60000);
+      const m = h.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) || h.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+      if (m && !/logo|\.svg(\?|$)/i.test(m[1])) n.img = ent(m[1]);
+    } catch (e) {}
+  }));
   const resp = new Response(JSON.stringify({ geradoEm: Date.now(), itens, fontes: listas.map((l, i) => ({ fonte: i ? FEEDS[i - 1].url : "IBGE", n: l.length, relevantes: l.filter(x => x.rel >= 2).length })) }), {
     headers: { "content-type": "application/json", "cache-control": "public, max-age=900" },
   });
