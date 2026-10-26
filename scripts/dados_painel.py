@@ -201,11 +201,33 @@ MVI = {"AP": 42.5, "BA": 36.8, "CE": 34.7, "AL": 33.1, "PE": 33.0, "MA": 29.7, "
 RENDA = {"DF": 4538, "SP": 2956, "RS": 2839, "SC": 2809, "RJ": 2794, "PR": 2762, "MS": 2454, "GO": 2407, "MG": 2353,
          "MT": 2335, "ES": 2249, "TO": 2036, "RO": 1991, "RR": 1878, "RN": 1819, "AP": 1697, "SE": 1697, "PE": 1600,
          "PI": 1546, "PB": 1543, "AM": 1484, "BA": 1465, "AL": 1422, "PA": 1420, "AC": 1392, "CE": 1390, "MA": 1219}
+
+# desemprego, 2º tri/2026 (IBGE, PNAD Contínua trimestral, SIDRA 4099, divulgado em 14/08/2026)
+DESEMP = {"RO": 2.6, "AC": 6.6, "AM": 7.5, "RR": 5.0, "PA": 6.2, "AP": 9.8, "TO": 4.1, "MA": 6.0, "PI": 8.3, "CE": 6.6,
+          "RN": 5.6, "PB": 5.4, "PE": 8.3, "AL": 7.9, "SE": 7.9, "BA": 9.1, "MG": 3.8, "ES": 2.3, "RJ": 7.1, "SP": 5.4,
+          "PR": 3.1, "SC": 2.1, "RS": 4.2, "MS": 2.7, "MT": 2.2, "GO": 4.0, "DF": 6.5}
+# analfabetismo 15 anos ou mais, 2025 (IBGE, PNAD Contínua Educação, SIDRA 7113, divulgado em 19/06/2026)
+ANALF = {"RO": 5.1, "AC": 8.9, "AM": 4.3, "RR": 3.4, "PA": 6.2, "AP": 4.5, "TO": 6.8, "MA": 10.9, "PI": 13.1, "CE": 11.1,
+         "RN": 9.3, "PB": 11.6, "PE": 10.1, "AL": 13.1, "SE": 10.3, "BA": 9.5, "MG": 3.8, "ES": 3.8, "RJ": 1.6, "SP": 1.9,
+         "PR": 3.3, "SC": 1.5, "RS": 2.2, "MS": 3.9, "MT": 3.5, "GO": 3.5, "DF": 2.0}
+# domicílios com Bolsa Família, 2025, em mil (IBGE, PNAD Contínua Rendimento de todas as fontes, SIDRA 7449 e 7450, divulgado em 08/05/2026)
+BF_SIM = {"RO": 95, "AC": 91, "AM": 421, "RR": 42, "PA": 1061, "AP": 74, "TO": 103, "MA": 920, "PI": 448, "CE": 1042,
+          "RN": 343, "PB": 493, "PE": 1062, "AL": 375, "SE": 255, "BA": 1791, "MG": 1078, "ES": 191, "RJ": 889, "SP": 1341,
+          "PR": 359, "SC": 119, "RS": 347, "MS": 102, "MT": 169, "GO": 313, "DF": 115}
+BF_NAO = {"RO": 535, "AC": 199, "AM": 855, "RR": 164, "PA": 1684, "AP": 176, "TO": 468, "MA": 1394, "PI": 719, "CE": 2264,
+          "RN": 906, "PB": 1001, "PE": 2528, "AL": 768, "SE": 605, "BA": 3873, "MG": 7032, "ES": 1396, "RJ": 5915, "SP": 16213,
+          "PR": 4158, "SC": 2967, "RS": 4176, "MS": 969, "MT": 1210, "GO": 2516, "DF": 974}
+BF = {u: round(BF_SIM[u] / (BF_SIM[u] + BF_NAO[u]) * 100, 1) for u in BF_SIM}
+# esperança de vida ao nascer, 2024 (IBGE, Projeções da População, revisão 2024, divulgado em 22/08/2024)
+EXPEC = {"DF": 79.7, "SC": 78.3, "RN": 77.8, "MG": 77.5, "CE": 77.3, "ES": 77.2, "RS": 77.2, "SP": 77.0, "PI": 77.0,
+         "PR": 76.8, "PB": 76.8, "GO": 76.8, "TO": 76.7, "SE": 76.4, "PA": 76.3, "RO": 76.0, "AC": 75.9, "BA": 75.8,
+         "MT": 75.7, "RJ": 75.6, "MA": 75.6, "PE": 75.5, "AM": 75.5, "MS": 75.4, "AL": 74.4, "RR": 74.3, "AP": 74.3}
 ESTADOS = []
 for uf, (nome, reg, x, y) in UFS.items():
     v, pct = ELE[uf]
     ESTADOS.append(dict(uf=uf, nome=nome, regiao=reg, x=x, y=y, vencedor_2026=v, pct_vencedor_2026=pct,
-                        pib_pc_2023=PIB[uf], mvi_2025=MVI[uf], renda_pc_2025=RENDA[uf]))
+                        pib_pc_2023=PIB[uf], mvi_2025=MVI[uf], renda_pc_2025=RENDA[uf], desemprego_2026t2=DESEMP[uf],
+                        analfabetismo_2025=ANALF[uf], bolsa_familia_dom_2025=BF[uf], expectativa_2024=EXPEC[uf]))
 
 def q(s):
     return "null" if s is None else "'" + str(s).replace("'", "''") + "'"
@@ -224,8 +246,8 @@ def gerar(raiz):
         for v in d["valores"]:
             rows.append(f"({q(k)},{q(v['data_ref'])},{q(v['periodo'])},{n(v['valor'])},{q(v['valor_texto'])})")
     sql.append("insert into public.painel_valores (chave,data_ref,periodo,valor,valor_texto) values\n" + ",\n".join(rows) + ";")
-    rows = [f"({q(e['uf'])},{q(e['nome'])},{q(e['regiao'])},{e['x']},{e['y']},{q(e['vencedor_2026'])},{n(e['pct_vencedor_2026'])},{n(e['pib_pc_2023'])},{n(e['mvi_2025'])})" for e in ESTADOS]
-    sql.append("insert into public.painel_estados (uf,nome,regiao,x,y,vencedor_2026,pct_vencedor_2026,pib_pc_2023,mvi_2025) values\n" + ",\n".join(rows) + ";")
+    rows = [f"({q(e['uf'])},{q(e['nome'])},{q(e['regiao'])},{e['x']},{e['y']},{q(e['vencedor_2026'])},{n(e['pct_vencedor_2026'])},{n(e['pib_pc_2023'])},{n(e['mvi_2025'])},{n(e['renda_pc_2025'])},{n(e['desemprego_2026t2'])},{n(e['analfabetismo_2025'])},{n(e['bolsa_familia_dom_2025'])},{n(e['expectativa_2024'])})" for e in ESTADOS]
+    sql.append("insert into public.painel_estados (uf,nome,regiao,x,y,vencedor_2026,pct_vencedor_2026,pib_pc_2023,mvi_2025,renda_pc_2025,desemprego_2026t2,analfabetismo_2025,bolsa_familia_dom_2025,expectativa_2024) values\n" + ",\n".join(rows) + ";")
     (raiz / "scripts" / "seed_painel.sql").write_text("\n".join(sql), encoding="utf-8")
     js = dict(indicadores=[dict(chave=k, **{a: b for a, b in d.items() if a != "valores"}, ordem=i) for i, (k, d) in enumerate(IND.items())],
               valores=[dict(chave=k, **v) for k, d in IND.items() for v in d["valores"]], estados=ESTADOS,

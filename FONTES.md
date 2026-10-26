@@ -44,5 +44,10 @@ repetir o último valor na fotografia do mês (o histórico oficial não muda).
 | Estados | Vencedor e % no 2º turno | TSE | resultados.tse.jus.br | a cada eleição |
 | | PIB por pessoa | IBGE – Contas Regionais | ibge.gov.br | anual (novembro) |
 | | Mortes violentas por 100 mil | Fórum Brasileiro de Segurança Pública – Anuário | forumseguranca.org.br | anual (julho) |
+| | Renda por pessoa | IBGE – PNAD Contínua (renda domiciliar per capita) | agenciadenoticias.ibge.gov.br | anual (fevereiro) |
+| | Desemprego por estado | IBGE – PNAD Contínua trimestral, SIDRA 4099 | sidra.ibge.gov.br/tabela/4099 | trimestral (meio de fev., mai., ago., nov.) |
+| | Analfabetismo 15+ | IBGE – PNAD Contínua Educação, SIDRA 7113 | sidra.ibge.gov.br/tabela/7113 | anual (junho) |
+| | % de casas com Bolsa Família | IBGE – PNAD Contínua Rendimento, SIDRA 7449 ÷ (7449 + 7450) | sidra.ibge.gov.br/tabela/7449 | anual (maio) |
+| | Expectativa de vida | IBGE – Projeções da População (revisão 2024) e Tábuas de Mortalidade | ibge.gov.br (projeção da população) | anual (novembro, Tábuas) |
 
 Mapa: fronteiras dos estados do projeto [geodata-br-states](https://github.com/giuliano-oliveira/geodata-br-states) (licença MIT), simplificadas em `mapa-br.json` por `scripts/gerar_mapa.py`.

@@ -15,12 +15,12 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101114;--card:#191b1f;--ink:#eceef1;--muted:#9aa0a9;--line:#2a2d33;--soft:#22252a;
   --pt:#ef5a54;--pl:#5b8cf5;--up:#e6a72e;--down:#35b8a5;--acc:#eceef1;--ok:#3fbf73;--ap:#5b93f0;--old:#e6a12e;--bad:#ef6b5f;--nv:#7d828b}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px 64px}
 header{padding:24px 0 8px;display:flex;gap:12px;align-items:center}
 .logo{width:44px;height:44px;flex:none;display:block}
 h1{font-size:22px;margin:0;letter-spacing:-.01em}
-.sub{color:var(--muted);font-size:13px;margin:0}
+.sub{color:var(--muted);font-size:14px;margin:0}
 nav{display:flex;gap:6px;margin:14px 0 18px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:5}
 nav button{font:600 14px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;white-space:nowrap}
 nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -31,38 +31,40 @@ nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 @media (min-width:760px){.grid.kpis{grid-template-columns:repeat(4,1fr)}.c2,.c3{grid-template-columns:repeat(2,1fr)}.mapgrid{grid-template-columns:1.2fr 1fr}}
 @media (min-width:1000px){.c3{grid-template-columns:repeat(3,1fr)}}
 .kpis{grid-template-columns:repeat(2,1fr)}
-.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .l{font-size:14px;color:var(--muted)}
 .kpi .v{font:600 22px "JetBrains Mono",monospace;letter-spacing:-.02em;margin:2px 0}
-.delta{font-size:12px;font-weight:600}
+.delta{font-size:14px;font-weight:600}
 .delta.up{color:var(--up)}.delta.down{color:var(--down)}.delta.eq{color:var(--muted)}
 .two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:10px}
 h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:26px 0 10px;font-weight:600}
 h3{font-size:15px;margin:0 0 2px}
-.note{font-size:12px;color:var(--muted);margin:4px 0 0}
+.note{font-size:14px;color:var(--muted);margin:4px 0 0}
 .items{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
 .item{cursor:pointer}
 .item .top{display:flex;justify-content:space-between;gap:8px}
 .item .n{font-weight:600;font-size:14px}
 .item .v{font:600 18px "JetBrains Mono",monospace;margin:6px 0 0}
-.item .p{font-size:12px;color:var(--muted)}
-.item .hist{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:12px}
+.item .p{font-size:14px;color:var(--muted)}
+.item .hist{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
 .item.open .hist{display:block}
 .hist table{width:100%;border-collapse:collapse}.hist td{padding:3px 0;border-bottom:1px solid var(--line)}.hist td:last-child{text-align:right;font-family:"JetBrains Mono",monospace}
 .hist a{color:var(--ap)}
 svg text{font-family:Inter,sans-serif}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:8px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:15px;margin:8px 0}
 .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .vs .side{border-radius:12px;padding:12px;background:var(--soft)}
 .vs .big{font:600 20px "JetBrains Mono",monospace}
-.tag{font-size:12px;font-weight:700;letter-spacing:.04em}
-.aviso{font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding:4px 0 4px 10px;margin:12px 0}
+.tag{font-size:13px;font-weight:700;letter-spacing:.04em}
+.aviso{font-size:14px;color:var(--muted);border-left:3px solid var(--line);padding:4px 0 4px 10px;margin:12px 0}
 .hidden{display:none}
-.info{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted);font:700 11px/1 Inter,sans-serif;color:var(--muted);background:none;cursor:pointer;margin-left:6px;vertical-align:2px;padding:0}
+.info{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--muted);font:700 13px/1 Inter,sans-serif;color:var(--muted);background:none;cursor:pointer;margin-left:6px;vertical-align:2px;padding:0}
 .info.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.infotxt{display:none;font-size:12.5px;line-height:1.5;background:var(--soft);border-radius:10px;padding:9px 11px;margin:8px 0 4px;color:var(--ink)}
+.infotxt{display:none;font-size:14.5px;line-height:1.5;background:var(--soft);border-radius:10px;padding:9px 11px;margin:8px 0 4px;color:var(--ink)}
 .infotxt.on{display:block}
-.fonte{font-size:11.5px;color:var(--muted);margin:2px 0 8px}
+.fontes ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}.fontes a,.fonte a{color:inherit;text-decoration:underline}
+details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8px}
+.fonte{font-size:13.5px;color:var(--muted);margin:2px 0 8px}
 .filtro{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:600}
 .filtro select{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
 /* dossiê */
@@ -72,11 +74,11 @@ svg text{font-family:Inter,sans-serif}
 .bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 0;background:var(--soft)}
 .dit{margin-bottom:8px}
 .dit .vals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.dit small{display:block;color:var(--muted);font-size:12px}
+.dit small{display:block;color:var(--muted);font-size:13.5px}
 .dit .mono{font:500 15px "JetBrains Mono",monospace}
 .strike{color:var(--muted);text-decoration:line-through}
-.badge{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-footer{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
+.badge{font-size:13px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 </head>
 <body>
@@ -127,7 +129,21 @@ footer{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid va
     <div class="card"><h3>Ranking: renda por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="fonte">IBGE · dado de 2025 · divulgado em 27/02/2026</p><div id="rk-renda"></div></div>
     <div class="card"><h3>Ranking: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="fonte">FBSP · dado de 2025 · divulgado em 23/07/2026</p><div id="rk-mvi"></div></div>
   </div>
-  <p class="aviso">As cores mostram apenas quem venceu a eleição presidencial em cada estado. Elas não indicam que um partido causou a riqueza ou a violência do lugar: esses números vêm de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.</p>
+  <h2>Trabalho, estudo, Bolsa Família e saúde</h2>
+  <div class="grid c2" id="mais-comp"></div>
+  <h2>Fontes desta aba</h2>
+  <div class="card fontes"><ul>
+    <li>Eleição 2026, 2º turno (25/10/2026): <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · Resultados</a></li>
+    <li>PIB por pessoa, 2023 (divulgado em 14/11/2025): <a href="https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9054-contas-regionais-do-brasil.html" target="_blank" rel="noopener">IBGE · Contas Regionais</a></li>
+    <li>Renda por pessoa, 2025 (divulgado em 27/02/2026): <a href="https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/45942-ibge-divulga-rendimento-domiciliar-per-capita-2025-para-brasil-e-unidades-da-federacao" target="_blank" rel="noopener">IBGE · PNAD Contínua, renda domiciliar por pessoa</a></li>
+    <li>Mortes violentas, 2025 (divulgado em 23/07/2026): <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener">Fórum Brasileiro de Segurança Pública · Anuário</a></li>
+    <li>Desemprego, 2º trimestre de 2026 (divulgado em 14/08/2026): <a href="https://sidra.ibge.gov.br/tabela/4099" target="_blank" rel="noopener">IBGE · PNAD Contínua trimestral, tabela 4099</a></li>
+    <li>Analfabetismo, 2025 (divulgado em 19/06/2026): <a href="https://sidra.ibge.gov.br/tabela/7113" target="_blank" rel="noopener">IBGE · PNAD Contínua Educação, tabela 7113</a></li>
+    <li>Bolsa Família nos domicílios, 2025 (divulgado em 08/05/2026): <a href="https://sidra.ibge.gov.br/tabela/7449" target="_blank" rel="noopener">IBGE · PNAD Contínua, tabelas 7449 e 7450</a></li>
+    <li>Expectativa de vida, 2024 (divulgado em 22/08/2024): <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html" target="_blank" rel="noopener">IBGE · Projeções da População, revisão 2024</a></li>
+    <li>Fronteiras do mapa: <a href="https://github.com/giuliano-oliveira/geodata-br-states" target="_blank" rel="noopener">geodata-br-states</a> (licença MIT)</li>
+  </ul></div>
+  <p class="aviso">As cores mostram apenas quem venceu a eleição presidencial em cada estado. Elas não indicam que um partido causou a riqueza, a violência ou qualquer outro número do lugar: esses números vêm de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.</p>
 </section>
 
 <section id="t-dossie" class="hidden">
@@ -164,6 +180,7 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   montarFiltro();painel();estados();dossie();
+  let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
 }
 const serie=k=>D.val.filter(v=>v.chave===k);
 const cmp=()=>CMP.a&&CMP.b&&CMP.a!==CMP.b;
@@ -189,29 +206,33 @@ function montarFiltro(){
 }
 
 /* ---------- gráficos em SVG ---------- */
-function linha(pts,{w=520,h=170,fmt=v=>nf(v),step=false}={}){
-  if(pts.length<2)return "";const P={l:54,r:26,t:16,b:26};
+const LARG=(id)=>{const e=id&&document.getElementById(id),c=e&&e.clientWidth;return Math.round(Math.max(260,Math.min(640,c||((window.innerWidth||520)-64))))};
+function linha(pts,{w=LARG(),h=200,fmt=v=>nf(v),step=false}={}){
+  if(pts.length<2)return "";const P={l:64,r:30,t:24,b:32};
   const vs=pts.map(p=>p.v),mn=Math.min(...vs),mx=Math.max(...vs),pad=(mx-mn)*.15||1,lo=mn-pad,hi=mx+pad;
   const X=i=>P.l+i*(w-P.l-P.r)/(pts.length-1),Y=v=>P.t+(hi-v)/(hi-lo)*(h-P.t-P.b);
   let d=pts.map((p,i)=>(i?(step?`H${X(i)}V${Y(p.v)}`:`L${X(i)},${Y(p.v)}`):`M${X(i)},${Y(p.v)}`)).join("");
-  const g=[0,.5,1].map(f=>{const v=lo+(hi-lo)*f;return `<line x1="${P.l}" x2="${w-P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css('--line')}"/><text x="${P.l-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" fill="${css('--muted')}">${fmt(v)}</text>`}).join("");
-  const lab=pts.map((p,i)=>(pts.length<=10||i%2===0)?`<text x="${X(i)}" y="${h-6}" font-size="11" text-anchor="middle" fill="${css('--muted')}">${esc(p.l)}</text>`:"").join("");
-  const dots=pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.v)}" r="3.5" fill="${css('--acc')}"><title>${esc(p.l)}: ${fmt(p.v)}</title></circle>`).join("");
+  const g=[0,.5,1].map(f=>{const v=lo+(hi-lo)*f;return `<line x1="${P.l}" x2="${w-P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css('--line')}"/><text x="${P.l-6}" y="${Y(v)+4}" font-size="14" text-anchor="end" fill="${css('--muted')}">${fmt(v)}</text>`}).join("");
+  const lab=pts.map((p,i)=>(pts.length<=(w<420?6:10)||i%(w<420?3:2)===0)?`<text x="${X(i)}" y="${h-8}" font-size="14" text-anchor="middle" fill="${css('--muted')}">${esc(p.l)}</text>`:"").join("");
+  const dots=pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.v)}" r="4" fill="${css('--acc')}"><title>${esc(p.l)}: ${fmt(p.v)}</title></circle>`).join("");
   const last=pts[pts.length-1];
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${g}<path d="${d}" fill="none" stroke="${css('--acc')}" stroke-width="2.5"/>${dots}<text x="${X(pts.length-1)}" y="${Y(last.v)-9}" font-size="12" font-weight="700" text-anchor="end" fill="${css('--ink')}">${fmt(last.v)}</text>${lab}</svg>`}
-function pizza(fatias,{tam=170,centro=""}={}){
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${g}<path d="${d}" fill="none" stroke="${css('--acc')}" stroke-width="2.5"/>${dots}<text x="${X(pts.length-1)}" y="${Y(last.v)-10}" font-size="16" font-weight="700" text-anchor="end" fill="${css('--ink')}">${fmt(last.v)}</text>${lab}</svg>`}
+function pizza(fatias,{tam=180,centro=""}={}){
   const tot=fatias.reduce((s,f)=>s+f.v,0),R=tam/2-4,r=R*.6,c=tam/2;let a=-Math.PI/2,out="";
   for(const f of fatias){const ang=f.v/tot*2*Math.PI;if(ang<=0)continue;const a2=a+ang,big=ang>Math.PI?1:0;
     const p=(rr,t)=>`${c+rr*Math.cos(t)},${c+rr*Math.sin(t)}`;
     out+= ang>=2*Math.PI-1e-6?`<circle cx="${c}" cy="${c}" r="${(R+r)/2}" fill="none" stroke="${f.cor}" stroke-width="${R-r}"/>`:
       `<path d="M${p(R,a)}A${R},${R} 0 ${big} 1 ${p(R,a2)}L${p(r,a2)}A${r},${r} 0 ${big} 0 ${p(r,a)}Z" fill="${f.cor}"><title>${esc(f.l)}: ${nf(f.v,1)}</title></path>`;a=a2}
   const leg=fatias.map(f=>`<div><span class="sw" style="background:${f.cor}"></span>${esc(f.l)}: <b>${f.txt??nf(f.v/tot*100,0)+"%"}</b></div>`).join("");
-  return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="18" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div style="font-size:13px;display:grid;gap:6px">${leg}</div></div>`}
-function barrasH(itens,{fmt=v=>nf(v),w=520}={}){
-  const lw=150,vw=92,bh=20,gap=6,h=itens.length*(bh+gap);const mx=Math.max(...itens.map(i=>Math.abs(i.v)));
-  const temNeg=itens.some(i=>i.v<0),area=w-lw-vw,zero=lw+(temNeg?area/2:0),esc2=(temNeg?area/2:area)/mx;
-  const rows=itens.map((it,i)=>{const y=i*(bh+gap),bw=Math.abs(it.v)*esc2,x=it.v<0?zero-bw:zero;
-    return `<text x="${lw-8}" y="${y+bh/2+4}" font-size="12" text-anchor="end" fill="${css('--ink')}">${esc(it.l)}</text><rect x="${x}" y="${y}" width="${Math.max(bw,1)}" height="${bh}" rx="4" fill="${it.cor}"><title>${esc(it.l)}: ${fmt(it.v)}</title></rect><text x="${it.v<0?x-6:x+bw+6}" y="${y+bh/2+4}" font-size="12" font-weight="600" text-anchor="${it.v<0?"end":"start"}" fill="${css('--ink')}">${fmt(it.v)}</text>`}).join("");
+  return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div style="font-size:15px;display:grid;gap:8px">${leg}</div></div>`}
+function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
+  /* telas estreitas: nome em cima, barra embaixo; telas largas: nome à esquerda */
+  const emp=w<340,fs=w<440?14:15,lw=emp?0:(w<440?134:160),vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
+  const mx=Math.max(...itens.map(i=>Math.abs(i.v)))||1;
+  const temNeg=itens.some(i=>i.v<0),area=w-lw-vw-(temNeg?vw:0),zero=lw+(temNeg?vw+area/2:0),esc2=(temNeg?area/2:area)/mx;
+  const rows=itens.map((it,i)=>{const y0=i*passo,y=y0+lh,bw=Math.abs(it.v)*esc2,x=it.v<0?zero-bw:zero;
+    const nome=emp?`<text x="0" y="${y0+fs}" font-size="${fs}" fill="${css('--ink')}">${esc(it.l)}</text>`:`<text x="${lw-10}" y="${y+bh/2+5}" font-size="${fs}" text-anchor="end" fill="${css('--ink')}">${esc(it.l)}</text>`;
+    return `${nome}<rect x="${x}" y="${y}" width="${Math.max(bw,1)}" height="${bh}" rx="4" fill="${it.cor}"><title>${esc(it.l)}: ${fmt(it.v)}</title></rect><text x="${it.v<0?x-6:x+bw+6}" y="${y+bh/2+5}" font-size="${fs}" font-weight="700" text-anchor="${it.v<0?"end":"start"}" fill="${css('--ink')}">${fmt(it.v)}</text>`}).join("");
   return `<svg viewBox="0 0 ${w} ${h}" width="100%">${temNeg?`<line x1="${zero}" x2="${zero}" y1="0" y2="${h}" stroke="${css('--line')}"/>`:""}${rows}</svg>`}
 
 /* ---------- painel ---------- */
@@ -220,12 +241,12 @@ function painel(){
   const ind=Object.fromEntries(D.ind.map(i=>[i.chave,i]));
   document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>`<div class="card kpi"><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("");
   const mesL=p=>p.periodo.split("/")[0];
-  document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%"});
-  document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true});
+  document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%",w:LARG("g-ipca")});
+  document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true,w:LARG("g-selic")});
   const pct=61.52;
   document.getElementById("g-pizza").innerHTML=pizza([{l:"Cesta básica",v:pct,cor:css('--up')},{l:"Sobra para o resto",v:100-pct,cor:css('--soft')}],{centro:nf(pct,1)+"%"})+`<p class="note">Fonte: DIEESE. Salário mínimo necessário: ${esc(ult("salario_necessario")?.valor_texto||"")}.</p>`;
   const it=D.ind.filter(i=>i.chave.startsWith("var12_")).map(i=>({l:i.nome,v:+ult(i.chave).valor})).sort((a,b)=>b.v-a.v).map(o=>({...o,cor:o.v>=0?css('--up'):css('--down')}));
-  document.getElementById("g-cesta").innerHTML=barrasH(it,{fmt:v=>(v>0?"+":"")+nf(v,1)+"%"})+`<div class="legend"><span><span class="sw" style="background:var(--up)"></span>Subiu</span><span><span class="sw" style="background:var(--down)"></span>Caiu</span></div>`;
+  document.getElementById("g-cesta").innerHTML=barrasH(it,{fmt:v=>(v>0?"+":"")+nf(v,1)+"%",w:LARG("g-cesta")})+`<div class="legend"><span><span class="sw" style="background:var(--up)"></span>Subiu</span><span><span class="sw" style="background:var(--down)"></span>Caiu</span></div>`;
   const cats=[...new Set(D.ind.filter(i=>!i.chave.startsWith("var12_")).map(i=>i.categoria))];
   document.getElementById("cats").innerHTML=cats.map(c=>`<h2>${esc(c)}</h2><div class="grid items">${D.ind.filter(i=>i.categoria===c).map(cartao).join("")}</div>`).join("");
   document.querySelectorAll(".item").forEach(el=>el.onclick=e=>{if(e.target.tagName!=="A")el.classList.toggle("open")});
@@ -237,7 +258,9 @@ function cartao(i){const u=ult(i.chave);if(!u)return "";const s=serie(i.chave);
 
 /* ---------- estados ---------- */
 /* mapa real do Brasil (fronteiras: geodata-br-states, licença MIT) */
-const PEQ={DF:[0,0,9],SE:[14,6,10],AL:[18,0,10],PB:[22,-2,10],RN:[14,-8,10],PE:[0,0,11],ES:[14,4,10],RJ:[10,10,10]};
+const PEQ={DF:[6,2,15],GO:[-16,8,21]};
+/* estados pequenos: nome fora do mapa, ligado por uma linha */
+const FORA={RN:[595,146],PB:[595,174],PE:[595,202],AL:[595,230],SE:[595,258],ES:[512,392],RJ:[478,452]};
 async function desenharMapa(U,cor){
   const el=document.getElementById("mapa");
   let M;try{M=await (await fetch("mapa-br.json")).json()}catch(e){el.innerHTML='<p class="note">Não foi possível carregar o mapa.</p>';return}
@@ -245,9 +268,11 @@ async function desenharMapa(U,cor){
   const forma=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
     const op=.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45;
     return `<path d="${g.d}" data-uf="${uf}" fill="${cor(u.vencedor_2026)}" fill-opacity="${op.toFixed(2)}" stroke="${css('--card')}" stroke-width="1.2" style="cursor:pointer"><title>${esc(u.nome)}: ${u.vencedor_2026} ${nf(u.pct_vencedor_2026,1)}%</title></path>`}).join("");
-  const rot=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";const [dx,dy,fs]=PEQ[uf]||[0,0,13];
-    return `<text x="${g.cx+dx}" y="${g.cy+dy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="2.5" paint-order="stroke" pointer-events="none">${uf}${fs>=13?`<tspan x="${g.cx+dx}" dy="14" font-size="11" font-weight="600">${nf(u.pct_vencedor_2026,0)}%</tspan>`:""}</text>`}).join("");
-  el.innerHTML=`<svg viewBox="0 0 ${M.w} ${M.h}" width="100%" style="max-width:560px;display:block;margin:auto">${forma}${rot}</svg><div id="mapa-info" class="note" style="text-align:center;min-height:20px">Toque num estado para ver os números.</div>`;
+  const rot=Object.entries(M.ufs).map(([uf,g])=>{const u=por[uf];if(!u)return "";
+    if(FORA[uf]){const [lx,ly]=FORA[uf];return `<line x1="${g.cx}" y1="${g.cy}" x2="${lx-4}" y2="${ly-6}" stroke="${css('--muted')}" stroke-width="1"/><text x="${lx}" y="${ly}" font-size="19" font-weight="700" fill="${cor(u.vencedor_2026)}" pointer-events="none">${uf}</text>`}
+    const [dx,dy,fs]=PEQ[uf]||[0,0,21];
+    return `<text x="${g.cx+dx}" y="${g.cy+dy}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3.5" paint-order="stroke" pointer-events="none">${uf}${fs>=21?`<tspan x="${g.cx+dx}" dy="20" font-size="17" font-weight="700">${nf(u.pct_vencedor_2026,0)}%</tspan>`:""}</text>`}).join("");
+  el.innerHTML=`<svg viewBox="0 0 ${M.w+60} ${M.h}" width="100%" style="max-width:600px;display:block;margin:auto">${forma}${rot}</svg><div id="mapa-info" class="note" style="text-align:center;min-height:20px">Toque num estado para ver os números.</div>`;
   el.querySelectorAll("path[data-uf]").forEach(p=>p.onclick=()=>{const u=por[p.dataset.uf];
     el.querySelectorAll("path[data-uf]").forEach(q=>q.setAttribute("stroke-width",q===p?"3":"1.2"));
     document.getElementById("mapa-info").innerHTML=`<b style="color:${cor(u.vencedor_2026)}">${esc(u.nome)}</b>: ${u.vencedor_2026==="PT"?"Lula (PT)":"Flávio Bolsonaro (PL)"} com ${nf(u.pct_vencedor_2026,2)}% · PIB por pessoa R$ ${nf(u.pib_pc_2023,0)} · renda R$ ${nf(u.renda_pc_2025,0)}/mês · ${nf(u.mvi_2025,1)} mortes violentas por 100 mil`});
@@ -258,20 +283,39 @@ function estados(){
   document.getElementById("nPT").textContent=pt.length+" estados";document.getElementById("nPL").textContent=pl.length+" estados (com o DF)";
   desenharMapa(U,cor);
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
-  const vs=(k,fmt,un)=>{const a=media(pt,k),b=media(pl,k),mx=Math.max(a,b);
+  const vs=(k,fmt,un,id)=>{const a=media(pt,k),b=media(pl,k),mx=Math.max(a,b);
     return `<div class="vs"><div class="side"><div class="tag" style="color:var(--pt)">ESTADOS PT</div><div class="big">${fmt(a)}</div><div class="note">${un}</div></div><div class="side"><div class="tag" style="color:var(--pl)">ESTADOS PL</div><div class="big">${fmt(b)}</div><div class="note">${un}</div></div></div>`+
-    barrasH([{l:"Estados PT",v:a,cor:css('--pt')},{l:"Estados PL",v:b,cor:css('--pl')}],{fmt})};
-  document.getElementById("vs-pib").innerHTML=vs("pib_pc_2023",v=>"R$ "+nf(v,0),"PIB por pessoa por ano");
-  document.getElementById("vs-renda").innerHTML=vs("renda_pc_2025",v=>"R$ "+nf(v,0),"por pessoa, por mês");
-  document.getElementById("vs-mvi").innerHTML=vs("mvi_2025",v=>nf(v,1),"mortes por 100 mil hab.");
+    barrasH([{l:"Estados PT",v:a,cor:css('--pt')},{l:"Estados PL",v:b,cor:css('--pl')}],{fmt,w:LARG(id)})};
+  document.getElementById("vs-pib").innerHTML=vs("pib_pc_2023",v=>"R$ "+nf(v,0),"PIB por pessoa por ano","vs-pib");
+  document.getElementById("vs-renda").innerHTML=vs("renda_pc_2025",v=>"R$ "+nf(v,0),"por pessoa, por mês","vs-renda");
+  document.getElementById("vs-mvi").innerHTML=vs("mvi_2025",v=>nf(v,1),"mortes por 100 mil hab.","vs-mvi");
   const top=(k)=>U.slice().sort((a,b)=>b[k]-a[k]).slice(0,10);
   const pz=(k,el)=>{const t=top(k),a=t.filter(u=>u.vencedor_2026==="PT"),b=t.filter(u=>u.vencedor_2026==="PL");
     document.getElementById(el).innerHTML=pizza([{l:"PT",v:a.length,cor:css('--pt'),txt:a.length+(a.length?" ("+a.map(u=>u.uf).join(", ")+")":"")},{l:"PL",v:b.length,cor:css('--pl'),txt:b.length+(b.length?" ("+b.map(u=>u.uf).join(", ")+")":"")}],{centro:"10"})};
   pz("pib_pc_2023","pz-ricos");pz("renda_pc_2025","pz-renda");pz("mvi_2025","pz-violentos");
-  const rk=(k,fmt)=>barrasH(U.slice().sort((a,b)=>b[k]-a[k]).map(u=>({l:u.nome,v:+u[k],cor:cor(u.vencedor_2026)})),{fmt});
-  document.getElementById("rk-pib").innerHTML=rk("pib_pc_2023",v=>"R$ "+nf(v/1000,1)+" mil");
-  document.getElementById("rk-renda").innerHTML=rk("renda_pc_2025",v=>"R$ "+nf(v,0));
-  document.getElementById("rk-mvi").innerHTML=rk("mvi_2025",v=>nf(v,1));
+  const rk=(k,fmt,id)=>barrasH(U.slice().sort((a,b)=>b[k]-a[k]).map(u=>({l:u.nome,v:+u[k],cor:cor(u.vencedor_2026)})),{fmt,w:LARG(id)});
+  document.getElementById("rk-pib").innerHTML=rk("pib_pc_2023",v=>"R$ "+nf(v/1000,1)+" mil","rk-pib");
+  document.getElementById("rk-renda").innerHTML=rk("renda_pc_2025",v=>"R$ "+nf(v,0),"rk-renda");
+  document.getElementById("rk-mvi").innerHTML=rk("mvi_2025",v=>nf(v,1),"rk-mvi");
+  /* mais comparações: desemprego, analfabetismo, Bolsa Família, expectativa de vida */
+  const MAIS=[
+    {k:"desemprego_2026t2",id:"desemp",t:"Desemprego",un:"% de quem procura trabalho",dec:1,suf:"%",pior:true,top:"Os 10 com mais desemprego",
+     fonte:"IBGE · PNAD Contínua · 2º trimestre de 2026 · divulgado em 14/08/2026",url:"https://sidra.ibge.gov.br/tabela/4099",
+     info:"Taxa de desocupação do <b>2º trimestre de 2026</b> (abril a junho), divulgada pelo IBGE em <b>14/08/2026</b>. Conta quem não tem trabalho e procurou emprego. O 3º trimestre sai em meados de novembro de 2026. Aqui, número <b>maior é pior</b>."},
+    {k:"analfabetismo_2025",id:"analf",t:"Escolaridade: analfabetismo",un:"% das pessoas com 15 anos ou mais",dec:1,suf:"%",pior:true,top:"Os 10 com mais analfabetismo",
+     fonte:"IBGE · PNAD Contínua Educação · dado de 2025 · divulgado em 19/06/2026",url:"https://sidra.ibge.gov.br/tabela/7113",
+     info:"Pessoas de <b>15 anos ou mais</b> que não sabem ler nem escrever um bilhete simples. Dado de <b>2025</b>, divulgado pelo IBGE em <b>19/06/2026</b> (Brasil: 4,9%). O de 2026 deve sair em meados de 2027. Aqui, número <b>maior é pior</b>."},
+    {k:"bolsa_familia_dom_2025",id:"bf",t:"Bolsa Família",un:"% das casas com alguém que recebe",dec:1,suf:"%",pior:false,top:"Os 10 com mais casas no Bolsa Família",
+     fonte:"IBGE · PNAD Contínua · dado de 2025 · divulgado em 08/05/2026",url:"https://sidra.ibge.gov.br/tabela/7449",
+     info:"Parte das casas em que pelo menos um morador recebeu Bolsa Família em <b>2025</b>. Calculado com as tabelas 7449 e 7450 do IBGE, divulgadas em <b>08/05/2026</b> (Brasil: 17,2%). Mostra onde há mais famílias de baixa renda atendidas, não é uma nota boa ou ruim. O de 2026 deve sair em maio de 2027."},
+    {k:"expectativa_2024",id:"expec",t:"Expectativa de vida",un:"anos, ao nascer",dec:1,suf:"",pior:false,top:"As 10 maiores expectativas de vida",
+     fonte:"IBGE · Projeções da População · dado de 2024 · divulgado em 22/08/2024",url:"https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html",
+     info:"Quantos anos, em média, vive quem nasce hoje no estado. Dado de <b>2024</b> das Projeções da População do IBGE (revisão 2024), divulgadas em <b>22/08/2024</b> (Brasil: 76,6 anos, confirmado nas Tábuas de Mortalidade de 28/11/2025). Aqui, número <b>maior é melhor</b>."}];
+  document.getElementById("mais-comp").innerHTML=MAIS.map(m=>`<div class="card"><h3>${m.t}<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">${m.info}</div><p class="fonte"><a href="${m.url}" target="_blank" rel="noopener">${m.fonte}</a></p><div id="vs-${m.id}"></div><h3 style="margin-top:16px">${m.top}</h3><p class="note">De que lado ficaram</p><div id="pz-${m.id}"></div><details class="rk"><summary>Ver os 27 estados</summary><div id="rk-${m.id}"></div></details></div>`).join("");
+  for(const m of MAIS){const f=v=>nf(v,m.dec)+m.suf;
+    document.getElementById("vs-"+m.id).innerHTML=vs(m.k,f,m.un,"vs-"+m.id);pz(m.k,"pz-"+m.id);
+    const d=document.querySelector("#rk-"+m.id).parentElement;
+    const desenha=()=>{document.getElementById("rk-"+m.id).innerHTML=rk(m.k,f,"rk-"+m.id)};desenha();d.ontoggle=desenha}
 }
 
 /* ---------- dossiê ---------- */
@@ -293,7 +337,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0})});
+  ["painel","estados","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel()});
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
   if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
