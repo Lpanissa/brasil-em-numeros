@@ -65,8 +65,13 @@ svg text{font-family:Inter,sans-serif}
 .fontes ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px}.fontes a,.fonte a{color:inherit;text-decoration:underline}
 details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8px}
 .fonte{font-size:13.5px;color:var(--muted);margin:2px 0 8px}
-.filtro{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:600}
-.filtro select{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.filtro{display:grid;gap:10px;font-size:15px;font-weight:600}
+.f-tit{display:flex;align-items:center;gap:2px}
+.f-sel{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.f-sel span{color:var(--muted);font-weight:500}
+.f-sel select{width:100%;min-width:0}
+@media (max-width:480px){.f-sel{grid-template-columns:1fr}.f-sel span{text-align:center;margin:-4px 0}}
+.filtro select{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 /* dossiê */
 .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--ink)}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -263,7 +268,7 @@ function montarFiltro(){
   const base=D.col.find(c=>c.base)||D.col[0],ultc=D.col[D.col.length-1];CMP.a=base.data_coleta;CMP.b=ultc.data_coleta;
   const op=sel=>D.col.map(c=>`<option value="${c.data_coleta}" ${c.data_coleta===sel?"selected":""}>${esc(c.rotulo)}</option>`).join("");
   const prox=new Date(ultc.data_coleta+"T12:00");prox.setMonth(prox.getMonth()+(prox.getDate()>=15?1:0));prox.setDate(15);
-  el.innerHTML=`<div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button><label>Comparar <select id="cA">${op(CMP.a)}</select></label><span>com</span><label><select id="cB">${op(CMP.b)}</select></label></div>
+  el.innerHTML=`<div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><div class="f-tit">Comparar as coletas<button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button></div><div class="f-sel"><select id="cA" aria-label="Coleta inicial">${op(CMP.a)}</select><span>com</span><select id="cB" aria-label="Coleta final">${op(CMP.b)}</select></div></div>
   <p class="note">${D.col.length<2?`Hoje existe só a coleta base. A próxima coleta automática é em ${prox.toLocaleDateString("pt-BR")}; a partir dela dá para comparar os meses.`:"Os números e as setas mostram a mudança entre as duas coletas escolhidas."}</p>`;
   document.getElementById("cA").onchange=e=>{CMP.a=e.target.value;painel()};
   document.getElementById("cB").onchange=e=>{CMP.b=e.target.value;painel()};
