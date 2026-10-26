@@ -169,10 +169,17 @@ svg.vis .an-bar{transform:scaleX(1)}svg.vis .an-line{stroke-dashoffset:0}svg.vis
 @media(max-width:600px){.impm{gap:7px;font-size:12.5px;padding:5px 8px}.impm b{font-size:13.5px}}
 .impm b{font:700 15px "JetBrains Mono",ui-monospace,monospace;color:#ffd23f;letter-spacing:.02em}.impm .info{width:18px;height:18px;font-size:11px;border-color:#aaa;color:#ccc;margin:0}
 nav{top:31px}
-.video-ep{display:grid;grid-template-columns:minmax(200px,300px) 1fr;gap:18px;align-items:start}
-@media (max-width:620px){.video-ep{grid-template-columns:1fr}}
-.yt{position:relative;width:100%;max-width:300px;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000;margin:0 auto}
+.vids{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.vcard{flex:0 0 132px;scroll-snap-align:start;border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer;font:inherit}
+.vcard .vt{display:block;font-size:13px;font-weight:600;line-height:1.25;margin-top:6px}.vcard .ve{display:block;font-size:11.5px;opacity:.7;margin-top:2px}
+.vthumb{display:block;position:relative;width:132px;height:132px;border-radius:12px;overflow:hidden;background:#000 center/cover no-repeat;cursor:pointer}
+.vthumb::after{content:"";position:absolute;left:50%;top:50%;width:0;height:0;margin:-11px 0 0 -7px;border-left:20px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
+.vthumb::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.25)}
+.vid-dlg{border:0;padding:0;background:transparent;width:min(92vw,380px);overflow:visible}
+.vid-dlg::backdrop{background:rgba(0,0,0,.8)}
+.yt{position:relative;width:100%;aspect-ratio:9/16;max-height:86vh;border-radius:14px;overflow:hidden;background:#000}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-dlg .nd-x{position:absolute;top:-40px;right:0;background:none;border:0;color:#fff;font-size:30px;cursor:pointer}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -264,12 +271,9 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 
 <section id="t-politicos" class="hidden">
   <h2 style="margin-top:4px">Entenda em 1 minuto</h2>
-  <div class="card video-ep">
-    <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/2FzphWKf_9E" title="Quem manda no Brasil? Os 3 poderes em 1 minuto" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-    <div><div class="pol-tag">Como funciona o Brasil · Ep. 1</div><h3 style="margin:8px 0 6px">Quem manda no Brasil? Os 3 poderes</h3>
-      <p class="note">Legislativo, Executivo e Judiciário: quem faz as leis, quem põe em prática e quem julga, e por que ninguém manda sozinho. Fonte: Constituição Federal, arts. 2º, 44, 76 e 92.</p>
-      <p class="fonte"><a href="https://youtube.com/shorts/2FzphWKf_9E" target="_blank" rel="noopener">Ver no YouTube</a></p></div>
-  </div>
+  <p class="note" style="margin:-4px 0 8px">Série "Como funciona o Brasil". Toque num vídeo para assistir.</p>
+  <div class="vids" id="vids"></div>
+<dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p></dialog>
   <h2>Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
   <h2>Governadores eleitos em 2026: planos de governo</h2>
@@ -1090,6 +1094,13 @@ let tBusca;document.getElementById("busca").addEventListener("input",()=>{clearT
 document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
   if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
+/* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
+const VIDEOS=[
+  {id:"2FzphWKf_9E",ep:1,titulo:"Quem manda no Brasil? Os 3 poderes",fonte:"Constituição Federal, arts. 2º, 44, 76 e 92"},
+];
+function listaVideos(){const el=document.getElementById("vids");if(!el)return;el.innerHTML=VIDEOS.slice().reverse().map(v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(https://i.ytimg.com/vi/${v.id}/hqdefault.jpg)"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`).join("")}
+listaVideos();
+function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelector(".yt").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;document.getElementById("vid-yt").href="https://youtube.com/shorts/"+id;d.showModal()}
 /* impostômetro federal: total oficial do Tesouro até o último bimestre + ritmo médio por segundo */
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
