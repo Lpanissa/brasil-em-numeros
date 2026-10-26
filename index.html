@@ -82,7 +82,6 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .agr-tit{font-weight:700;font-size:16px;margin-bottom:10px}
 .chips.agr{display:flex;flex-wrap:wrap;gap:8px}
 .chips.agr button{font:600 15px Inter,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 16px;cursor:pointer}
-.chips.agr button.so2{border-style:dashed}
 .chips.agr button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
 .pizza svg{flex:none}
@@ -122,7 +121,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 <section id="t-estados" class="hidden">
   <div class="card agrupar">
     <div class="agr-tit">Comparar os estados por<button class="info" aria-label="Sobre os agrupamentos">i</button></div>
-    <div class="infotxt">Escolha como juntar os 27 estados. <b>Voto para presidente</b>: quem venceu o 2º turno de 25/10/2026 no estado. <b>Governador 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). <b>Governador eleito 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. <b>Região</b>: as 5 regiões do IBGE. Fonte das eleições: TSE.</div>
+    <div class="infotxt">Escolha como juntar os 27 estados. <b>PT × PL</b>: quem venceu o 2º turno para presidente em 25/10/2026 no estado. <b>Governador 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). <b>Governador eleito 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. Fonte das eleições: TSE.</div>
     <div class="chips agr" id="agr"></div>
   </div>
   <div class="grid mapgrid" style="margin-top:0">
@@ -311,21 +310,17 @@ const MODOS={
   pres:{nome:"PT × PL (presidente 2026)",grupo:u=>u.vencedor_2026,tit:"Quem venceu em cada estado: 2º turno de 2026",
     rot:g=>g==="PT"?"PT (Lula)":"PL (Flávio Bolsonaro)",opac:u=>.55+Math.min(1,(u.pct_vencedor_2026-50)/25)*.45,sub:u=>nf(u.pct_vencedor_2026,0)+"%",
     info:"Resultado oficial do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE. Percentual do vencedor nos votos válidos de cada estado.",nota:"Cor mais forte = vitória com mais folga. Fonte: TSE."},
-  gov22:{nome:"Governador 2023–2026",grupo:u=>u.gov_2022_partido,tit:"Partido do governador (mandato 2023–2026)",rot:g=>g,sub:u=>SIGLA(u.gov_2022_partido),
+  gov22:{nome:"Governadores 2023–2026",grupo:u=>u.gov_2022_partido,tit:"Partido do governador (mandato 2023–2026)",rot:g=>g,sub:u=>SIGLA(u.gov_2022_partido),
     info:"Partido pelo qual cada governador foi eleito em <b>2022</b> (fonte: TSE). Foi quem governou enquanto a maior parte dos números do site foi medida. Alguns trocaram de partido depois (por exemplo, Eduardo Leite e Raquel Lyra foram para o PSD, Eduardo Riedel para o PP) e outros deixaram o cargo em abril de 2026 para disputar outra eleição.",nota:"Partido na eleição de 2022. Fonte: TSE."},
-  gov26:{nome:"Governador eleito 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
-    info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."},
-  regiao:{nome:"Região",grupo:u=>u.regiao,tit:"Regiões do Brasil",rot:g=>g,
-    info:"As 5 grandes regiões do IBGE. Ajuda a ver quanto das diferenças entre estados vem da história e da economia de cada região.",nota:"Divisão regional do IBGE."}};
-let MODO="pres",SO2=false;
+  gov26:{nome:"Governadores eleitos 2026",grupo:u=>u.gov_2026_partido,tit:"Partido do governador eleito em 2026",rot:g=>g,sub:u=>SIGLA(u.gov_2026_partido),
+    info:"Governadores eleitos em <b>04/10/2026</b> (1º turno) e <b>25/10/2026</b> (2º turno), segundo o TSE. Tomam posse em <b>01/01/2027</b>; os números deste site ainda são da gestão anterior e servem de ponto de partida para comparar daqui para frente.",nota:"Posse em 01/01/2027. Fonte: TSE."}};
+let MODO="pres";
 function estados(){
-  const gov=MODO==="gov22"||MODO==="gov26",G0={...MODOS[MODO],cor:corG};
-  /* opção "só PT × PL" nos modos de governador: compara apenas os estados governados por PT ou PL */
-  const U=gov&&SO2?D.uf.filter(u=>["PT","PL"].includes(G0.grupo(u))):D.uf,G=G0;
-  document.getElementById("agr").innerHTML=Object.entries(MODOS).map(([k,m])=>`<button data-m="${k}" class="${k===MODO?"on":""}">${m.nome}</button>`).join("")+
-    (gov?`<button data-so2="1" class="so2 ${SO2?"on":""}">${SO2?"Mostrando só PT × PL":"Só governadores do PT × PL"}</button>`:"");
+  const G0={...MODOS[MODO],cor:corG};
+  const U=D.uf,G=G0;
+  document.getElementById("agr").innerHTML=Object.entries(MODOS).map(([k,m])=>`<button data-m="${k}" class="${k===MODO?"on":""}">${m.nome}</button>`).join("");
   document.querySelectorAll("#agr button[data-m]").forEach(b=>b.onclick=()=>{MODO=b.dataset.m;estados()});
-  const b2=document.querySelector("#agr button[data-so2]");if(b2)b2.onclick=()=>{SO2=!SO2;estados()};
+
   /* grupos com nº de estados, do maior para o menor */
   const grupos=[...new Set(U.map(G.grupo))].map(g=>({g,us:U.filter(u=>G.grupo(u)===g)})).sort((a,b)=>(a.g==="PT"?-1:b.g==="PT"?1:0)||(a.g==="PL"?-1:b.g==="PL"?1:0)||b.us.length-a.us.length||a.g.localeCompare(b.g));
   const rotN=x=>`${G.rot(x.g)} · ${x.us.length} ${x.us.length===1?"estado":"estados"}`;
