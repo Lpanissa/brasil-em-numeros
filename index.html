@@ -25,8 +25,12 @@ nav{display:flex;gap:6px;margin:14px 0 18px;overflow-x:auto;scrollbar-width:none
 nav button{font:600 14px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;white-space:nowrap}
 nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-.grid{display:grid;gap:10px}
-.kpis{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.grid{display:grid;gap:12px}
+.c2,.c3,.mapgrid{grid-template-columns:1fr;margin-top:12px}
+.mapgrid .lado{display:grid;gap:12px;align-content:start}
+@media (min-width:760px){.grid.kpis{grid-template-columns:repeat(4,1fr)}.c2,.c3{grid-template-columns:repeat(2,1fr)}.mapgrid{grid-template-columns:1.2fr 1fr}}
+@media (min-width:1000px){.c3{grid-template-columns:repeat(3,1fr)}}
+.kpis{grid-template-columns:repeat(2,1fr)}
 .kpi .l{font-size:12px;color:var(--muted)}
 .kpi .v{font:600 22px "JetBrains Mono",monospace;letter-spacing:-.02em;margin:2px 0}
 .delta{font-size:12px;font-weight:600}
@@ -54,6 +58,11 @@ svg text{font-family:Inter,sans-serif}
 .tag{font-size:12px;font-weight:700;letter-spacing:.04em}
 .aviso{font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding:4px 0 4px 10px;margin:12px 0}
 .hidden{display:none}
+.info{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted);font:700 11px/1 Inter,sans-serif;color:var(--muted);background:none;cursor:pointer;margin-left:6px;vertical-align:2px;padding:0}
+.info.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.infotxt{display:none;font-size:12.5px;line-height:1.5;background:var(--soft);border-radius:10px;padding:9px 11px;margin:8px 0 4px;color:var(--ink)}
+.infotxt.on{display:block}
+.fonte{font-size:11.5px;color:var(--muted);margin:2px 0 8px}
 .filtro{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:600}
 .filtro select{font:inherit;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
 /* dossiê */
@@ -85,7 +94,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid va
 <section id="t-painel">
   <div class="card" id="filtro" style="margin-bottom:10px"></div>
   <div class="grid kpis" id="kpis"></div>
-  <div class="grid two">
+  <div class="grid c2">
     <div class="card"><h3>Inflação (IPCA) em 12 meses</h3><p class="note">Mês a mês em 2026</p><div id="g-ipca"></div></div>
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
     <div class="card"><h3>Quanto o salário mínimo compra</h3><p class="note">Cesta básica de SP sobre o salário mínimo líquido (set/2026)</p><div id="g-pizza"></div></div>
@@ -95,21 +104,28 @@ footer{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid va
 </section>
 
 <section id="t-estados" class="hidden">
-  <div class="card">
-    <h3>Quem venceu em cada estado: 2º turno 2026</h3>
-    <div class="legend"><span><span class="sw" style="background:var(--pt)"></span>PT (Lula): <b id="nPT"></b></span><span><span class="sw" style="background:var(--pl)"></span>PL (Flávio Bolsonaro): <b id="nPL"></b></span></div>
-    <div id="mapa"></div>
-    <p class="note">Cor mais forte = vitória com mais folga. Percentuais de alguns estados vêm arredondados pela imprensa.</p>
+  <div class="grid mapgrid" style="margin-top:0">
+    <div class="card">
+      <h3>Quem venceu em cada estado: 2º turno 2026<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Resultado do 2º turno de <b>25/10/2026</b>, totalizado pelo TSE na mesma noite. Os percentuais por estado vêm da imprensa a partir do painel do TSE; alguns estão arredondados.</div>
+      <div class="legend"><span><span class="sw" style="background:var(--pt)"></span>PT (Lula): <b id="nPT"></b></span><span><span class="sw" style="background:var(--pl)"></span>PL (Flávio Bolsonaro): <b id="nPL"></b></span></div>
+      <div id="mapa"></div>
+      <p class="note">Cor mais forte = vitória com mais folga. Percentuais de alguns estados vêm arredondados pela imprensa.</p>
+    </div>
+    <div class="lado">
+      <div class="card"><h3>Riqueza: PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">Média dos estados de cada lado · IBGE, dado de 2023, divulgado em 14/11/2025</p><div id="vs-pib"></div></div>
+      <div class="card"><h3>Renda por pessoa na casa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">Por mês, média dos estados de cada lado · IBGE, dado de 2025, divulgado em 27/02/2026</p><div id="vs-renda"></div></div>
+      <div class="card"><h3>Violência: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">Por 100 mil habitantes, média de cada lado · FBSP, dado de 2025, divulgado em 23/07/2026</p><div id="vs-mvi"></div></div>
+    </div>
   </div>
-  <div class="grid two">
-    <div class="card"><h3>Riqueza: PIB por pessoa</h3><p class="note">Média dos estados de cada lado (IBGE, 2023)</p><div id="vs-pib"></div></div>
-    <div class="card"><h3>Violência: mortes violentas</h3><p class="note">Por 100 mil habitantes, média de cada lado (FBSP, 2025)</p><div id="vs-mvi"></div></div>
-    <div class="card"><h3>Os 10 estados mais ricos</h3><p class="note">De que lado ficaram</p><div id="pz-ricos"></div></div>
-    <div class="card"><h3>Os 10 estados mais violentos</h3><p class="note">De que lado ficaram</p><div id="pz-violentos"></div></div>
+  <div class="grid c3">
+    <div class="card"><h3>Os 10 maiores PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="note">De que lado ficaram</p><div id="pz-ricos"></div></div>
+    <div class="card"><h3>As 10 maiores rendas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="note">De que lado ficaram</p><div id="pz-renda"></div></div>
+    <div class="card"><h3>Os 10 estados mais violentos<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="note">De que lado ficaram</p><div id="pz-violentos"></div></div>
   </div>
-  <div class="grid two">
-    <div class="card"><h3>Ranking: PIB por pessoa</h3><div id="rk-pib"></div></div>
-    <div class="card"><h3>Ranking: mortes violentas por 100 mil</h3><div id="rk-mvi"></div></div>
+  <div class="grid c3">
+    <div class="card"><h3>Ranking: PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="fonte">IBGE · dado de 2023 · divulgado em 14/11/2025</p><div id="rk-pib"></div></div>
+    <div class="card"><h3>Ranking: renda por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="fonte">IBGE · dado de 2025 · divulgado em 27/02/2026</p><div id="rk-renda"></div></div>
+    <div class="card"><h3>Ranking: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="fonte">FBSP · dado de 2025 · divulgado em 23/07/2026</p><div id="rk-mvi"></div></div>
   </div>
   <p class="aviso">As cores mostram apenas quem venceu a eleição presidencial em cada estado. Elas não indicam que um partido causou a riqueza ou a violência do lugar: esses números vêm de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.</p>
 </section>
@@ -166,7 +182,7 @@ function montarFiltro(){
   const base=D.col.find(c=>c.base)||D.col[0],ultc=D.col[D.col.length-1];CMP.a=base.data_coleta;CMP.b=ultc.data_coleta;
   const op=sel=>D.col.map(c=>`<option value="${c.data_coleta}" ${c.data_coleta===sel?"selected":""}>${esc(c.rotulo)}</option>`).join("");
   const prox=new Date(ultc.data_coleta+"T12:00");prox.setMonth(prox.getMonth()+(prox.getDate()>=15?1:0));prox.setDate(15);
-  el.innerHTML=`<div class="filtro"><label>Comparar <select id="cA">${op(CMP.a)}</select></label><span>com</span><label><select id="cB">${op(CMP.b)}</select></label></div>
+  el.innerHTML=`<div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button><label>Comparar <select id="cA">${op(CMP.a)}</select></label><span>com</span><label><select id="cB">${op(CMP.b)}</select></label></div>
   <p class="note">${D.col.length<2?`Hoje existe só a coleta base. A próxima coleta automática é em ${prox.toLocaleDateString("pt-BR")}; a partir dela dá para comparar os meses.`:"Os números e as setas mostram a mudança entre as duas coletas escolhidas."}</p>`;
   document.getElementById("cA").onchange=e=>{CMP.a=e.target.value;painel()};
   document.getElementById("cB").onchange=e=>{CMP.b=e.target.value;painel()};
@@ -174,7 +190,7 @@ function montarFiltro(){
 
 /* ---------- gráficos em SVG ---------- */
 function linha(pts,{w=520,h=170,fmt=v=>nf(v),step=false}={}){
-  if(pts.length<2)return "";const P={l:54,r:14,t:16,b:26};
+  if(pts.length<2)return "";const P={l:54,r:26,t:16,b:26};
   const vs=pts.map(p=>p.v),mn=Math.min(...vs),mx=Math.max(...vs),pad=(mx-mn)*.15||1,lo=mn-pad,hi=mx+pad;
   const X=i=>P.l+i*(w-P.l-P.r)/(pts.length-1),Y=v=>P.t+(hi-v)/(hi-lo)*(h-P.t-P.b);
   let d=pts.map((p,i)=>(i?(step?`H${X(i)}V${Y(p.v)}`:`L${X(i)},${Y(p.v)}`):`M${X(i)},${Y(p.v)}`)).join("");
@@ -234,7 +250,7 @@ async function desenharMapa(U,cor){
   el.innerHTML=`<svg viewBox="0 0 ${M.w} ${M.h}" width="100%" style="max-width:560px;display:block;margin:auto">${forma}${rot}</svg><div id="mapa-info" class="note" style="text-align:center;min-height:20px">Toque num estado para ver os números.</div>`;
   el.querySelectorAll("path[data-uf]").forEach(p=>p.onclick=()=>{const u=por[p.dataset.uf];
     el.querySelectorAll("path[data-uf]").forEach(q=>q.setAttribute("stroke-width",q===p?"3":"1.2"));
-    document.getElementById("mapa-info").innerHTML=`<b style="color:${cor(u.vencedor_2026)}">${esc(u.nome)}</b>: ${u.vencedor_2026==="PT"?"Lula (PT)":"Flávio Bolsonaro (PL)"} com ${nf(u.pct_vencedor_2026,2)}% · PIB por pessoa R$ ${nf(u.pib_pc_2023,0)} · ${nf(u.mvi_2025,1)} mortes violentas por 100 mil`});
+    document.getElementById("mapa-info").innerHTML=`<b style="color:${cor(u.vencedor_2026)}">${esc(u.nome)}</b>: ${u.vencedor_2026==="PT"?"Lula (PT)":"Flávio Bolsonaro (PL)"} com ${nf(u.pct_vencedor_2026,2)}% · PIB por pessoa R$ ${nf(u.pib_pc_2023,0)} · renda R$ ${nf(u.renda_pc_2025,0)}/mês · ${nf(u.mvi_2025,1)} mortes violentas por 100 mil`});
 }
 function estados(){
   const U=D.uf,cor=p=>p==="PT"?css('--pt'):css('--pl');
@@ -246,13 +262,15 @@ function estados(){
     return `<div class="vs"><div class="side"><div class="tag" style="color:var(--pt)">ESTADOS PT</div><div class="big">${fmt(a)}</div><div class="note">${un}</div></div><div class="side"><div class="tag" style="color:var(--pl)">ESTADOS PL</div><div class="big">${fmt(b)}</div><div class="note">${un}</div></div></div>`+
     barrasH([{l:"Estados PT",v:a,cor:css('--pt')},{l:"Estados PL",v:b,cor:css('--pl')}],{fmt})};
   document.getElementById("vs-pib").innerHTML=vs("pib_pc_2023",v=>"R$ "+nf(v,0),"PIB por pessoa por ano");
+  document.getElementById("vs-renda").innerHTML=vs("renda_pc_2025",v=>"R$ "+nf(v,0),"por pessoa, por mês");
   document.getElementById("vs-mvi").innerHTML=vs("mvi_2025",v=>nf(v,1),"mortes por 100 mil hab.");
   const top=(k)=>U.slice().sort((a,b)=>b[k]-a[k]).slice(0,10);
   const pz=(k,el)=>{const t=top(k),a=t.filter(u=>u.vencedor_2026==="PT"),b=t.filter(u=>u.vencedor_2026==="PL");
     document.getElementById(el).innerHTML=pizza([{l:"PT",v:a.length,cor:css('--pt'),txt:a.length+(a.length?" ("+a.map(u=>u.uf).join(", ")+")":"")},{l:"PL",v:b.length,cor:css('--pl'),txt:b.length+(b.length?" ("+b.map(u=>u.uf).join(", ")+")":"")}],{centro:"10"})};
-  pz("pib_pc_2023","pz-ricos");pz("mvi_2025","pz-violentos");
+  pz("pib_pc_2023","pz-ricos");pz("renda_pc_2025","pz-renda");pz("mvi_2025","pz-violentos");
   const rk=(k,fmt)=>barrasH(U.slice().sort((a,b)=>b[k]-a[k]).map(u=>({l:u.nome,v:+u[k],cor:cor(u.vencedor_2026)})),{fmt});
   document.getElementById("rk-pib").innerHTML=rk("pib_pc_2023",v=>"R$ "+nf(v/1000,1)+" mil");
+  document.getElementById("rk-renda").innerHTML=rk("renda_pc_2025",v=>"R$ "+nf(v,0));
   document.getElementById("rk-mvi").innerHTML=rk("mvi_2025",v=>nf(v,1));
 }
 
@@ -276,6 +294,9 @@ function dossie(){
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
   ["painel","estados","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0})});
+document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)return;e.stopPropagation();
+  const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
+  if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
 carregar();
 </script>
 </body>

@@ -162,6 +162,18 @@ ind("celulares_sp", "Segurança (SP)", "Celulares roubados/furtados em SP", "cas
 ind("roubo_veiculos_sp", "Segurança (SP)", "Roubos de veículos em SP", "casos/ano", "SSP-SP", "https://www.ssp.sp.gov.br/estatistica", [
     ("2024-12-31", "2024", 31696, "31.696"), ("2025-12-31", "2025", 25024, "25.024")])
 
+# ---------- atualização de 26/10/2026 ----------
+def mais(chave, d, p, v, txt):
+    IND[chave]["valores"].append(dict(data_ref=d, periodo=p, valor=v, valor_texto=txt))
+mais("ibovespa", "2026-10-23", "23/10/2026", 205082.56, "205.083")
+mais("euro", "2026-10-23", "23/10/2026", 5.589, "R$ 5,59")
+mais("cdi", "2026-10-23", "23/10/2026", 13.65, "13,65%")
+mais("diesel", "2026-10-17", "17/10/2026", 7.34, "R$ 7,34")
+mais("cesta_procon", "2026-09-01", "set/2026", 1347.61, "R$ 1.347,61")
+mais("arroz", "2026-09-01", "set/2026", 21.27, "R$ 21,27")
+mais("batata", "2026-09-01", "set/2026", 7.77, "R$ 7,77")
+IND["euro"]["fonte"] = "Banco Central / mercado (fechamento)"
+
 # ---------- Estados ----------
 # uf: (nome, região, coluna, linha no mapa em blocos)
 UFS = {
@@ -186,11 +198,14 @@ MVI = {"AP": 42.5, "BA": 36.8, "CE": 34.7, "AL": 33.1, "PE": 33.0, "MA": 29.7, "
        "PB": 24.6, "MT": 22.9, "RJ": 22.6, "SE": 22.1, "ES": 22.0, "AC": 21.6, "MS": 20.2, "RR": 19.5, "TO": 19.3,
        "AM": 18.5, "PI": 17.1, "GO": 16.5, "PR": 15.5, "MG": 12.9, "RS": 11.3, "DF": 9.6, "SP": 7.8, "SC": 7.6}
 
+RENDA = {"DF": 4538, "SP": 2956, "RS": 2839, "SC": 2809, "RJ": 2794, "PR": 2762, "MS": 2454, "GO": 2407, "MG": 2353,
+         "MT": 2335, "ES": 2249, "TO": 2036, "RO": 1991, "RR": 1878, "RN": 1819, "AP": 1697, "SE": 1697, "PE": 1600,
+         "PI": 1546, "PB": 1543, "AM": 1484, "BA": 1465, "AL": 1422, "PA": 1420, "AC": 1392, "CE": 1390, "MA": 1219}
 ESTADOS = []
 for uf, (nome, reg, x, y) in UFS.items():
     v, pct = ELE[uf]
     ESTADOS.append(dict(uf=uf, nome=nome, regiao=reg, x=x, y=y, vencedor_2026=v, pct_vencedor_2026=pct,
-                        pib_pc_2023=PIB[uf], mvi_2025=MVI[uf]))
+                        pib_pc_2023=PIB[uf], mvi_2025=MVI[uf], renda_pc_2025=RENDA[uf]))
 
 def q(s):
     return "null" if s is None else "'" + str(s).replace("'", "''") + "'"
