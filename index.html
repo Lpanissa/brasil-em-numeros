@@ -132,6 +132,13 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .media-aviso{margin:8px 2px 4px}
 .comunicado{border-left:4px solid var(--acc);margin-bottom:10px;font-size:15.5px;line-height:1.55}
 .comunicado b.t{display:block;font-size:16px;margin-bottom:4px}
+.pres-top{display:flex;gap:14px;align-items:center}.pres-ini{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--pt);flex:none}
+.pres .l{font-size:14px;color:var(--muted)}.pres .v{font-size:20px;font-weight:800;margin:2px 0}
+.pres-res{font-size:15.5px;line-height:1.5;margin:12px 0 8px}
+.pres-bt{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 8px}
+.bt{display:inline-block;padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none;font-size:14.5px}
+.prom{display:grid;gap:10px;margin-top:10px}.prom-i{border-top:1px solid var(--line);padding-top:10px}
+.prom-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;font-size:15.5px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -216,6 +223,9 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </section>
 
 <section id="t-politicos" class="hidden">
+  <h2 style="margin-top:4px">Presidente eleito</h2>
+  <div class="grid" id="pres" style="gap:10px"></div>
+  <h2>Deputados, senadores e governadores</h2>
   <div class="card">
     <h3>Quem são, quanto ganham e quanto gastam<button class="info" aria-label="Sobre esta aba">i</button></h3>
     <div class="infotxt">Lista ao vivo dos <b>513 deputados federais</b> (Câmara dos Deputados) e dos <b>81 senadores</b> em exercício (Senado Federal), mais os governadores eleitos em 2022 e em 2026 (TSE). Toque em um nome para ver quanto ele gastou da <b>cota parlamentar</b> no ano: é a verba para passagens, aluguel de escritório, combustível, divulgação etc., paga além do salário. O salário bruto de presidente, ministros, senadores, deputados federais e ministros do STF é de <b>R$ 46.366,19</b> desde 2025 (Decreto Legislativo 172/2022). O de cada governador é decidido pela Assembleia do estado.</div>
@@ -346,10 +356,11 @@ async function carregarPoliticos(){
     {tipo:"gov",id:"e"+u.uf,nome:u.gov_2026,partido:u.gov_2026_partido,uf:u.uf,cargo:`Eleito(a) governador(a) de ${u.nome} em 2026 (posse em 01/01/2027)`,sal:GOV_SAL[u.uf],url:"https://resultados.tse.jus.br"}]).filter(g=>g.nome);
   const [d,s,c,el]=await Promise.all([dep,sen,cea,ele]);CEAPS=c;
   const nomeUF=Object.fromEntries(D.uf.map(u=>[u.uf,u.nome]));
-  POL=[...s,...d,...gov,...el].map(p=>({...p,busca:fz(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
+  POL=[{tipo:"pres",id:"lula",nome:"Lula (Luiz Inácio Lula da Silva)",partido:"PT",uf:"BR",cargo:"Presidente eleito em 2026 · mandato 2027–2030",sal:SAL_FED,url:PRES.tse},...s,...d,...gov,...el].map(p=>({...p,busca:fz(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
 }
 
 async function politicos(){
+  presidente();
   const lista=document.getElementById("pol-lista");
   if(!POL){lista.innerHTML=`<p class="note">Buscando deputados, senadores e governadores nas fontes oficiais…</p>`;await carregarPoliticos()}
   const tipos={todos:"Todos",dep:"Deputados federais",sen:"Senadores",gov:"Governadores",ele:"Eleitos para o Congresso em 2026"};
@@ -388,6 +399,8 @@ async function detalhePol(el){
     const s=CEAPS&&CEAPS.senadores[id];
     det.innerHTML=(s?`<div class="pol-gasto">Gastou <b>${rs(s.total)}</b> da cota parlamentar em ${ANO}${CEAPS.ateMes?` (até ${MESES[CEAPS.ateMes-1]})`:""}</div><ul class="pol-tipos">${tiposHTML(s.total,s.tipos)}</ul>`:`<p class="note">Sem gastos da cota registrados em ${ANO}.</p>`)+
       `<p class="fonte">Fonte: <a href="${esc(p.url)}" target="_blank" rel="noopener">Senado Federal · página oficial</a> e <a href="https://www12.senado.leg.br/transparencia/dados-abertos-transparencia" target="_blank" rel="noopener">Dados Abertos do Senado (CEAPS)</a> · salário: Decreto Legislativo 172/2022</p>`;
+  }else if(tipo==="pres"){
+    det.innerHTML=`<p class="note">Veja acima, em "Presidente eleito", os planos de governo de 2022 e 2026 e o que aconteceu com cada promessa.</p>`;document.getElementById("pres").scrollIntoView({behavior:"smooth"});
   }else if(tipo==="ele"){
     det.innerHTML=`<p class="note">${esc(p.situacao)} pelo ${esc(p.partido)} em ${esc(D.uf.find(e=>e.uf===p.uf)?.nome||p.uf)}, com <b>${nf(p.votos,0)}</b> votos. Toma posse em 01/02/2027; os gastos da cota aparecem a partir do mandato.</p>
       <p class="fonte">Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · resultado oficial das eleições de 04/10/2026</a> · salário: Decreto Legislativo 172/2022</p>`;
@@ -467,6 +480,62 @@ function abaNoticias(){
   const l=document.getElementById("not-lista");
   l.innerHTML=r.length?r.map(([n,i])=>cardNot(n,i,"nt nt-g")).join(""):`<p class="note">Nenhuma notícia recente${NOTF.uf?" citando esse estado":""}. As fontes publicam ao longo do dia.</p>`;
   l.querySelectorAll(".nt").forEach(b=>b.onclick=()=>abrirNot(NOT[+b.dataset.n]));
+}
+
+
+/* ---------- presidente eleito e planos de governo (TSE) ---------- */
+const PRES={nome:"Lula",civil:"Luiz Inácio Lula da Silva",partido:"PT",vice:"Geraldo Alckmin (PSB)",votos:64256232,pct:"51,79",adv:"Flávio Bolsonaro (PL)",advVotos:59826041,advPct:"48,21",
+  plano26:"https://divulgacandcontas.tse.jus.br/divulga/rest/arquivo/doc/280017016005",plano22:"https://divulgacandcontas.tse.jus.br/divulga/rest/arquivo/doc/280011836852",
+  pag26:"https://divulgacandcontas.tse.jus.br/divulga/#/home",tse:"https://resultados.tse.jus.br"};
+/* promessas do plano registrado no TSE em 2022 ("Diretrizes para o Programa de Reconstrução e Transformação do Brasil"), item a item.
+   Selo: cumprida = lei ou medida aprovada e em vigor; em parte = só uma parte foi feita; em andamento = medida em curso, meta ainda não atingida; não cumprida = não aprovada até out/2026 */
+const PROM22=[
+  {i:16,t:"Retomar a valorização do salário mínimo",s:"cumprida",o:"A Lei 14.663/2023 voltou a reajustar o mínimo pela inflação mais o crescimento do PIB. Desde 2025 o ganho acima da inflação ficou limitado a 2,5% ao ano (Lei 15.077/2024). Em 2026 o mínimo é R$ 1.621.",f:"Planalto · Lei 14.663/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14663.htm"},
+  {i:20,t:"Bolsa Família renovado e ampliado",s:"cumprida",o:"A Lei 14.601/2023 recriou o Bolsa Família, com mínimo de R$ 600 por família e R$ 150 a mais por criança de até 6 anos.",f:"Planalto · Lei 14.601/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14601.htm"},
+  {i:51,t:"Revogar o teto de gastos e criar um novo regime fiscal",s:"cumprida",o:"O teto de gastos foi substituído pelo novo arcabouço fiscal (Lei Complementar 200/2023).",f:"Planalto · Lei Complementar 200/2023",u:"https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp200.htm"},
+  {i:53,t:"Reforma tributária que simplifique os impostos sobre o consumo",s:"cumprida",o:"Aprovada pela Emenda Constitucional 132/2023 e regulamentada pela Lei Complementar 214/2025. Cinco tributos viram dois (CBS e IBS), com transição de 2026 a 2033.",f:"Planalto · Emenda Constitucional 132/2023",u:"https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm"},
+  {i:54,t:"Fazer os muito ricos pagarem imposto de renda",s:"cumprida",o:"A Lei 15.270/2025 isentou do IR quem ganha até R$ 5 mil por mês e criou um imposto mínimo para rendas muito altas, valendo a partir de 2026. Antes disso, passaram a ser tributados fundos exclusivos e offshores (Lei 14.754/2023).",f:"Planalto · Lei 15.270/2025",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/L15270.htm"},
+  {i:60,t:"Renegociar as dívidas das famílias",s:"cumprida",o:"Criado o Desenrola Brasil (Lei 14.690/2023), com renegociação de dívidas em bancos e empresas.",f:"Planalto · Lei 14.690/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14690.htm"},
+  {i:24,t:"Retomar o Mais Médicos e o Farmácia Popular",s:"cumprida",o:"O Mais Médicos foi recriado pela Lei 14.621/2023. O Farmácia Popular foi ampliado e, desde 2025, todos os remédios do programa são gratuitos.",f:"Planalto · Lei 14.621/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14621.htm"},
+  {i:30,t:"Voltar a ter um amplo programa de moradia",s:"cumprida",o:"O Minha Casa, Minha Vida foi relançado pela Lei 14.620/2023.",f:"Planalto · Lei 14.620/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14620.htm"},
+  {i:18,t:"Prioridade no combate à fome",s:"cumprida",o:"No relatório da ONU (FAO) de julho de 2025, o Brasil saiu do Mapa da Fome, com menos de 2,5% da população em subalimentação.",f:"FAO · O Estado da Segurança Alimentar no Mundo 2025",u:"https://www.fao.org/publications/home/fao-flagship-publications/the-state-of-food-security-and-nutrition-in-the-world"},
+  {i:77,t:"Não privatizar a Petrobras e mudar a política de preços",s:"cumprida",o:"A Petrobras saiu da lista de privatizações e, em maio de 2023, deixou de seguir só o preço de importação (PPI) para definir gasolina e diesel.",f:"Petrobras · Relações com Investidores",u:"https://www.investidorpetrobras.com.br"},
+  {i:79,t:"Não privatizar os Correios",s:"cumprida",o:"Os Correios foram retirados do Programa Nacional de Desestatização em 2023 (Decreto 11.478/2023).",f:"Planalto · Decreto 11.478/2023",u:"https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/d11478.htm"},
+  {i:78,t:"Recuperar o papel da Eletrobras (contra a privatização)",s:"em parte",o:"A privatização foi concluída em junho de 2022, antes do mandato, e não foi desfeita. Em 2025, um acordo no STF ampliou o número de conselheiros indicados pelo governo.",f:"STF · ADI 7385",u:"https://portal.stf.jus.br"},
+  {i:94,t:"Combater o desmatamento ilegal e chegar ao desmatamento líquido zero",s:"em andamento",o:"O desmatamento na Amazônia caiu pelo quarto ano seguido: 5.796 km² em 2025 (PRODES), 11% menos que em 2024. A meta de desmatamento líquido zero é para 2030.",f:"INPE · PRODES (TerraBrasilis)",u:"https://terrabrasilis.dpi.inpe.br"},
+  {i:13,t:"Nova legislação trabalhista, revogando pontos da reforma de 2017 e protegendo trabalhadores de aplicativos",s:"não cumprida",o:"A reforma trabalhista de 2017 continua valendo. O projeto para motoristas de aplicativo (PLP 12/2024) não foi votado até outubro de 2026.",f:"Câmara dos Deputados · PLP 12/2024",u:"https://www.camara.leg.br/propostas-legislativas"}];
+/* principais propostas do plano registrado no TSE em 2026 (Programa de Governo 2027–2030), com a página do documento */
+const PROP26=[
+  {a:"Trabalho",t:"Fim da escala 6x1 e jornada de 40 horas sem redução de salário, nos termos aprovados na Câmara",p:75},
+  {a:"Trabalho",t:"Mudar regras da legislação trabalhista que levam à precarização",p:75},
+  {a:"Meio ambiente",t:"Desmatamento líquido zero até 2030",p:70},
+  {a:"Educação",t:"Manter e fortalecer o Pé-de-Meia, para nenhum jovem pobre deixar a escola",p:32},
+  {a:"Educação",t:"Ampliar creches e o ensino em tempo integral",p:34},
+  {a:"Saúde",t:"Manter o Farmácia Popular 100% gratuito",p:36},
+  {a:"Saúde",t:"Ampliar o Agora tem Especialistas e abrir novos hospitais universitários",p:34},
+  {a:"Saúde",t:"Fixar profissionais do Mais Médicos e formar especialistas em medicina de família",p:35},
+  {a:"Segurança",t:"Tornar as Forças Integradas de Combate ao Crime Organizado (FICCOs) política de Estado e manter as Forças Armadas nas fronteiras da Amazônia",p:29},
+  {a:"Segurança",t:"Ampliar o Celular Seguro e a base nacional de celulares roubados",p:29},
+  {a:"Cidades",t:"Investimento contínuo na urbanização de favelas, junto com o combate ao crime organizado",p:28}];
+function presidente(){
+  const el=document.getElementById("pres");if(!el||el.dataset.ok)return;el.dataset.ok=1;
+  const cor={"cumprida":"#2f9e63","em parte":"#d4a017","em andamento":"#3fa7e0","não cumprida":"#e05252"};
+  const cont=Object.keys(cor).map(k=>[k,PROM22.filter(p=>p.s===k).length]);
+  el.innerHTML=`<div class="card pres">
+    <div class="pres-top"><span class="pres-ini">PT</span><div><div class="l">Presidente eleito em 25/10/2026 · mandato 2027–2030</div><div class="v">${esc(PRES.civil)} (${esc(PRES.nome)})</div>
+    <div class="note">${esc(PRES.partido)} · vice: ${esc(PRES.vice)} · posse em 01/01/2027</div></div></div>
+    <p class="pres-res"><b>${nf(PRES.votos,0)}</b> votos (${PRES.pct}% dos válidos) no 2º turno, contra ${nf(PRES.advVotos,0)} (${PRES.advPct}%) de ${esc(PRES.adv)}. Salário bruto: <b>${rs2(SAL_FED)}</b> por mês.</p>
+    <div class="pres-bt"><a class="bt" href="${PRES.plano26}" target="_blank" rel="noopener">Plano de governo 2026 (PDF, TSE)</a><a class="bt" href="${PRES.plano22}" target="_blank" rel="noopener">Plano de governo 2022 (PDF, TSE)</a></div>
+    <p class="fonte">Fontes: <a href="${PRES.tse}" target="_blank" rel="noopener">TSE · resultado oficial do 2º turno</a> e <a href="${PRES.pag26}" target="_blank" rel="noopener">TSE · DivulgaCandContas (planos de governo registrados)</a></p></div>
+  <div class="card"><h3>Promessas do plano de 2022: o que aconteceu<button class="info" aria-label="Como foi avaliado">i</button></h3>
+    <div class="infotxt">Promessas concretas do plano de governo registrado no TSE em 2022 ("Diretrizes para o Programa de Reconstrução e Transformação do Brasil"). O número é o item do documento. Ficam de fora os trechos genéricos, que não dá para medir. <b>Cumprida</b>: lei ou medida aprovada e em vigor. <b>Em parte</b>: só uma parte foi feita. <b>Em andamento</b>: a medida existe, mas a meta ainda não foi atingida. <b>Não cumprida</b>: não foi aprovada até outubro de 2026. O selo diz se a promessa saiu do papel, e não se a política é boa ou ruim. Cada item mostra a fonte oficial.</div>
+    <div class="legend">${cont.map(([k,n])=>`<span><span class="sw" style="background:${cor[k]}"></span>${k[0].toUpperCase()+k.slice(1)}: <b>${n}</b></span>`).join("")}</div>
+    <div class="prom">${PROM22.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="badge" style="color:${cor[p.s]};background:color-mix(in srgb,${cor[p.s]} 14%,transparent)"><span class="dot" style="background:${cor[p.s]}"></span>${p.s}</span></div>
+      <p class="note">Item ${p.i} do plano de 2022. ${esc(p.o)}</p><p class="fonte">Fonte: <a href="${p.u}" target="_blank" rel="noopener">${esc(p.f)}</a></p></div>`).join("")}</div></div>
+  <div class="card"><h3>O que propõe o plano de 2026<button class="info" aria-label="Sobre esta lista">i</button></h3>
+    <div class="infotxt">Principais propostas concretas do Programa de Governo 2027–2030 registrado no TSE, com a página do documento. Aqui fica o que o plano promete. A partir de 2027, cada item ganha um selo, como os do plano de 2022, conforme leis e dados oficiais forem saindo.</div>
+    <div class="prom">${PROP26.map(p=>`<div class="prom-i"><div class="prom-h"><b>${esc(p.t)}</b><span class="pol-tag">${esc(p.a)}</span></div><p class="fonte">Plano de governo 2026, página ${p.p}</p></div>`).join("")}</div>
+    <p class="fonte">Fonte: <a href="${PRES.plano26}" target="_blank" rel="noopener">TSE · Programa de Governo 2026 registrado pela candidatura (PDF)</a></p></div>`;
 }
 
 const serie=k=>D.val.filter(v=>v.chave===k);
