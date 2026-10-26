@@ -152,6 +152,10 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .calc-res{margin-top:10px;font-size:15.5px;line-height:1.5}.calc-t{width:100%;border-collapse:collapse;font-size:15px}.calc-t td{padding:6px 4px;border-bottom:1px solid var(--line)}
 .comp-t{margin-top:6px;font:600 14px Inter,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
 #contas .big{font-size:26px;font-weight:800;margin:4px 0}
+.placar{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--soft);margin:8px 0 4px}.placar span{display:block;height:100%}
+.placar.mini{height:8px;margin:0;flex:1;min-width:60px}
+.vot-p{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}.vot-p li{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center;font-size:14px}
+.vot details summary{cursor:pointer;font-size:14.5px;font-weight:600;margin-top:4px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -257,6 +261,9 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <div class="card"><h3>Câmara dos Deputados<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos deputados federais em exercício cada partido tem hoje, contados ao vivo na lista oficial da Câmara. São 513 cadeiras; para aprovar um projeto de lei comum basta a maioria dos presentes, e para mudar a Constituição são 308 votos, em dois turnos. Os deputados eleitos em outubro de 2026 tomam posse em 01/02/2027, e a lista muda sozinha nesse dia.</div><p class="note" id="banc-dep-sub"></p><div id="banc-dep"></div></div>
     <div class="card"><h3>Senado Federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos senadores em exercício cada partido tem hoje, contados ao vivo na lista oficial do Senado. São 81 cadeiras, 3 por estado; para mudar a Constituição são 49 votos, em dois turnos. Os senadores eleitos em outubro de 2026 tomam posse em 01/02/2027.</div><p class="note" id="banc-sen-sub"></p><div id="banc-sen"></div></div>
   </div>
+  <h2>Últimas votações no Plenário da Câmara<button class="info" aria-label="Sobre as votações" data-alvo="vot-info">i</button></h2>
+  <div class="infotxt" id="vot-info">Votações nominais (com o voto de cada deputado registrado) dos últimos meses, direto dos Dados Abertos da Câmara. Ficam de fora os requerimentos, que são votações de procedimento. Toque em um deputado na busca acima para ver como ele votou. Atualiza sozinho a cada 6 horas.</div>
+  <div class="grid c2" id="votacoes"></div>
   <h2>Como fica o Congresso a partir de 01/02/2027</h2>
   <div class="grid c2">
     <div class="card"><h3>Câmara eleita em 2026<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Os 513 deputados federais eleitos em 04/10/2026, pelo partido em que foram eleitos, segundo o resultado oficial do TSE. Tomam posse em 01/02/2027. Depois da posse, alguns podem trocar de partido; aí o gráfico "Câmara dos Deputados" acima passa a mostrar a bancada real do dia.</div><p class="note" id="banc27-dep-sub"></p><div id="banc27-dep"></div></div>
@@ -386,7 +393,7 @@ async function carregarPoliticos(){
 }
 
 async function politicos(){
-  presidente();
+  presidente();votacoes();
   const lista=document.getElementById("pol-lista");
   if(!POL){lista.innerHTML=`<p class="note">Buscando deputados, senadores e governadores nas fontes oficiais…</p>`;await carregarPoliticos()}
   const tipos={todos:"Todos",dep:"Deputados federais",sen:"Senadores",gov:"Governadores",ele:"Eleitos para o Congresso em 2026"};
@@ -419,7 +426,7 @@ async function detalhePol(el){
         let velho=false;for(const n of j.dados){if(n.ano!==ANO){if(n.ano<ANO)velho=true;continue}const v=+n.valorLiquido||0;tot+=v;tp[n.tipoDespesa]=(tp[n.tipoDespesa]||0)+v;if(n.mes>ult)ult=n.mes}
         if(j.dados.length<100||velho)break}
       det.innerHTML=`<div class="pol-gasto">Gastou <b>${rs(tot)}</b> da cota parlamentar em ${ANO}${ult?` (até ${MESES[ult-1]})`:""}</div><ul class="pol-tipos">${tiposHTML(tot,tp)}</ul>
-        <p class="fonte">Fonte: <a href="${esc(p.url)}" target="_blank" rel="noopener">Câmara dos Deputados · página oficial</a> e <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Dados Abertos da Câmara</a> · salário: Decreto Legislativo 172/2022</p>`}
+        ${await votosDoDeputado(+id)}<p class="fonte">Fonte: <a href="${esc(p.url)}" target="_blank" rel="noopener">Câmara dos Deputados · página oficial</a> e <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Dados Abertos da Câmara</a> · salário: Decreto Legislativo 172/2022</p>`}
     catch(e){det.innerHTML=`<p class="note">Não consegui falar com a Câmara agora. <a href="${esc(p.url)}" target="_blank" rel="noopener">Ver na página oficial</a></p>`}
   }else if(tipo==="sen"){
     const s=CEAPS&&CEAPS.senadores[id];
@@ -711,6 +718,27 @@ async function contas(){
   if(div.length)document.getElementById("g-div").innerHTML=linha(div.slice(-24).map(x=>({l:mes(x.data),v:+x.valor})),{fmt:v=>nf(v,1)+"%",w:LARG("g-div"),h:170});
   if(pri.length)document.getElementById("g-pri").innerHTML=linha(pri.slice(-24).map(x=>({l:mes(x.data),v:-x.valor})),{fmt:v=>nf(v,2)+"%",w:LARG("g-pri"),h:170})+`<p class="note">Resultado primário em 12 meses (acima de zero = superávit)</p>`;
 }
+
+
+/* ---------- votações nominais do Plenário da Câmara (ponte /api/camara-votacoes) ---------- */
+let VOT=null;
+const VOTO_N={S:"Sim",N:"Não",A:"Abstenção",O:"Obstrução",P:"Presidente (não vota)","?":"Outro"};
+async function carregarVot(){if(VOT)return VOT;try{VOT=(await (await fetch("/api/camara-votacoes")).json()).votacoes||[]}catch(e){VOT=[]}return VOT}
+async function votacoes(){
+  const el=document.getElementById("votacoes");if(!el||el.dataset.ok)return;el.dataset.ok=1;el.innerHTML=`<p class="note">Buscando as votações na Câmara…</p>`;
+  const L=await carregarVot();if(!L.length){el.innerHTML=`<p class="note">Votações indisponíveis no momento.</p>`;return}
+  const dt=d=>d.split("-").reverse().join("/");
+  el.innerHTML=L.map(v=>{const s=v.placar["Sim"]||0,n=v.placar["Não"]||0,t=s+n||1;
+    const pp=Object.entries(v.partidos).map(([p,c])=>({p,s:c["Sim"]||0,n:c["Não"]||0,tot:Object.values(c).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.tot-a.tot);
+    return `<div class="card vot"><div class="prom-h"><b>${esc(v.prop||"Votação")} · ${dt(v.data)}</b><span class="badge" style="color:${v.aprovada?"#2f9e63":"#e05252"};background:color-mix(in srgb,${v.aprovada?"#2f9e63":"#e05252"} 14%,transparent)">${v.aprovada?"aprovada":"rejeitada"}</span></div>
+      <p class="note">${esc((v.ementa||v.descricao).slice(0,220))}${(v.ementa||v.descricao).length>220?"…":""}</p><p class="note" style="font-size:13px">${esc(v.descricao)}</p>
+      <div class="placar"><span style="width:${s/t*100}%;background:#2f9e63"></span><span style="width:${n/t*100}%;background:#e05252"></span></div>
+      <p class="note"><b style="color:#2f9e63">Sim: ${s}</b> · <b style="color:#e05252">Não: ${n}</b>${Object.entries(v.placar).filter(([k])=>k!=="Sim"&&k!=="Não").map(([k,c])=>` · ${esc(k)}: ${c}`).join("")}</p>
+      <details><summary>Como cada partido votou</summary><ul class="vot-p">${pp.map(x=>`<li><span>${esc(x.p)}</span><span class="placar mini"><span style="width:${x.s/x.tot*100}%;background:#2f9e63"></span><span style="width:${x.n/x.tot*100}%;background:#e05252"></span></span><span class="note">${x.s} sim · ${x.n} não${x.tot-x.s-x.n?` · ${x.tot-x.s-x.n} outros`:""}</span></li>`).join("")}</ul></details>
+      ${v.idProp?`<p class="fonte"><a href="https://www.camara.leg.br/propostas-legislativas/${v.idProp}" target="_blank" rel="noopener">Câmara dos Deputados · ver o projeto</a></p>`:""}</div>`}).join("");
+}
+async function votosDoDeputado(id){const L=await carregarVot();const r=L.filter(v=>v.votos[id]);if(!r.length)return "";
+  return `<div class="pol-gasto" style="margin-top:10px">Como votou nas últimas votações do Plenário:</div><ul class="pol-tipos">${r.slice(0,8).map(v=>`<li>${esc(v.prop||"Votação")} (${v.data.split("-").reverse().join("/")}): <b>${VOTO_N[v.votos[id]]}</b></li>`).join("")}</ul>`}
 
 const serie=k=>D.val.filter(v=>v.chave===k);
 /* números com API pública (Banco Central, IBGE e cotações de mercado): busca direto na fonte ao abrir o site.
