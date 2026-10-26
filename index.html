@@ -1097,6 +1097,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)re
 /* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
 const VIDEOS=[
   {id:"2FzphWKf_9E",ep:1,titulo:"Quem manda no Brasil? Os 3 poderes",fonte:"Constituição Federal, arts. 2º, 44, 76 e 92"},
+  {id:"KxTq93ADE9M",ep:2,titulo:"Deputado ou senador: qual a diferença?",fonte:"Constituição Federal, arts. 45, 46, 51, 52 e 65; Decreto Legislativo 172/2022"},
 ];
 function listaVideos(){const el=document.getElementById("vids");if(!el)return;el.innerHTML=VIDEOS.slice().reverse().map(v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(https://i.ytimg.com/vi/${v.id}/hqdefault.jpg)"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`).join("")}
 listaVideos();
