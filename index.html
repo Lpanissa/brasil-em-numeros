@@ -130,6 +130,8 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .nd-x{position:absolute;right:10px;top:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
 .nd-ler{display:block;text-align:center;margin:12px 0 6px;padding:12px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none}
 .media-aviso{margin:8px 2px 4px}
+.comunicado{border-left:4px solid var(--acc);margin-bottom:10px;font-size:15.5px;line-height:1.55}
+.comunicado b.t{display:block;font-size:16px;margin-bottom:4px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -164,6 +166,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </section>
 
 <section id="t-estados" class="hidden">
+  <div class="card comunicado" id="comunicado"></div>
   <div class="card agrupar">
     <div class="agr-tit">Comparar os estados por<button class="info" aria-label="Sobre os agrupamentos">i</button></div>
     <div class="infotxt">Escolha como juntar os 27 estados. <b>PT × PL</b>: quem venceu o 2º turno para presidente em 25/10/2026 no estado. <b>Governadores 2023–2026</b>: partido pelo qual o governador foi eleito em 2022 (é quem governava quando os números foram medidos; alguns mudaram de partido depois ou deixaram o cargo em 2026). <b>Governadores eleitos 2026</b>: partido do eleito em outubro de 2026, que toma posse em 01/01/2027. Fonte das eleições: TSE.</div>
@@ -642,6 +645,10 @@ function estados(){
   document.getElementById("mapa-nota").textContent=G.nota;
   document.getElementById("mapa-leg").innerHTML=grupos.map(x=>`<span><span class="sw" style="background:${corG(x.g)}"></span>${esc(G.rot(x.g))}: <b>${x.us.length}</b></span>`).join("");
   desenharMapa(U,G);
+  /* comunicado: os grupos juntam estados de regiões diferentes; o número é a média desses estados, não uma nota do partido */
+  const lista=x=>{const ns=x.us.map(u=>u.nome);return ns.length>6?ns.slice(0,6).join(", ")+` e mais ${ns.length-6}`:ns.join(", ").replace(/, ([^,]*)$/," e $1")};
+  const g2=grupos.slice(0,2);
+  document.getElementById("comunicado").innerHTML=`<b class="t">Como ler esta aba</b>Os números de cada grupo são a <b>média dos estados</b> onde aquele partido ganhou${MODO==="pres"?" a eleição para presidente":" o governo"}. ${g2.map(x=>`<b>${esc(G.rot(x.g))}</b>: ${esc(lista(x))}`).join(". ")}. Como esses estados ficam em regiões com histórias e economias muito diferentes, a comparação mostra <b>onde</b> cada partido teve mais votos, e não que um partido seja responsável por números bons ou ruins. Riqueza, violência, renda e escolaridade dependem de décadas de história, da economia local e de governos estaduais e municipais de vários partidos.`;
   const media=(arr,k)=>arr.reduce((s,u)=>s+ +u[k],0)/arr.length;
   const vs=(k,fmt,un,id)=>{const it=grupos.map(x=>({l:rotN(x),v:media(x.us,k),cor:corG(x.g)}));
     const topo=grupos.length===2?`<div class="vs">${grupos.map((x,i)=>`<div class="side"><div class="tag" style="color:${corG(x.g)}">ESTADOS ${esc(x.g).toUpperCase()}</div><div class="big">${fmt(it[i].v)}</div><div class="note">${un}</div></div>`).join("")}</div>`:`<p class="note" style="margin:6px 0 10px">${un}</p>`;
