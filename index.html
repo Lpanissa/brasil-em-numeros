@@ -575,7 +575,7 @@ function pizza(fatias,{tam=180,centro=""}={}){
   return `<div class="pizza"><svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}">${out}<text x="${c}" y="${c+6}" text-anchor="middle" font-size="22" font-weight="700" fill="${css('--ink')}">${centro}</text></svg><div class="pizza-leg">${leg}</div></div>`}
 function barrasH(itens,{fmt=v=>nf(v),w=LARG()}={}){
   /* telas estreitas: nome em cima, barra embaixo; telas largas: nome à esquerda */
-  const fs=w<440?14:15,lwN=Math.max(80,Math.max(...itens.map(i=>String(i.l).length))*fs*.56+14),emp=w<340||lwN>w*.5,lw=emp?0:lwN,vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
+  const fs=w<440?14:15,lwN=Math.max(80,Math.max(...itens.map(i=>[...String(i.l)].reduce((t,c)=>t+(c>="A"&&c<="Z"||"ÁÃÂÉÊÍÓÔÕÚÇ".includes(c)?.7:.56),0)))*fs+14),emp=w<340||lwN>w*.5,lw=emp?0:lwN,vw=Math.max(60,Math.max(...itens.map(i=>String(fmt(i.v)).length))*(w<440?14:15)*.62+12),bh=22,gap=emp?12:10,lh=emp?fs+6:0,passo=lh+bh+gap,h=itens.length*passo;
   const mx=Math.max(...itens.map(i=>Math.abs(i.v)))||1;
   const temNeg=itens.some(i=>i.v<0),area=w-lw-vw-(temNeg?vw:0),zero=lw+(temNeg?vw+area/2:0),esc2=(temNeg?area/2:area)/mx;
   const rows=itens.map((it,i)=>{const y0=i*passo,y=y0+lh,bw=Math.abs(it.v)*esc2,x=it.v<0?zero-bw:zero;
