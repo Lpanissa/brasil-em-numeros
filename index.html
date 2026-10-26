@@ -462,7 +462,7 @@ async function politicos(){
   document.querySelectorAll("#pol-tipo button").forEach(b=>b.onclick=()=>{POLT=b.dataset.k;POLN=POLT==="todos"?2:30;politicos()});
   const q=semAc(document.getElementById("busca").value.trim()),qU=q.toUpperCase();
   let r=POL.filter(p=>POLT==="todos"||(POLT==="fav"?FAV.includes(p.tipo+":"+p.id):p.tipo===POLT));
-  if(!q&&POLT==="todos"){const top=["pres:lula","gov:e"+UFSEL,...FAV.filter(k=>k!=="pres:lula"&&k!=="gov:e"+UFSEL)];if(POLN<30)POLN=2+top.slice(2).filter(k=>r.some(p=>p.tipo+":"+p.id===k)).length;r=[...top.map(k=>r.find(p=>p.tipo+":"+p.id===k)).filter(Boolean),...r.filter(p=>!top.includes(p.tipo+":"+p.id))]}
+  if(!q&&POLT==="todos"){const top=["pres:lula","gov:e"+UFSEL,...FAV.filter(k=>k!=="pres:lula"&&k!=="gov:e"+UFSEL)];r=[...top.map(k=>r.find(p=>p.tipo+":"+p.id===k)).filter(Boolean),...r.filter(p=>!top.includes(p.tipo+":"+p.id))]}
   if(q)r=/^[a-z]{2}$/.test(q)&&D.uf.some(u=>u.uf===qU)?r.filter(p=>p.uf===qU||semAc(p.partido)===q):r.filter(p=>q.split(/\s+/).every(w=>p.busca.includes(fz(w))));
   document.getElementById("pol-n").textContent=`${r.length} ${r.length===1?"resultado":"resultados"}`+(r.length>POLN?` · mostrando ${POLN}`:"")+(POLT==="fav"&&!r.length?"":"");
   lista.innerHTML=r.slice(0,POLN).map(p=>`<div class="card pol" data-id="${esc(p.tipo+":"+p.id)}"><button class="fav${FAV.includes(p.tipo+":"+p.id)?" on":""}" aria-label="Favoritar ${esc(p.nome)}" aria-pressed="${FAV.includes(p.tipo+":"+p.id)}"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg></button>
