@@ -239,7 +239,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
     <li>Deputados federais e gastos da cota parlamentar (ao vivo): <a href="https://dadosabertos.camara.leg.br" target="_blank" rel="noopener">Câmara dos Deputados · Dados Abertos</a></li>
     <li>Senadores em exercício (ao vivo): <a href="https://legis.senado.leg.br/dadosabertos" target="_blank" rel="noopener">Senado Federal · Dados Abertos</a></li>
     <li>Gastos da cota dos senadores, CEAPS (ao vivo): <a href="https://www12.senado.leg.br/transparencia/dados-abertos-transparencia" target="_blank" rel="noopener">Senado Federal · Transparência</a></li>
-    <li>Governadores eleitos em 2022 e 2026: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · Resultados</a></li>
+    <li>Governadores eleitos em 2022 e 2026, e deputados federais e senadores eleitos em 04/10/2026 (resultado final): <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · Resultados</a></li>
     <li>Salário de presidente, ministros e parlamentares: <a href="https://www2.camara.leg.br/legin/fed/decleg/2022/decretolegislativo-172-21-dezembro-2022-793628-publicacaooriginal-166732-pl.html" target="_blank" rel="noopener">Decreto Legislativo 172/2022</a></li>
     <li>Salário dos governadores (fixado por cada Assembleia): <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
   </ul></div>
@@ -284,6 +284,7 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 <script>
 const SB_URL="https://fyxksvydxwvygjebanno.supabase.co", SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
 const D={ind:[],val:[],uf:[],dcol:[],dind:[],col:[],snap:[]},CMP={a:null,b:null};
+function fz(s){return semAc(s).replace(/ph/g,"f").replace(/k/g,"c").replace(/y/g,"i").replace(/w/g,"v").replace(/z/g,"s").replace(/h/g,"").replace(/([a-z])\1/g,"$1")}
 function semAc(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const nf=(v,d=2)=>Number(v).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -331,24 +332,27 @@ async function carregarPoliticos(){
   const dep=fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1000&ordem=ASC&ordenarPor=nome").then(r=>r.json()).then(j=>j.dados.map(d=>({tipo:"dep",id:d.id,nome:d.nome,partido:d.siglaPartido,uf:d.siglaUf,foto:d.urlFoto,cargo:"Deputado(a) federal",sal:SAL_FED,url:`https://www.camara.leg.br/deputados/${d.id}`}))).catch(()=>[]);
   const sen=fetch("https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json").then(r=>r.json()).then(j=>j.ListaParlamentarEmExercicio.Parlamentares.Parlamentar.map(p=>{const i=p.IdentificacaoParlamentar;
     return {tipo:"sen",id:i.CodigoParlamentar,nome:i.NomeParlamentar,partido:i.SiglaPartidoParlamentar,uf:i.UfParlamentar,foto:(i.UrlFotoParlamentar||"").replace(/^http:/,"https:"),cargo:"Senador(a)",sal:SAL_FED,url:(i.UrlPaginaParlamentar||"").replace(/^http:/,"https:")}})).catch(()=>[]);
+  /* eleitos em 2026 para a Câmara e o Senado (resultado final do TSE, gravado no banco) */
+  const ele=sb("eleitos_2026?select=cargo,uf,nome,partido,votos,pct,situacao&order=votos.desc").then(l=>l.map(e=>({tipo:"ele",id:e.cargo+e.uf+e.nome,nome:e.nome.toLowerCase().replace(/(^|[\s.'-])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()),partido:e.partido,uf:e.uf,
+    cargo:`Eleito(a) ${e.cargo==="dep"?"deputado(a) federal":"senador(a)"} em 2026 · ${nf(e.votos,0)} votos (${e.pct}%) · posse em 01/02/2027`,sal:SAL_FED,url:"https://resultados.tse.jus.br",votos:e.votos,situacao:e.situacao}))).catch(()=>[]);
   const cea=fetch(`/api/senado-ceaps?ano=${ANO}`).then(r=>r.json()).catch(()=>null);
   const gov=D.uf.flatMap(u=>[
     {tipo:"gov",id:"g"+u.uf,nome:u.gov_2022,partido:u.gov_2022_partido,uf:u.uf,cargo:`Governador(a) de ${u.nome}, eleito(a) em 2022`,sal:GOV_SAL[u.uf],url:"https://www.tse.jus.br"},
     {tipo:"gov",id:"e"+u.uf,nome:u.gov_2026,partido:u.gov_2026_partido,uf:u.uf,cargo:`Eleito(a) governador(a) de ${u.nome} em 2026 (posse em 01/01/2027)`,sal:GOV_SAL[u.uf],url:"https://resultados.tse.jus.br"}]).filter(g=>g.nome);
-  const [d,s,c]=await Promise.all([dep,sen,cea]);CEAPS=c;
+  const [d,s,c,el]=await Promise.all([dep,sen,cea,ele]);CEAPS=c;
   const nomeUF=Object.fromEntries(D.uf.map(u=>[u.uf,u.nome]));
-  POL=[...s,...d,...gov].map(p=>({...p,busca:semAc(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
+  POL=[...s,...d,...gov,...el].map(p=>({...p,busca:fz(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
 }
 
 async function politicos(){
   const lista=document.getElementById("pol-lista");
   if(!POL){lista.innerHTML=`<p class="note">Buscando deputados, senadores e governadores nas fontes oficiais…</p>`;await carregarPoliticos()}
-  const tipos={todos:"Todos",dep:"Deputados federais",sen:"Senadores",gov:"Governadores"};
+  const tipos={todos:"Todos",dep:"Deputados federais",sen:"Senadores",gov:"Governadores",ele:"Eleitos para o Congresso em 2026"};
   document.getElementById("pol-tipo").innerHTML=Object.entries(tipos).map(([k,n])=>`<button data-k="${k}" class="${k===POLT?"on":""}">${n}</button>`).join("");
   document.querySelectorAll("#pol-tipo button").forEach(b=>b.onclick=()=>{POLT=b.dataset.k;POLN=30;politicos()});
   const q=semAc(document.getElementById("busca").value.trim()),qU=q.toUpperCase();
   let r=POL.filter(p=>POLT==="todos"||p.tipo===POLT);
-  if(q)r=/^[a-z]{2}$/.test(q)&&D.uf.some(u=>u.uf===qU)?r.filter(p=>p.uf===qU||semAc(p.partido)===q):r.filter(p=>q.split(/\s+/).every(w=>p.busca.includes(w)));
+  if(q)r=/^[a-z]{2}$/.test(q)&&D.uf.some(u=>u.uf===qU)?r.filter(p=>p.uf===qU||semAc(p.partido)===q):r.filter(p=>q.split(/\s+/).every(w=>p.busca.includes(fz(w))));
   document.getElementById("pol-n").textContent=`${r.length} ${r.length===1?"resultado":"resultados"}`+(r.length>POLN?` · mostrando ${POLN}`:"");
   lista.innerHTML=r.slice(0,POLN).map(p=>`<div class="card pol" data-id="${esc(p.tipo+":"+p.id)}">
     <div class="pol-top">${p.foto?`<img src="${esc(p.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<span class="pol-ini">${esc(p.uf)}</span>`}
@@ -379,6 +383,9 @@ async function detalhePol(el){
     const s=CEAPS&&CEAPS.senadores[id];
     det.innerHTML=(s?`<div class="pol-gasto">Gastou <b>${rs(s.total)}</b> da cota parlamentar em ${ANO}${CEAPS.ateMes?` (até ${MESES[CEAPS.ateMes-1]})`:""}</div><ul class="pol-tipos">${tiposHTML(s.total,s.tipos)}</ul>`:`<p class="note">Sem gastos da cota registrados em ${ANO}.</p>`)+
       `<p class="fonte">Fonte: <a href="${esc(p.url)}" target="_blank" rel="noopener">Senado Federal · página oficial</a> e <a href="https://www12.senado.leg.br/transparencia/dados-abertos-transparencia" target="_blank" rel="noopener">Dados Abertos do Senado (CEAPS)</a> · salário: Decreto Legislativo 172/2022</p>`;
+  }else if(tipo==="ele"){
+    det.innerHTML=`<p class="note">${esc(p.situacao)} pelo ${esc(p.partido)} em ${esc(D.uf.find(e=>e.uf===p.uf)?.nome||p.uf)}, com <b>${nf(p.votos,0)}</b> votos. Toma posse em 01/02/2027; os gastos da cota aparecem a partir do mandato.</p>
+      <p class="fonte">Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">TSE · resultado oficial das eleições de 04/10/2026</a> · salário: Decreto Legislativo 172/2022</p>`;
   }else{
     const u=D.uf.find(e=>e.uf===p.uf);
     det.innerHTML=`<p class="note">O salário do governador é fixado pela Assembleia Legislativa de ${esc(u.nome)} e não pode passar do teto de ${rs2(SAL_FED)}.${u.rcl_pc?` O estado arrecadou ${rs(u.rcl_pc)} por habitante nos últimos 12 meses (receita corrente líquida, Tesouro Nacional).`:""}</p>
