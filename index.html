@@ -168,6 +168,10 @@ svg.vis .an-bar{transform:scaleX(1)}svg.vis .an-line{stroke-dashoffset:0}svg.vis
 .impm{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;gap:10px;background:#111;color:#f3f3f3;font-size:13.5px;padding:6px 12px;flex-wrap:wrap}
 .impm b{font:700 15px "JetBrains Mono",ui-monospace,monospace;color:#ffd23f;letter-spacing:.02em}.impm .info{width:18px;height:18px;font-size:11px;border-color:#aaa;color:#ccc;margin:0}
 nav{top:31px}
+.video-ep{display:grid;grid-template-columns:minmax(200px,300px) 1fr;gap:18px;align-items:start}
+@media (max-width:620px){.video-ep{grid-template-columns:1fr}}
+.yt{position:relative;width:100%;max-width:300px;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000;margin:0 auto}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -258,7 +262,14 @@ footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid va
 </section>
 
 <section id="t-politicos" class="hidden">
-  <h2 style="margin-top:4px">Presidente eleito</h2>
+  <h2 style="margin-top:4px">Entenda em 1 minuto</h2>
+  <div class="card video-ep">
+    <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/2FzphWKf_9E" title="Quem manda no Brasil? Os 3 poderes em 1 minuto" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <div><div class="pol-tag">Como funciona o Brasil · Ep. 1</div><h3 style="margin:8px 0 6px">Quem manda no Brasil? Os 3 poderes</h3>
+      <p class="note">Legislativo, Executivo e Judiciário: quem faz as leis, quem põe em prática e quem julga, e por que ninguém manda sozinho. Fonte: Constituição Federal, arts. 2º, 44, 76 e 92.</p>
+      <p class="fonte"><a href="https://youtube.com/shorts/2FzphWKf_9E" target="_blank" rel="noopener">Ver no YouTube</a></p></div>
+  </div>
+  <h2>Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
   <h2>Governadores eleitos em 2026: planos de governo</h2>
   <div class="grid c2" id="gov-planos"></div>
