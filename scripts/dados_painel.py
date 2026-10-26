@@ -39,13 +39,13 @@ ipca12 = [4.44, 3.81, 4.14, 4.39, 4.72, 4.64, 4.44, 4.22, 4.58]
 ipcam = [0.33, 0.70, 0.88, 0.67, 0.58, 0.16, 0.07, -0.32, 0.82]
 mes = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set"]
 br = lambda x, c=2: f"{x:.{c}f}".replace(".", ",")
-ind("ipca_12m", "Inflação", "IPCA acumulado em 12 meses", "%", "IBGE", IBGE + "/explica/inflacao.php",
+ind("ipca_12m", "Inflação", "Inflação em 12 meses (IPCA)", "%", "IBGE", IBGE + "/explica/inflacao.php",
     [(f"2026-{i+1:02d}-01", f"{m}/2026", v, br(v) + "%") for i, (m, v) in enumerate(zip(mes, ipca12))])
-ind("ipca_mes", "Inflação", "IPCA do mês", "%", "IBGE", IBGE + "/explica/inflacao.php",
+ind("ipca_mes", "Inflação", "Inflação do mês (IPCA)", "%", "IBGE", IBGE + "/explica/inflacao.php",
     [(f"2026-{i+1:02d}-01", f"{m}/2026", v, br(v) + "%") for i, (m, v) in enumerate(zip(mes, ipcam))])
-ind("inpc_12m", "Inflação", "INPC em 12 meses (corrige salários e INSS)", "%", "IBGE", IBGE, [
+ind("inpc_12m", "Inflação", "Inflação para salários (INPC, 12 meses)", "%", "IBGE", IBGE, [
     ("2026-09-01", "set/2026", 4.29, "4,29%")])
-ind("igpm_12m", "Inflação", "IGP-M em 12 meses (reajuste de aluguel)", "%", "FGV", "https://portalibre.fgv.br", [
+ind("igpm_12m", "Inflação", "Inflação do aluguel (IGP-M, 12 meses)", "%", "FGV", "https://portalibre.fgv.br", [
     ("2026-09-01", "set/2026", 3.34, "3,34%")])
 
 # ---------- Renda e trabalho ----------
