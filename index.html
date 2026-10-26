@@ -8,16 +8,22 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3CclipPath id='c'%3E%3Crect width='44' height='44' rx='10'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='44' height='44' fill='%23009c3b'/%3E%3Cpolygon points='0,5 39,22 0,39' fill='%23ffdf00'/%3E%3Ccircle cx='0' cy='22' r='13' fill='%23002776'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script>try{const t=localStorage.getItem("tema");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
 :root{--bg:#f4f4f1;--card:#fff;--ink:#16181d;--muted:#666b75;--line:#e2e2dd;--soft:#ededea;
   --pt:#d43c3c;--pl:#2f62d4;--up:#c98a00;--down:#178a7a;--acc:#16181d;
   --ok:#1f8a4c;--ap:#2f6fd6;--old:#c27a00;--bad:#c93a2e;--nv:#8b9099}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101114;--card:#191b1f;--ink:#eceef1;--muted:#9aa0a9;--line:#2a2d33;--soft:#22252a;
   --pt:#ef5a54;--pl:#5b8cf5;--up:#e6a72e;--down:#35b8a5;--acc:#eceef1;--ok:#3fbf73;--ap:#5b93f0;--old:#e6a12e;--bad:#ef6b5f;--nv:#7d828b}}
+:root[data-theme="dark"]{--bg:#101114;--card:#191b1f;--ink:#eceef1;--muted:#9aa0a9;--line:#2a2d33;--soft:#22252a;
+  --pt:#ef5a54;--pl:#5b8cf5;--up:#e6a72e;--down:#35b8a5;--acc:#eceef1;--ok:#3fbf73;--ap:#5b93f0;--old:#e6a12e;--bad:#ef6b5f;--nv:#7d828b}
+:root{color-scheme:light dark}:root[data-theme="light"]{color-scheme:light}:root[data-theme="dark"]{color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px 64px}
 header{padding:24px 0 8px;display:flex;gap:12px;align-items:center}
+.tema{margin-left:auto;align-self:flex-start;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;padding:0}
+.tema svg{width:20px;height:20px}
 .logo{width:44px;height:44px;flex:none;display:block}
 h1{font-size:22px;margin:0;letter-spacing:-.01em}
 .sub{color:var(--muted);font-size:14px;margin:0}
@@ -183,18 +189,19 @@ nav{top:31px}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 details.abre>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-weight:700;padding:10px 16px;margin:6px 0;border:1px solid var(--line,#ccc);border-radius:999px;user-select:none}
 details.abre>summary::-webkit-details-marker{display:none}
-details.abre>summary::before{content:"";width:0;height:0;border-left:8px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s}
-details.abre[open]>summary::before{transform:rotate(90deg)}
+details.abre>summary::after{content:"";width:8px;height:8px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:translateY(-25%) rotate(45deg);transition:transform .2s;margin-left:4px}
+details.abre[open]>summary::after{transform:translateY(25%) rotate(-135deg)}
 .card.fecha>*:not(h3){display:none!important}
-.card>h3.tog{cursor:pointer;position:relative;padding-left:26px;user-select:none}
-.card>h3.tog::before{content:"";position:absolute;left:4px;top:.45em;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s}
-.card:not(.fecha)>h3.tog::before{transform:rotate(90deg)}
+.card>h3.tog{cursor:pointer;position:relative;padding-right:30px;user-select:none}
+.card>h3.tog::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:transform .2s}
+.card:not(.fecha)>h3.tog::after{transform:translateY(-25%) rotate(-135deg)}
 .card.fecha{padding-bottom:14px}
 .card.fecha>h3.tog{margin-bottom:0}
 details.cat>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px}
 details.cat>summary::-webkit-details-marker{display:none}
-details.cat>summary::before{content:"";border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;transition:transform .2s;flex:none;margin-top:6px}
-details.cat[open]>summary::before{transform:rotate(90deg)}
+details.cat>summary{justify-content:space-between}
+details.cat>summary::after{content:"";flex:none;width:9px;height:9px;margin-right:8px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:translateY(-40%) rotate(45deg);transition:transform .2s}
+details.cat[open]>summary::after{transform:translateY(0) rotate(-135deg)}
 details.cat>summary h2{margin-bottom:8px}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
@@ -207,6 +214,7 @@ details.cat>summary h2{margin-bottom:8px}
 <header>
   <svg class="logo" viewBox="0 0 44 44" role="img" aria-label="Raio-X do Brasil"><clipPath id="lc"><rect width="44" height="44" rx="12"/></clipPath><g clip-path="url(#lc)"><rect width="44" height="44" fill="#009c3b"/><polygon points="0,5 39,22 0,39" fill="#ffdf00"/><circle cx="0" cy="22" r="13" fill="#002776"/></g></svg>
   <div><h1>Raio-X do Brasil</h1><p class="sub" id="sub">Custo de vida, economia e estados, guardados para comparar ao longo do tempo</p></div>
+  <button class="tema" id="tema" aria-label="Tema: automático" title="Tema: automático"></button>
 </header>
 <div class="faixa hidden" id="faixa" aria-label="Últimas notícias"><div class="faixa-tit">Últimas notícias</div><div class="faixa-trilho" id="faixa-trilho"></div></div>
 <nav>
@@ -1123,6 +1131,16 @@ function listaVideos(){const el=document.getElementById("vids");if(!el)return;el
 listaVideos();
 function abreVideo(id){const d=document.getElementById("vid-dlg");d.querySelector(".yt").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;document.getElementById("vid-yt").href="https://youtube.com/shorts/"+id;d.showModal()}
 
+/* tema: automático (segue o celular), claro ou escuro */
+(function(){const b=document.getElementById("tema");if(!b)return;
+  const IC={auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+    light:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+    dark:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>'};
+  const NOME={auto:"automático (segue o celular)",light:"claro",dark:"escuro"};
+  let t="auto";try{t=localStorage.getItem("tema")||"auto"}catch(e){}
+  const aplica=()=>{if(t==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;b.innerHTML=IC[t];b.title=b.ariaLabel="Tema: "+NOME[t];try{t==="auto"?localStorage.removeItem("tema"):localStorage.setItem("tema",t)}catch(e){}};
+  b.onclick=()=>{t=t==="auto"?"light":t==="light"?"dark":"auto";aplica();setTimeout(()=>location.reload(),150)};aplica();
+})();
 /* blocos recolhidos: cada card com título abre e fecha pela seta; mapa, busca e filtros ficam sempre abertos */
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
