@@ -1159,8 +1159,9 @@ const VIDEOS=[
   {id:"ep8",mp4:"videos/ep8.mp4",capa:"videos/ep8.jpg",ep:8,titulo:"O mais votado não entrou? Como funciona a eleição",fonte:"Constituição Federal, arts. 17, 29, 45 e 77; Código Eleitoral, arts. 106 a 109; EC 97/2017"},
   {id:"ep9",mp4:"videos/ep9.mp4",capa:"videos/ep9.jpg",ep:9,titulo:"Como se tira um presidente do cargo? O impeachment",fonte:"Constituição Federal, arts. 51, 52, 85 e 86; Lei 1.079/1950"},
   {id:"ep10",mp4:"videos/ep10.mp4",capa:"videos/ep10.jpg",ep:10,titulo:"Votou e acabou? 5 jeitos de cobrar um político",fonte:"Lei 12.527/2011; Portal da Transparência; e-Cidadania (Senado)"},
+  {id:"pmn3D9QhGZY",ep:"Especial",titulo:"O fim da escala 6x1: o que muda e quando",fonte:"Emenda Constitucional 141/2026; Câmara dos Deputados; Agência Senado; Ministério do Trabalho"},
 ];
-function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span><span class="ve">Ep. ${v.ep}</span></button>`;
+function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span><span class="ve">${typeof v.ep==="number"?"Ep. "+v.ep:v.ep}</span></button>`;
   const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
   const t=document.getElementById("vids-todos");if(t)t.innerHTML=SERIES.map(se=>{const vs=VIDEOS.filter(v=>(v.serie||"Como funciona o Brasil")===se.nome);return vs.length?`<section class="serie"><h2 style="margin-top:4px">${se.nome}</h2><p class="note" style="margin:-4px 0 12px">${se.desc} ${vs.length} episódios. Toque num vídeo para assistir.</p><div class="vgrade">${vs.map(card).join("")}</div></section>`:""}).join("")}
 listaVideos();
