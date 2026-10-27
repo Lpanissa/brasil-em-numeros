@@ -468,6 +468,7 @@ async function carregarPoliticos(){
 }
 
 async function politicos(){
+  if(!D||!D.uf||!D.uf.length){const l=document.getElementById("pol-lista");if(l)l.innerHTML=`<p class="note">Carregando…</p>`;setTimeout(politicos,400);return}
   presidente();votacoes();govPlanos();
   const lista=document.getElementById("pol-lista");
   if(!POL){lista.innerHTML=`<p class="note">Buscando deputados, senadores e governadores nas fontes oficiais…</p>`;await carregarPoliticos()}
@@ -901,7 +902,7 @@ function montarFiltro(){
   const base=D.col.find(c=>c.base)||D.col[0],ultc=D.col[D.col.length-1];CMP.a=base.data_coleta;CMP.b=ultc.data_coleta;
   const op=sel=>D.col.map(c=>`<option value="${c.data_coleta}" ${c.data_coleta===sel?"selected":""}>${esc(c.rotulo)}</option>`).join("");
   const prox=new Date(ultc.data_coleta+"T12:00");prox.setMonth(prox.getMonth()+(prox.getDate()>=15?1:0));prox.setDate(15);
-  el.innerHTML=`<div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><div class="f-tit">Comparar as coletas<button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button></div><div class="f-sel"><select id="cA" aria-label="Coleta inicial">${op(CMP.a)}</select><span>com</span><select id="cB" aria-label="Coleta final">${op(CMP.b)}</select></div></div>
+  el.innerHTML=`<h3>Comparar as coletas<button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button></h3><div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><div class="f-sel"><select id="cA" aria-label="Coleta inicial">${op(CMP.a)}</select><span>com</span><select id="cB" aria-label="Coleta final">${op(CMP.b)}</select></div></div>
   <p class="note">${D.col.length<2?`Hoje existe só a coleta base. A próxima coleta automática é em ${prox.toLocaleDateString("pt-BR")}; a partir dela dá para comparar os meses.`:"Os números e as setas mostram a mudança entre as duas coletas escolhidas."}</p>`;
   document.getElementById("cA").onchange=e=>{CMP.a=e.target.value;painel()};
   document.getElementById("cB").onchange=e=>{CMP.b=e.target.value;painel()};
@@ -1187,7 +1188,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
   const h=card.querySelector(":scope>h3");if(!h)return;
-  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar")||card.id==="filtro"){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
+  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
   if(!card.dataset.dobra){card.dataset.dobra=1;card.classList.add("fecha")}
   if(!h.classList.contains("tog")){h.classList.add("tog");h.setAttribute("role","button");h.tabIndex=0}
   h.setAttribute("aria-expanded",!card.classList.contains("fecha"));
