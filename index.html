@@ -449,7 +449,7 @@ async function extrasEstados(){
 }
 
 /* fotos oficiais das candidaturas no TSE (DivulgaCandContas): sequencial de cada governador eleito em 2022 (g) e em 2026 (e) */
-const TSE_FOTO=(el,sq,uf)=>`/api/foto?el=${el}&sq=${sq}&uf=${uf}`;
+const TSE_FOTO=(el,sq,uf)=>`/fotos/${sq}.jpg`;
 const GOV_SQ={eAC:"10002544107",eAL:"20002553350",eAM:"40002532272",eAP:"30002530014",eBA:"50002536314",eCE:"60002543969",eDF:"70002553055",eES:"80002552682",eGO:"90002540993",eMA:"100002545679",eMG:"130002552296",eMS:"120002536582",eMT:"110002551480",ePA:"140002549930",ePB:"150002551789",ePE:"170002537227",ePI:"180002532987",ePR:"160002540833",eRJ:"190002542887",eRN:"200002534001",eRO:"220002541939",eRR:"230002549223",eRS:"210002547857",eSC:"240002537073",eSE:"260002542491",eSP:"250002541303",eTO:"270002544544",gAC:"10001612476",gAL:"20001697934",gAM:"40001619528",gAP:"30001619676",gBA:"50001603638",gCE:"60001633585",gDF:"70001651044",gES:"80001649123",gGO:"90001646326",gMA:"100001667487",gMG:"130001701690",gMS:"120001635628",gMT:"110001643543",gPA:"140001651993",gPB:"150001613757",gPE:"170001604087",gPI:"180001604027",gPR:"160001614467",gRJ:"190001615753",gRN:"200001608810",gRO:"220001609511",gRR:"230001604255",gRS:"210001609847",gSC:"240001611127",gSE:"260001612779",gSP:"250001615967",gTO:"270001652198"};
 async function carregarPoliticos(){
   const dep=fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1000&ordem=ASC&ordenarPor=nome").then(r=>r.json()).then(j=>j.dados.map(d=>({tipo:"dep",id:d.id,nome:d.nome,partido:d.siglaPartido,uf:d.siglaUf,foto:d.urlFoto,cargo:"Deputado(a) federal",sal:SAL_FED,url:`https://www.camara.leg.br/deputados/${d.id}`}))).catch(()=>[]);
