@@ -213,6 +213,8 @@ details.cat>summary h2{margin-bottom:8px}
 .serie+.serie{margin-top:28px}
 .vgrade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
 .vgrade .vcard{flex:none;width:auto}.vgrade .vthumb{width:100%;height:auto;aspect-ratio:1}
+.vid-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 6px;padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
+.vl-seta{flex:none;width:9px;height:9px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg)}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
@@ -305,9 +307,7 @@ details.cat>summary h2{margin-bottom:8px}
 </section>
 
 <section id="t-politicos" class="hidden">
-  <h2 style="margin-top:4px">Entenda em 1 minuto</h2>
-  <p class="note" style="margin:-4px 0 8px">Série "Como funciona o Brasil". Toque num vídeo para assistir, ou veja todos na aba <a href="#videos" onclick="document.querySelector('nav button[data-t=videos]').click();return false">Vídeos</a>.</p>
-  <div class="vids" id="vids"></div>
+  <a class="vid-link" href="#videos" onclick="document.querySelector('nav button[data-t=videos]').click();return false"><span>Entenda em 1 minuto: vídeos da série "Como funciona o Brasil"</span><span class="vl-seta"></span></a>
 <dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p></dialog>
   <h2>Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
