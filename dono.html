@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Raio-X do Brasil · Dono</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>try{const t=localStorage.getItem("tema");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#f4f4f1;--card:#fff;--ink:#16181d;--muted:#4a4f58;--line:#dcdcd6;--soft:#f3f3f0;--acc:#16181d;--ok:#1f8a4c;--bad:#c93a2e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101114;--card:#191b1f;--ink:#eceef1;--muted:#9aa0a9;--line:#2a2d33;--soft:#22252a;--acc:#eceef1;--ok:#3fbf73;--bad:#ef6b5f}}
+:root[data-theme="dark"]{--bg:#101114;--card:#191b1f;--ink:#eceef1;--muted:#9aa0a9;--line:#2a2d33;--soft:#22252a;--acc:#eceef1;--ok:#3fbf73;--bad:#ef6b5f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:18px;margin:0 0 12px}.sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+button{font:inherit;font-weight:600;border-radius:10px;padding:11px 16px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.msg{font-size:14px;margin-top:10px;min-height:20px}.msg.ok{color:var(--ok)}.msg.err{color:var(--bad)}
+.v{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.v:first-child{border-top:0}
+.v img{width:54px;height:96px;object-fit:cover;border-radius:8px;background:var(--soft);flex:none}
+.v .t{flex:1;min-width:0}.v .t b{display:block;font-size:15px}.v .t span{font-size:13px;color:var(--muted)}
+.v button{padding:8px 12px;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:inherit}
+</style></head><body><div class="wrap">
+<div class="top"><div><h1>Página do dono</h1><p class="sub">Raio-X do Brasil · vídeos da aba Vídeos</p></div><a href="/#videos">Ver o site</a></div>
+
+<div class="card" id="entrar" hidden>
+  <h2>Entrar</h2>
+  <p class="sub">Só a conta lpanissa@gmail.com pode cadastrar vídeos.</p>
+  <button class="pri" id="btn-google">Entrar com Google</button>
+  <div class="msg" id="msg-login"></div>
+</div>
+
+<div id="painel" hidden>
+  <div class="card">
+    <h2>Adicionar vídeo</h2>
+    <label for="link">Link do YouTube</label>
+    <input id="link" placeholder="https://youtube.com/shorts/..." inputmode="url" autocomplete="off">
+    <label for="titulo">Título no site</label>
+    <input id="titulo" placeholder="Ex.: ICMS: o imposto que está em quase tudo">
+    <div class="row">
+      <div><label for="serie">Série</label><select id="serie"></select></div>
+      <div><label for="serie-nova">Ou nova série</label><input id="serie-nova" placeholder="Nome da nova série"></div>
+    </div>
+    <div class="row">
+      <div><label for="ep">Episódio</label><input id="ep" placeholder="Ex.: 3 ou Especial"></div>
+      <div><label for="quando">Aparecer no site a partir de</label><input id="quando" type="datetime-local"></div>
+    </div>
+    <label for="fonte">Fontes (opcional)</label>
+    <input id="fonte" placeholder="Ex.: Constituição Federal, art. 155">
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="pri" id="btn-salvar">Salvar vídeo</button><button id="btn-limpar">Limpar</button></div>
+    <div class="msg" id="msg"></div>
+  </div>
+  <div class="card"><h2>Vídeos cadastrados aqui</h2><div id="lista"><p class="sub">Carregando...</p></div></div>
+  <p class="sub">Conectado como <span id="quem"></span> · <a href="#" id="sair">Sair</a></p>
+</div>
+</div>
+<script>
+const DONO="lpanissa@gmail.com",SB_URL="https://fyxksvydxwvygjebanno.supabase.co",SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
+const $=id=>document.getElementById(id);
+const SERIES=["Como funciona o Brasil","Impostos"];
+let TOKEN=null;
+// login com Google pelo Supabase (o token volta no endereço depois do login)
+(function(){const h=new URLSearchParams(location.hash.slice(1));if(h.get("access_token")){try{localStorage.setItem("raiox-dono",JSON.stringify({t:h.get("access_token"),exp:Date.now()+(+h.get("expires_in")||3600)*1000}))}catch(e){}history.replaceState(null,"",location.pathname)}
+ try{const o=JSON.parse(localStorage.getItem("raiox-dono")||"null");if(o&&o.exp>Date.now()+60000)TOKEN=o.t}catch(e){}})();
+async function api(path,opt={}){const r=await fetch(SB_URL+path,{...opt,headers:{apikey:SB_KEY,Authorization:"Bearer "+(TOKEN||SB_KEY),"Content-Type":"application/json",...(opt.headers||{})}});
+ if(r.status===401){sair();throw new Error("Sessão expirada, entre de novo.")}
+ const t=await r.text();if(!r.ok){let m=t;try{m=JSON.parse(t).message||t}catch(e){}throw new Error(m)}return t?JSON.parse(t):null}
+const ytId=u=>{u=(u||"").trim();const m=u.match(/(?:shorts\/|v=|youtu\.be\/|embed\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(u)?u:null)};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function agoraLocal(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
+function msg(t,ok){const m=$("msg");m.textContent=t;m.className="msg "+(ok?"ok":"err")}
+function limpar(){["link","titulo","serie-nova","ep","fonte"].forEach(i=>$(i).value="");$("quando").value=agoraLocal()}
+async function carregar(){
+  let data;try{data=await api("/rest/v1/site_videos?select=*&order=serie.asc,ordem.asc.nullslast,publicar_em.asc")}catch(e){$("lista").innerHTML='<p class="msg err">Erro ao carregar: '+esc(e.message)+'</p>';return}
+  const series=[...new Set([...SERIES,...data.map(v=>v.serie)])];
+  $("serie").innerHTML=series.map(s=>`<option>${esc(s)}</option>`).join("");
+  const agora=Date.now();
+  $("lista").innerHTML=data.length?data.map(v=>`<div class="v"><img src="https://i.ytimg.com/vi/${esc(v.youtube_id)}/hqdefault.jpg" alt=""><div class="t"><b>${esc(v.titulo)}</b><span>${esc(v.serie)}${v.ep?" · Ep. "+esc(v.ep):""} · ${new Date(v.publicar_em).getTime()>agora?"aparece em "+new Date(v.publicar_em).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"no ar"}</span></div><button data-del="${v.id}">Remover</button></div>`).join(""):'<p class="sub">Nenhum vídeo cadastrado por aqui ainda. Os vídeos antigos da série continuam no site.</p>';
+}
+async function salvar(){
+  const id=ytId($("link").value);if(!id)return msg("Cole um link do YouTube válido.");
+  const titulo=$("titulo").value.trim();if(!titulo)return msg("Escreva o título.");
+  const serie=$("serie-nova").value.trim()||$("serie").value;
+  const ep=$("ep").value.trim()||null;const n=Number(ep);
+  const quando=$("quando").value?new Date($("quando").value).toISOString():new Date().toISOString();
+  $("btn-salvar").disabled=true;msg("Salvando...",true);
+  try{await api("/rest/v1/site_videos?on_conflict=youtube_id",{method:"POST",headers:{Prefer:"resolution=merge-duplicates"},body:JSON.stringify({youtube_id:id,titulo,serie,ep,fonte:$("fonte").value.trim()||null,ordem:(ep&&!isNaN(n))?n:null,publicar_em:quando})});
+    msg("Salvo. O vídeo aparece na aba Vídeos do site.",true);limpar();carregar()}catch(e){msg("Não salvou: "+e.message)}
+  $("btn-salvar").disabled=false;
+}
+async function apagar(id){if(!confirm("Remover este vídeo do site? (Ele continua no YouTube.)"))return;try{await api("/rest/v1/site_videos?id=eq."+id,{method:"DELETE"});msg("Removido do site.",true);carregar()}catch(e){msg("Não removeu: "+e.message)}}
+function sair(){try{localStorage.removeItem("raiox-dono")}catch(e){}TOKEN=null;$("entrar").hidden=false;$("painel").hidden=true}
+async function iniciar(){
+  if(!TOKEN){$("entrar").hidden=false;return}
+  let u;try{u=await api("/auth/v1/user")}catch(e){$("msg-login").className="msg err";$("msg-login").textContent=e.message;return}
+  if(!u||u.email!==DONO){sair();$("msg-login").className="msg err";$("msg-login").textContent="A conta "+(u&&u.email)+" não tem acesso. Entre com "+DONO+".";return}
+  $("entrar").hidden=true;$("painel").hidden=false;$("quem").textContent=u.email;limpar();carregar();
+}
+$("btn-google").onclick=()=>{location.href=SB_URL+"/auth/v1/authorize?provider=google&redirect_to="+encodeURIComponent(location.origin+"/dono")+"&login_hint="+encodeURIComponent(DONO)};
+$("btn-salvar").onclick=salvar;$("btn-limpar").onclick=limpar;
+$("sair").onclick=e=>{e.preventDefault();sair()};
+$("lista").onclick=e=>{const b=e.target.closest("[data-del]");if(b)apagar(b.dataset.del)};
+$("serie").innerHTML=SERIES.map(s=>`<option>${esc(s)}</option>`).join("");
+iniciar();
+</script></body></html>

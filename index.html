@@ -1147,7 +1147,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)re
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
   if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
 /* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
-const SERIES=[{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."}];
+const SERIES=[{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."}];
 const VIDEOS=[
   {id:"2FzphWKf_9E",ep:1,titulo:"Quem manda no Brasil? Os 3 poderes",fonte:"Constituição Federal, arts. 2º, 44, 76 e 92"},
   {id:"KxTq93ADE9M",ep:2,titulo:"Deputado ou senador: qual a diferença?",fonte:"Constituição Federal, arts. 45, 46, 51, 52 e 65; Decreto Legislativo 172/2022"},
@@ -1165,6 +1165,11 @@ function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('
   const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
   const t=document.getElementById("vids-todos");if(t)t.innerHTML=SERIES.map(se=>{const vs=VIDEOS.filter(v=>(v.serie||"Como funciona o Brasil")===se.nome);return vs.length?`<section class="serie"><h2 style="margin-top:4px">${se.nome}</h2><p class="note" style="margin:-4px 0 12px">${se.desc} ${vs.length} episódios. Toque num vídeo para assistir.</p><div class="vgrade">${vs.map(card).join("")}</div></section>`:""}).join("")}
 listaVideos();
+// vídeos cadastrados pela página /dono (tabela site_videos no Supabase)
+(async()=>{try{const db=await sb("site_videos?select=youtube_id,titulo,serie,ep,fonte,ordem,publicar_em&order=ordem.asc.nullslast,publicar_em.asc");let novo=0;
+  for(const v of db){if(VIDEOS.some(x=>x.id===v.youtube_id))continue;const n=Number(v.ep);VIDEOS.push({id:v.youtube_id,ep:v.ep&&!isNaN(n)?n:(v.ep||""),titulo:v.titulo,fonte:v.fonte||"",serie:v.serie||"Como funciona o Brasil"});novo++;
+    if(v.serie&&!SERIES.some(s=>s.nome===v.serie))SERIES.push({nome:v.serie,desc:""})}
+  if(novo)listaVideos()}catch(e){}})();
 function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(x=>x.id===id)||{},yt=document.getElementById("vid-yt");
   d.querySelector(".yt").innerHTML=v.mp4?`<video src="${v.mp4}" poster="${v.capa||""}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;background:#000"></video>`:`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;
   yt.style.display=v.mp4?"none":"";if(!v.mp4)yt.href="https://youtube.com/shorts/"+id;d.showModal()}
