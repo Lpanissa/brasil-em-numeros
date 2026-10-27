@@ -215,6 +215,7 @@ details.cat>summary h2{margin-bottom:8px}
 .vgrade .vcard{flex:none;width:auto}.vgrade .vthumb{width:100%;height:auto;aspect-ratio:1}
 .vid-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 6px;padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
 .vl-seta{flex:none;width:9px;height:9px;border-right:1.6px solid var(--muted);border-top:1.6px solid var(--muted);transform:rotate(45deg)}
+.pres-foto{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:50% 20%;flex:none;background:var(--soft)}
 </style>
 <!-- Google AdSense (conta pub-1546406246556926) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1546406246556926" crossorigin="anonymous"></script>
@@ -633,7 +634,7 @@ function presidente(){
   const cor={"cumprida":"#2f9e63","em parte":"#d4a017","em andamento":"#3fa7e0","não cumprida":"#e05252"};
   const cont=Object.keys(cor).map(k=>[k,PROM22.filter(p=>p.s===k).length]);
   el.innerHTML=`<div class="card pres">
-    <div class="pres-top"><span class="pres-ini">PT</span><div><div class="l">Presidente eleito em 25/10/2026 · mandato 2027–2030</div><div class="v">${esc(PRES.civil)} (${esc(PRES.nome)})</div>
+    <div class="pres-top"><img class="pres-foto" src="/fotos/280002542548.jpg" alt="Foto oficial de Lula (TSE)" onerror="this.outerHTML='<span class=pres-ini>PT</span>'"><div><div class="l">Presidente eleito em 25/10/2026 · mandato 2027–2030</div><div class="v">${esc(PRES.civil)} (${esc(PRES.nome)})</div>
     <div class="note">${esc(PRES.partido)} · vice: ${esc(PRES.vice)} · posse em 01/01/2027</div></div></div>
     <p class="pres-res"><b>${nf(PRES.votos,0)}</b> votos (${PRES.pct}% dos válidos) no 2º turno, contra ${nf(PRES.advVotos,0)} (${PRES.advPct}%) de ${esc(PRES.adv)}. Salário bruto: <b>${rs2(SAL_FED)}</b> por mês.</p>
     <div class="pres-bt"><a class="bt" href="${PRES.plano26}" target="_blank" rel="noopener">Plano de governo 2026 (PDF, TSE)</a><a class="bt" href="${PRES.plano22}" target="_blank" rel="noopener">Plano de governo 2022 (PDF, TSE)</a></div>
