@@ -448,20 +448,23 @@ async function extrasEstados(){
   if(!document.getElementById("t-estados").classList.contains("hidden"))estados();
 }
 
+/* fotos oficiais das candidaturas no TSE (DivulgaCandContas): sequencial de cada governador eleito em 2022 (g) e em 2026 (e) */
+const TSE_FOTO=(el,sq,uf)=>`https://divulgacandcontas.tse.jus.br/divulga/rest/arquivo/img/${el}/${sq}/${uf}`;
+const GOV_SQ={eAC:"10002544107",eAL:"20002553350",eAM:"40002532272",eAP:"30002530014",eBA:"50002536314",eCE:"60002543969",eDF:"70002553055",eES:"80002552682",eGO:"90002540993",eMA:"100002545679",eMG:"130002552296",eMS:"120002536582",eMT:"110002551480",ePA:"140002549930",ePB:"150002551789",ePE:"170002537227",ePI:"180002532987",ePR:"160002540833",eRJ:"190002542887",eRN:"200002534001",eRO:"220002541939",eRR:"230002549223",eRS:"210002547857",eSC:"240002537073",eSE:"260002542491",eSP:"250002541303",eTO:"270002544544",gAC:"10001612476",gAL:"20001697934",gAM:"40001619528",gAP:"30001619676",gBA:"50001603638",gCE:"60001633585",gDF:"70001651044",gES:"80001649123",gGO:"90001646326",gMA:"100001667487",gMG:"130001701690",gMS:"120001635628",gMT:"110001643543",gPA:"140001651993",gPB:"150001613757",gPE:"170001604087",gPI:"180001604027",gPR:"160001614467",gRJ:"190001615753",gRN:"200001608810",gRO:"220001609511",gRR:"230001604255",gRS:"210001609847",gSC:"240001611127",gSE:"260001612779",gSP:"250001615967",gTO:"270001652198"};
 async function carregarPoliticos(){
   const dep=fetch("https://dadosabertos.camara.leg.br/api/v2/deputados?itens=1000&ordem=ASC&ordenarPor=nome").then(r=>r.json()).then(j=>j.dados.map(d=>({tipo:"dep",id:d.id,nome:d.nome,partido:d.siglaPartido,uf:d.siglaUf,foto:d.urlFoto,cargo:"Deputado(a) federal",sal:SAL_FED,url:`https://www.camara.leg.br/deputados/${d.id}`}))).catch(()=>[]);
   const sen=fetch("https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json").then(r=>r.json()).then(j=>j.ListaParlamentarEmExercicio.Parlamentares.Parlamentar.map(p=>{const i=p.IdentificacaoParlamentar;
     return {tipo:"sen",leg1:p.Mandato?.PrimeiraLegislaturaDoMandato?.NumeroLegislatura,id:i.CodigoParlamentar,nome:i.NomeParlamentar,partido:i.SiglaPartidoParlamentar,uf:i.UfParlamentar,foto:(i.UrlFotoParlamentar||"").replace(/^http:/,"https:"),cargo:"Senador(a)",sal:SAL_FED,url:(i.UrlPaginaParlamentar||"").replace(/^http:/,"https:")}})).catch(()=>[]);
   /* eleitos em 2026 para a Câmara e o Senado (resultado final do TSE, gravado no banco) */
-  const ele=sb("eleitos_2026?select=cargo,uf,nome,partido,votos,pct,situacao&order=votos.desc").then(l=>l.map(e=>({tipo:"ele",id:e.cargo+e.uf+e.nome,nome:e.nome.toLowerCase().replace(/(^|[\s.'-])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()),partido:e.partido,uf:e.uf,
+  const ele=sb("eleitos_2026?select=cargo,uf,nome,partido,votos,pct,situacao,sq_candidato&order=votos.desc").then(l=>l.map(e=>({tipo:"ele",id:e.cargo+e.uf+e.nome,nome:e.nome.toLowerCase().replace(/(^|[\s.'-])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()),partido:e.partido,uf:e.uf,foto:e.sq_candidato?TSE_FOTO("20322002026",e.sq_candidato,e.uf):null,
     cargo:`Eleito(a) ${e.cargo==="dep"?"deputado(a) federal":"senador(a)"} em 2026 · ${nf(e.votos,0)} votos (${e.pct}%) · posse em 01/02/2027`,sal:SAL_FED,url:"https://resultados.tse.jus.br",votos:e.votos,situacao:e.situacao}))).catch(()=>[]);
   const cea=fetch(`/api/senado-ceaps?ano=${ANO}`).then(r=>r.json()).catch(()=>null);
   const gov=D.uf.flatMap(u=>[
-    {tipo:"gov",id:"g"+u.uf,nome:u.gov_2022,partido:u.gov_2022_partido,uf:u.uf,cargo:`Governador(a) de ${u.nome}, eleito(a) em 2022`,sal:GOV_SAL[u.uf],url:"https://www.tse.jus.br"},
-    {tipo:"gov",id:"e"+u.uf,nome:u.gov_2026,partido:u.gov_2026_partido,uf:u.uf,cargo:`Eleito(a) governador(a) de ${u.nome} em 2026 (posse em 01/01/2027)`,sal:GOV_SAL[u.uf],url:"https://resultados.tse.jus.br"}]).filter(g=>g.nome);
+    {tipo:"gov",id:"g"+u.uf,nome:u.gov_2022,partido:u.gov_2022_partido,uf:u.uf,foto:GOV_SQ["g"+u.uf]&&TSE_FOTO("2040602022",GOV_SQ["g"+u.uf],u.uf),cargo:`Governador(a) de ${u.nome}, eleito(a) em 2022`,sal:GOV_SAL[u.uf],url:"https://www.tse.jus.br"},
+    {tipo:"gov",id:"e"+u.uf,nome:u.gov_2026,partido:u.gov_2026_partido,uf:u.uf,foto:GOV_SQ["e"+u.uf]&&TSE_FOTO("20322002026",GOV_SQ["e"+u.uf],u.uf),cargo:`Eleito(a) governador(a) de ${u.nome} em 2026 (posse em 01/01/2027)`,sal:GOV_SAL[u.uf],url:"https://resultados.tse.jus.br"}]).filter(g=>g.nome);
   const [d,s,c,el]=await Promise.all([dep,sen,cea,ele]);CEAPS=c;
   const nomeUF=Object.fromEntries(D.uf.map(u=>[u.uf,u.nome]));
-  POL=[{tipo:"pres",id:"lula",nome:"Lula (Luiz Inácio Lula da Silva)",partido:"PT",uf:"BR",cargo:"Presidente eleito em 2026 · mandato 2027–2030",sal:SAL_FED,url:PRES.tse},...s,...d,...gov,...el].map(p=>({...p,busca:fz(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
+  POL=[{tipo:"pres",id:"lula",nome:"Lula (Luiz Inácio Lula da Silva)",partido:"PT",uf:"BR",foto:TSE_FOTO("20322002026","280002542548","BR"),cargo:"Presidente eleito em 2026 · mandato 2027–2030",sal:SAL_FED,url:PRES.tse},...s,...d,...gov,...el].map(p=>({...p,busca:fz(`${p.nome} ${p.partido} ${p.uf} ${nomeUF[p.uf]||""} ${p.cargo}`)}));
 }
 
 async function politicos(){
@@ -477,7 +480,7 @@ async function politicos(){
   if(q)r=/^[a-z]{2}$/.test(q)&&D.uf.some(u=>u.uf===qU)?r.filter(p=>p.uf===qU||semAc(p.partido)===q):r.filter(p=>q.split(/\s+/).every(w=>p.busca.includes(fz(w))));
   document.getElementById("pol-n").textContent=`${r.length} ${r.length===1?"resultado":"resultados"}`+(r.length>POLN?` · mostrando ${POLN}`:"")+(POLT==="fav"&&!r.length?"":"");
   lista.innerHTML=r.slice(0,POLN).map(p=>`<div class="card pol" data-id="${esc(p.tipo+":"+p.id)}"><button class="fav${FAV.includes(p.tipo+":"+p.id)?" on":""}" aria-label="Favoritar ${esc(p.nome)}" aria-pressed="${FAV.includes(p.tipo+":"+p.id)}"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg></button>
-    <div class="pol-top">${p.foto?`<img src="${esc(p.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<span class="pol-ini">${esc(p.uf)}</span>`}
+    <div class="pol-top">${p.foto?`<img src="${esc(p.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<span class=pol-ini>${esc(p.uf)}</span>'">`:`<span class="pol-ini">${esc(p.uf)}</span>`}
     <div><b>${esc(p.nome)}</b><div class="note">${esc(p.cargo)}${p.tipo==="gov"?"":" · "+esc(p.uf)}</div><div class="pol-tag">${esc(p.partido||"sem partido")}</div></div></div>
     <div class="pol-sal">Salário bruto: <b>${p.sal?rs2(p.sal):"—"}</b> por mês</div>
     <div class="pol-det"></div><div class="note pol-ver">Toque para ver os gastos e a fonte</div></div>`).join("")||(POLT==="fav"?`<p class="note">Nenhum favorito ainda. Toque na estrela de um político para guardar aqui.</p>`:`<p class="note">Ninguém encontrado. Tente o nome, a sigla do partido (PT, PL, MDB…) ou do estado (SP, BA…).</p>`);
