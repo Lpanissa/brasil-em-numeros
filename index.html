@@ -212,6 +212,11 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .kpi[data-hist]{cursor:pointer;transition:border-color .2s,transform .15s}.kpi[data-hist]:hover{border-color:var(--ok)}.kpi[data-hist]:active{transform:scale(.98)}.smh-ver{margin-top:8px;font-size:13.5px;font-weight:700;color:var(--ok)}button.smh-ver{background:none;border:0;padding:6px 0;cursor:pointer;font-family:inherit}
 .smh-share{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:600 14.5px Inter,system-ui,sans-serif;cursor:pointer}.smh-h4{font-size:16px;margin:14px 0 6px}.smh-t td small{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
 .smh-dlg{max-width:680px;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.smh-dlg h3{font-size:19px;margin:2px 0 8px}.smh-dlg .nd-x{position:sticky;top:0;float:right;margin:-8px -8px 0 8px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.25)}.smh-dlg h3{padding-right:0!important}
+.leis-f{display:flex;gap:8px;margin:10px 0 8px}.leis-f input{flex:1;min-width:0;font:16px Inter,system-ui,sans-serif;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}.leis-f button{font:700 15px Inter,system-ui,sans-serif;padding:0 16px;border-radius:12px;border:0;background:var(--ink);color:var(--card);cursor:pointer}
+.leis-op{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:14px;color:var(--muted)}.leis-op select{font:14px Inter,system-ui,sans-serif;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.leis-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.leis-chips button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 13.5px Inter,system-ui,sans-serif;cursor:pointer}
+.lei{margin-bottom:10px}.lei .lt{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}.lei h4{font-size:16.5px;margin:4px 0 2px}.lei .ap{color:var(--ok);font-weight:700;font-size:14px;margin:2px 0}.lei p{margin:6px 0;font-size:15px;line-height:1.45}.lei .lk{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;font-weight:600}.lei .lk a{color:inherit}.lei .rv{background:var(--bad);color:#fff;border-radius:6px;padding:1px 7px;font-weight:700;font-size:12px}
+.ver-lei,.item .ver-lei{display:inline-flex;align-items:baseline;gap:6px;font-size:13.5px;font-weight:700;color:var(--ok)!important;text-decoration:none;margin:6px 12px 0 0}.ver-lei::before{content:"§";font-weight:800}
 .smh-sw{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px;margin:10px 0 4px;gap:2px}.smh-sw button{border:0;background:none;color:var(--muted);font:600 14px Inter,system-ui,sans-serif;padding:7px 13px;border-radius:999px;cursor:pointer}.smh-sw button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .smh-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
 .smh-t{width:100%;border-collapse:collapse;font-size:14.5px}.smh-t th,.smh-t td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}.smh-t th:first-child,.smh-t td:first-child{text-align:left}.smh-t th{color:var(--muted);font-weight:600;font-size:13px}.smh-t .pos{color:var(--ok);font-weight:700}.smh-t .neg{color:var(--bad);font-weight:700}
@@ -229,7 +234,7 @@ nav{top:31px}
 .vthumb::after{content:"";position:absolute;left:50%;top:50%;width:0;height:0;margin:-11px 0 0 -7px;border-left:20px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
 .vthumb::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.25)}
 .vid-dlg{border:0;padding:0;background:transparent;width:min(92vw,380px);overflow:visible}
-.vid-dlg::backdrop{background:rgba(0,0,0,.8)}
+.vid-dlg::backdrop{background:rgba(0,0,0,.8)}.vid-leis{margin-top:10px;color:#fff;font-size:13.5px;display:flex;flex-direction:column;gap:6px;background:#16181d;border-radius:12px;padding:10px 12px}.vid-dlg.com-leis .yt{max-height:64vh}.vid-leis:empty{display:none}.vid-leis a{color:#9fe0b4}
 .yt{position:relative;width:100%;aspect-ratio:9/16;max-height:86vh;border-radius:14px;overflow:hidden;background:#000}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .vid-dlg .nd-x{position:absolute;top:-40px;right:0;background:none;border:0;color:#fff;font-size:30px;cursor:pointer}
@@ -292,6 +297,7 @@ details.cat>summary h2{margin-bottom:8px}
   <button data-t="videos">Vídeos</button>
   <button data-t="contas">Contas do governo</button>
   <button data-t="calc">Calculadoras</button>
+  <button data-t="leis">Leis</button>
   <button data-t="noticias">Notícias</button>
   <button data-t="dossie">Conferência do dossiê</button>
 </nav>
@@ -363,7 +369,7 @@ details.cat>summary h2{margin-bottom:8px}
 
 <section id="t-politicos" class="hidden">
   <a class="vid-link" href="#videos" onclick="document.querySelector('nav button[data-t=videos]').click();return false"><span>Entenda em 1 minuto: vídeos da série "Como funciona o Brasil"</span><span class="vl-seta"></span></a>
-<dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p></dialog>
+<dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p><div id="vid-leis" class="vid-leis"></div></dialog>
   <h2>Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
   <h2>Governadores eleitos em 2026: planos de governo</h2>
@@ -420,6 +426,17 @@ details.cat>summary h2{margin-bottom:8px}
   <div class="grid c3" id="calcs"></div>
 </section>
 
+<section id="t-leis" class="hidden">
+  <div class="card">
+    <h3>Buscar uma lei<button class="info" aria-label="Sobre esta busca">i</button></h3>
+    <div class="infotxt">Busca nas leis federais: a Constituição, as emendas constitucionais, as leis, as leis complementares e os decretos-leis, com o resumo oficial (ementa) de cada uma. A base vem do projeto aberto <a href="https://github.com/ctresb/leis" target="_blank" rel="noopener">ctresb/leis</a>, que copia os textos de fontes oficiais (Senado, Câmara e Planalto). Cada resultado tem o link do texto oficial: confira sempre lá antes de usar, porque só a publicação no Diário Oficial vale. Leis estaduais e municipais ainda não entram aqui.</div>
+    <p class="note">Digite um assunto, um apelido ou o número. Ex.: férias, aluguel, Maria da Penha, 8.078.</p>
+    <form id="leis-f" class="leis-f" role="search"><input id="leis-q" type="search" placeholder="Buscar lei por assunto ou número" aria-label="Buscar lei" autocomplete="off" enterkeyhint="search"><button type="submit">Buscar</button></form>
+    <div class="leis-op"><select id="leis-tipo" aria-label="Tipo de norma"><option value="">Todas</option><option value="Lei">Leis</option><option value="Lei Complementar">Leis complementares</option><option value="CF">Constituição e emendas</option><option value="Decreto-Lei">Decretos-leis</option></select><label><input type="checkbox" id="leis-rev" checked> Esconder revogadas</label></div>
+    <div class="leis-chips" id="leis-chips"></div>
+  </div>
+  <div id="leis-res" style="margin-top:12px"></div>
+</section>
 <section id="t-noticias" class="hidden">
   <div class="card">
     <h3>Notícias de fontes oficiais<button class="info" aria-label="Sobre as notícias">i</button></h3>
@@ -1075,7 +1092,7 @@ function painel(){
 function cartao(i){const u=ult(i.chave);if(!u)return "";const s=serie(i.chave);
   const sp=s.length>=2?linha(s.map(p=>({l:"",v:+p.valor})),{w:260,h:70,fmt:()=>""}).replace(/<text[^>]*><\/text>/g,""):"";
   return `<div class="card item"><button class="comp" data-k="${i.chave}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="top"><span class="n">${esc(i.nome)}</span></div><div class="v">${esc(u.valor_texto)}</div><div class="p">${esc(u.periodo)}</div>${delta(i.chave)}
-  <div class="hist">${sp}${i.descricao?`<p class="note">${esc(i.descricao)}</p>`:""}<table>${s.slice().reverse().map(p=>`<tr><td>${esc(p.periodo)}</td><td>${esc(p.valor_texto)}</td></tr>`).join("")}</table><p class="note">Fonte: ${i.fonte_url?`<a href="${esc(i.fonte_url)}" target="_blank" rel="noopener">${esc(i.fonte)}</a>`:esc(i.fonte||"—")}</p></div></div>`}
+  <div class="hist">${sp}${i.descricao?`<p class="note">${esc(i.descricao)}</p>`:""}<table>${s.slice().reverse().map(p=>`<tr><td>${esc(p.periodo)}</td><td>${esc(p.valor_texto)}</td></tr>`).join("")}</table><p class="note">Fonte: ${i.fonte_url?`<a href="${esc(i.fonte_url)}" target="_blank" rel="noopener">${esc(i.fonte)}</a>`:esc(i.fonte||"—")}</p>${LEI[i.chave]?`<div>${verLei(i.chave)}</div>`:""}</div></div>`}
 
 /* ---------- estados ---------- */
 /* mapa real do Brasil (fronteiras: geodata-br-states, licença MIT) */
@@ -1190,7 +1207,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","videos","contas","calc","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
+  ["painel","estados","politicos","videos","contas","calc","leis","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="leis")abaLeis();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
 /* volta para a última aba aberta (pelo endereço #aba ou pelo que ficou salvo) e para o ponto da página */
 function voltaAba(){let t=location.hash.slice(1);try{t=t||localStorage.getItem("aba")}catch(e){}const b=t&&document.querySelector(`nav button[data-t="${t}"]`);if(b&&t!=="painel"){b.click()}
   let y=0;try{y=+sessionStorage.getItem("rolagem")||0}catch(e){}if(y)setTimeout(()=>scrollTo({top:y}),400)}
@@ -1226,7 +1243,8 @@ listaVideos();
   if(novo)listaVideos()}catch(e){}})();
 function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(x=>x.id===id)||{},yt=document.getElementById("vid-yt");
   d.querySelector(".yt").innerHTML=v.mp4?`<video src="${v.mp4}" poster="${v.capa||""}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;background:#000"></video>`:`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;
-  yt.style.display=v.mp4?"none":"";if(!v.mp4)yt.href="https://youtube.com/shorts/"+id;d.showModal()}
+  yt.style.display=v.mp4?"none":"";if(!v.mp4)yt.href="https://youtube.com/shorts/"+id;
+  const bl=v.serie==="Seus direitos"&&BASE_LEGAL[v.ep];d.classList.toggle("com-leis",!!bl);document.getElementById("vid-leis").innerHTML=bl?`<b>Base legal</b>${bl.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join("")}`:"";d.showModal()}
 
 /* estado da pessoa, escolhido no topo do site: vale para o Painel e para os destaques de Políticos */
 (function(){const sel=document.getElementById("uf-head");if(!sel)return;
@@ -1250,7 +1268,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
   const h=card.querySelector(":scope>h3");if(!h)return;
-  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
+  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar,#leis-f")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
   if(!card.dataset.dobra){card.dataset.dobra=1;card.classList.add("fecha")}
   if(!h.classList.contains("tog")){h.classList.add("tog");h.setAttribute("role","button");h.tabIndex=0}
   h.setAttribute("aria-expanded",!card.classList.contains("fecha"));
@@ -1365,7 +1383,7 @@ function histDesenhar(){
   <div class="smh-k">${H.destaques(d).map(x=>kp(...x)).join("")}</div>
   <button class="smh-share" type="button">${ICONE_COMP} Compartilhar gráfico</button>
   ${H.extra?H.extra(d):""}
-  <p class="fonte"><a href="https://www3.bcb.gov.br/sgspub/" target="_blank" rel="noopener">${esc(H.fonte)}</a> · ao vivo</p>`;
+  ${LEI[k]?`<div style="margin:2px 0 8px">${verLei(k)}</div>`:""}<p class="fonte"><a href="https://www3.bcb.gov.br/sgspub/" target="_blank" rel="noopener">${esc(H.fonte)}</a> · ao vivo</p>`;
   box.querySelectorAll(".smh-sw button").forEach(b=>b.onclick=()=>{HM[k]=b.dataset.m;histDesenhar()});
   box.querySelector(".smh-share").onclick=()=>histCompartilhar();
 }
@@ -1392,6 +1410,63 @@ async function histCompartilhar(){
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click()}catch(e){}
 }
+/* ---------- aba Leis: busca no índice estático gerado do projeto ctresb/leis ---------- */
+const LX={meta:null,sh:{},ch:{},res:[],n:30};
+const lxNorm=t=>t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const LX_STOP=new Set("a o as os de da do das dos e em no na nos nas para por pelo pela pelos pelas com sem sob sobre que se ao aos um uma uns umas ou dispoe outras providencias altera lei leis decreto federal art arts artigo institui fica autoriza da dar redacao este esta seu sua qual como mais entre ate apos".split(" "));
+const lxToks=q=>[...new Set((lxNorm(q).match(/[a-z0-9]+(?:\.[0-9]+)*/g)||[]).map(w=>w.replace(/\./g,"")).filter(w=>!LX_STOP.has(w)&&(w.length>=3||/^\d+$/.test(w))))];
+const lxJ=u=>fetch(u).then(r=>{if(!r.ok)throw 0;return r.json()});
+async function lxShard(p){if(!(p in LX.sh))LX.sh[p]=lxJ("/leis-idx/i/"+p+".json").catch(()=>({}));return LX.sh[p]}
+async function lxDoc(i){const c=Math.floor(i/LX.meta.ch);if(!LX.ch[c])LX.ch[c]=lxJ("/leis-idx/d/"+c+".json");return (await LX.ch[c])[i%LX.meta.ch]}
+async function leisBuscar(q){
+  const box=document.getElementById("leis-res"),tk=lxToks(q);if(!tk.length){box.innerHTML="";return}
+  box.innerHTML=`<p class="note">Buscando…</p>`;
+  try{if(!LX.meta)LX.meta=await lxJ("/leis-idx/meta.json");
+    const listas=await Promise.all(tk.map(async(t,ix)=>{const sh=await lxShard(t.slice(0,2)),S=new Set(sh[t]||[]);
+      /* palavra pela metade: também vale o começo (ex.: "aposent" acha aposentadoria) */
+      if(t.length>=4&&!/^\d+$/.test(t))for(const k in sh)if(k!==t&&k.startsWith(t))for(const i of sh[k])S.add(i);return S}));
+    const cont=new Map();listas.forEach(S=>S.forEach(i=>cont.set(i,(cont.get(i)||0)+1)));
+    let ids=[...cont.keys()].filter(i=>cont.get(i)===tk.length);const todas=ids.length>0;if(!todas)ids=[...cont.keys()];
+    ids.sort((a,b)=>(cont.get(b)-cont.get(a))||(a-b));
+    LX.res={ids,todas,q};LX.n=30;await leisMostrar();
+  }catch(e){box.innerHTML=`<p class="note">Não deu para buscar agora. Tente de novo daqui a pouco.</p>`}}
+async function leisMostrar(){
+  const box=document.getElementById("leis-res"),{ids,todas,q}=LX.res,tipo=document.getElementById("leis-tipo").value,semRev=document.getElementById("leis-rev").checked;
+  const out=[];let i=0;
+  while(out.length<LX.n&&i<ids.length){const lote=ids.slice(i,i+60);i+=60;const ds=await Promise.all(lote.map(lxDoc));
+    ds.forEach(d=>{if(out.length>=LX.n)return;if(semRev&&d[4])return;if(tipo==="CF"?!/^(Constituição|Emenda)/.test(d[3]):tipo&&d[3]!==tipo)return;out.push(d)})}
+  /* apelidos conhecidos (CLT, Maria da Penha...) e a Constituição sobem para o topo */
+  const nums=lxToks(q).filter(t=>/^\d+$/.test(t)),numOk=d=>nums.some(n=>new RegExp("n[ºo°]\\s*"+n+"\\b").test(d[0].replace(/\./g,"")));
+  out.sort((a,b)=>(numOk(b)-numOk(a))||((b[7]?1:0)-(a[7]?1:0)));
+  const dt=s=>s?s.slice(8,10)+"/"+s.slice(5,7)+"/"+s.slice(0,4):"";
+  box.innerHTML=(out.length?`<p class="note" style="margin:0 2px 8px">${todas?"":"Nenhuma lei tem todas as palavras. Mostrando as que têm parte delas. "}Resultados para "${esc(q)}"</p>`:`<div class="card"><p class="note">Nada encontrado para "${esc(q)}". Tente outra palavra ou o número da lei.</p></div>`)+
+    out.map(d=>`<div class="card lei"><div class="lt"><span>${esc(d[3])}</span><span>${dt(d[2])}</span>${d[4]?`<span class="rv">Revogada</span>`:""}</div><h4>${esc(d[0])}</h4>${d[7]?`<div class="ap">${esc(d[7])}</div>`:""}<p>${esc(d[1])}</p><div class="lk"><a href="${esc(d[5])}" target="_blank" rel="noopener">Texto oficial ›</a>${d[6]?`<a href="https://github.com/ctresb/leis/blob/main/${esc(d[6])}" target="_blank" rel="noopener">Texto em formato simples ›</a>`:""}</div></div>`).join("")+
+    (i<ids.length||out.length>=LX.n?`<button class="smh-share" id="leis-mais" type="button">Mostrar mais</button>`:"");
+  const m=document.getElementById("leis-mais");if(m)m.onclick=()=>{LX.n+=30;leisMostrar()};
+}
+function abaLeis(){const f=document.getElementById("leis-f");if(f.dataset.ok)return;f.dataset.ok=1;
+  const ch=["férias","aluguel","consumidor","aposentadoria","Maria da Penha","trânsito","salário mínimo","escala 6x1"];
+  document.getElementById("leis-chips").innerHTML=ch.map(c=>`<button type="button">${c}</button>`).join("");
+  document.querySelectorAll("#leis-chips button").forEach(b=>b.onclick=()=>{document.getElementById("leis-q").value=b.textContent;leisBuscar(b.textContent)});
+  f.onsubmit=e=>{e.preventDefault();const q=document.getElementById("leis-q").value;document.getElementById("leis-q").blur();leisBuscar(q)};
+  ["leis-tipo","leis-rev"].forEach(id=>document.getElementById(id).onchange=()=>{if(LX.res.ids){LX.n=30;leisMostrar()}});
+}
+/* "Ver a lei": de onde vem cada regra dos dados do site */
+const LEI={
+  salario_minimo:[["Lei 14.663/2023 (regra de reajuste do mínimo)","https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14663.htm"],["Decreto 12.797/2025 (valor de 2026)","https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/decreto/D12797.htm"]],
+  poupanca:[["Lei 8.177/1991, art. 12, com a Lei 12.703/2012 (regra da poupança)","https://www.planalto.gov.br/ccivil_03/leis/l8177.htm"]],
+  bolsa_familia:[["Lei 14.601/2023 (Bolsa Família)","https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14601.htm"]],
+  remedios:[["Lei 10.742/2003 (regras de preço dos remédios, CMED)","https://normas.leg.br/?urn=urn:lex:br:federal:lei:2003-10-06;10742"]],
+  plano_saude:[["Lei 9.656/1998 (planos de saúde)","https://www.planalto.gov.br/ccivil_03/leis/l9656.htm"]],
+  cesta_sp:[["Decreto-Lei 399/1938 (o que entra na cesta básica)","https://normas.leg.br/?urn=urn:lex:br:federal:decreto.lei:1938-04-30;399"]],
+  cesta_brasil:[["Decreto-Lei 399/1938 (o que entra na cesta básica)","https://normas.leg.br/?urn=urn:lex:br:federal:decreto.lei:1938-04-30;399"]],
+  salario_necessario:[["Constituição, art. 7º, IV (o que o salário mínimo deve pagar)","https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"]],
+  selic:[["Lei Complementar 179/2021 (autonomia do Banco Central)","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp179.htm"]],
+  teto_inss:[["Lei 8.213/1991, art. 41-A (reajuste dos benefícios do INSS)","https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm"]]
+};
+const verLei=k=>(LEI[k]||[]).map(([n,u])=>`<a class="ver-lei" href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join("");
+/* base legal dos episódios de "Seus direitos" */
+const BASE_LEGAL={"1": [["CLT, arts. 129 a 145 (férias)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"], ["Constituição, art. 7º, XVII (um terço a mais)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"]], "2": [["Lei 4.090/1962 (13º salário)", "https://www.planalto.gov.br/ccivil_03/leis/l4090.htm"], ["Lei 4.749/1965 (pagamento em duas parcelas)", "https://www.planalto.gov.br/ccivil_03/leis/l4749.htm"]], "3": [["Lei 8.036/1990 (FGTS)", "https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm"], ["Lei 13.932/2019 (saque-aniversário)", "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13932.htm"]], "4": [["Constituição, art. 7º, XVI (hora extra de no mínimo 50%)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["CLT, art. 59 (horas extras) e art. 73 (adicional noturno)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"]], "5": [["CLT, art. 477 (prazo de 10 dias) e art. 484-A (acordo)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"], ["Lei 12.506/2011 (aviso prévio de até 90 dias)", "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12506.htm"], ["Lei 8.036/1990, art. 18 (multa do FGTS)", "https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm"]], "6": [["Lei 7.998/1990 (seguro-desemprego)", "https://www.planalto.gov.br/ccivil_03/leis/l7998.htm"]], "7": [["Constituição, art. 239, §3º (abono salarial)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["Emenda Constitucional 135/2024 (novo limite de renda)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc135.htm"], ["Lei 7.998/1990, art. 9º", "https://www.planalto.gov.br/ccivil_03/leis/l7998.htm"]], "8": [["Constituição, art. 7º, XVIII e XIX (licenças)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["Lei 15.371/2026 (nova licença-paternidade)", "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15371.htm"], ["Lei 11.770/2008 (Empresa Cidadã)", "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11770.htm"], ["Lei 8.213/1991, art. 60 (afastamento pelo INSS)", "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm"]], "9": [["Código de Defesa do Consumidor, art. 49 (arrependimento), art. 18 (defeito) e art. 26 (prazos)", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"]], "10": [["Código de Defesa do Consumidor, art. 42 (cobrança e devolução em dobro) e art. 43 (cadastro de devedores)", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"]], "11": [["Emenda Constitucional 103/2019 (reforma da Previdência)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm"]], "12": [["Emenda Constitucional 141/2026 (fim da escala 6x1)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc141.htm"], ["Constituição, art. 7º, XIII e XV (jornada e descanso)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["CLT, arts. 66, 67 e 71 (descansos e intervalo)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"]]};
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
   const tic=()=>{const agora=Date.now();const val=j.ano===anoAtual?j.acumulado+j.porSegundo*Math.max(0,agora-j.fimBimestre)/1000:j.porSegundo*(agora-ini)/1000;
