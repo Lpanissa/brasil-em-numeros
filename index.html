@@ -9,6 +9,11 @@
 <meta name="theme-color" content="#f4f4f1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://raioxdobrasil.com.br/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Raio-X do Brasil"><meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Raio-X do Brasil"><meta property="og:description" content="Custo de vida, economia e estados em números oficiais, para comparar ano a ano.">
+<meta property="og:url" content="https://raioxdobrasil.com.br/"><meta property="og:image" content="https://raioxdobrasil.com.br/og/inicio.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://raioxdobrasil.com.br/og/inicio.jpg">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <style id="sp-css">
 #sp{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#101114;color:#eceef1;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .5s ease,visibility .5s}
@@ -1215,7 +1220,7 @@ function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('
 listaVideos();
 // vídeos cadastrados pela página /dono (tabela site_videos no Supabase)
 (async()=>{try{const db=await sb("site_videos?select=youtube_id,titulo,serie,ep,fonte,ordem,publicar_em&order=ordem.asc.nullslast,publicar_em.asc");let novo=0;
-  for(const v of db){if(VIDEOS.some(x=>x.id===v.youtube_id))continue;const n=Number(v.ep);VIDEOS.push({id:v.youtube_id,ep:v.ep&&!isNaN(n)?n:(v.ep||""),titulo:v.titulo,fonte:v.fonte||"",serie:v.serie||"Como funciona o Brasil"});novo++;
+  for(const v of db){if(!/^[\w-]{11}$/.test(v.youtube_id||"")||VIDEOS.some(x=>x.id===v.youtube_id))continue;const n=Number(v.ep);VIDEOS.push({id:v.youtube_id,ep:v.ep&&!isNaN(n)?n:esc(v.ep||""),titulo:esc(v.titulo),fonte:esc(v.fonte||""),serie:v.serie||"Como funciona o Brasil"});novo++;
     if(v.serie&&!SERIES.some(s=>s.nome===v.serie))SERIES.push({nome:v.serie,desc:""})}
   if(novo)listaVideos()}catch(e){}})();
 function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(x=>x.id===id)||{},yt=document.getElementById("vid-yt");
@@ -1329,6 +1334,8 @@ const HIST={
 function maxMin(L,f){const z=L[L.length-1],mx=L.reduce((a,b)=>b.v>a.v?b:a),mn=L.reduce((a,b)=>b.v<a.v?b:a);
   return [["Agora",f(z.v),mesAno(z.d)],["Mais alto",f(mx.v),mx.a===z.a?"agora":"em "+mx.a],["Mais baixo",f(mn.v),mn.a===z.a?"agora":"em "+mn.a]]}
 let HK=null,HM={},HD={},HP={};
+const SLUG={"salario-minimo":"salario_minimo",selic:"selic",dolar:"dolar",desemprego:"desemprego",inflacao:"ipca"},SLUG_DE=Object.fromEntries(Object.entries(SLUG).map(([a,b])=>[b,a]));
+(()=>{try{const v=new URLSearchParams(location.search).get("ver");if(!v||!SLUG[v])return;history.replaceState(null,"","/"+(location.hash||""));addEventListener("load",()=>setTimeout(()=>abrirHist(SLUG[v]),600))}catch(e){}})();
 function abrirHist(k){const H=HIST[k];if(!H)return;HK=k;const d=document.getElementById("smh-dlg");
   d.querySelector("h3 .t").textContent=H.tit;d.querySelector(".infotxt").textContent=H.info;d.querySelector(".infotxt").classList.remove("on");d.querySelector("h3 .info").classList.remove("on");
   d.querySelector(".oque").innerHTML="<b>O que é:</b> "+esc(H.oque);d.scrollTop=0;if(!d.open)d.showModal();
@@ -1380,7 +1387,7 @@ async function histCompartilhar(){
   g.fillStyle="#2a2d33";g.fillRect(80,Ht-220,W-160,3);g.fillStyle="#9aa0a9";g.font=F(500,30);g.fillText("Fonte: "+H.fonte,80,Ht-160);
   g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(location.host,80,Ht-90);
   const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-${k}-historico.png`,{type:"image/png"});
-  const texto=`${H.tit}: veja o gráfico completo no Raio-X do Brasil: ${location.origin}/`;
+  const texto=`${H.tit}: veja o gráfico completo no Raio-X do Brasil: ${location.origin}/${SLUG_DE[k]||""}`;
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click()}catch(e){}
 }
