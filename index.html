@@ -1260,7 +1260,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
   const h=card.querySelector(":scope>h3");if(!h)return;
-  if(card.querySelector("#busca,#mapa,#not-uf,#d-bar,#leis-f")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
+  if(card.id==="gastos-card"||card.querySelector("#busca,#mapa,#not-uf,#d-bar,#leis-f")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
   if(!card.dataset.dobra){card.dataset.dobra=1;card.classList.add("fecha")}
   if(!h.classList.contains("tog")){h.classList.add("tog");h.setAttribute("role","button");h.tabIndex=0}
   h.setAttribute("aria-expanded",!card.classList.contains("fecha"));
@@ -1514,12 +1514,12 @@ async function gastosCompartilhar(){
   x.fillStyle="#eceef1";x.font=F(800,44);x.fillText("Raio-X do Brasil",192,128);
   x.font=F(800,54);x.fillText("Com o que o governo federal",80,250);x.fillStyle="#ef5a54";x.fillText("gasta o seu dinheiro",80,314);
   x.fillStyle="#9aa0a9";x.font=F(500,32);x.fillText(`${g.ano}${g.per===6?"":" (até "+MESES[g.per*2-1]+")"} · total ${bi(g.total)}`,80,370);
-  const cx=300,cy=640,R=210,r=128;let a=-Math.PI/2;g.top.forEach((t,i)=>{const s=t.v/g.total*2*Math.PI;x.beginPath();x.arc(cx,cy,R,a,a+s);x.arc(cx,cy,r,a+s,a,true);x.closePath();x.fillStyle=GCOR[i%GCOR.length];x.fill();x.strokeStyle="#101114";x.lineWidth=4;x.stroke();a+=s});
-  x.fillStyle="#eceef1";x.font=F(800,40);x.textAlign="center";x.fillText("R$ 100",cx,cy+4);x.fillStyle="#9aa0a9";x.font=F(500,24);x.fillText("de cada",cx,cy-40);x.textAlign="left";
-  g.top.slice(0,8).forEach((t,i)=>{const y=470+i*44;x.fillStyle=GCOR[i];x.beginPath();x.arc(560,y-10,11,0,7);x.fill();x.fillStyle="#eceef1";x.font=F(600,27);x.fillText(t.l.replace(/ \(.*\)/,""),584,y);x.textAlign="right";x.font=F(800,27);x.fillText("R$ "+nf(t.v/g.total*100,0),1000,y);x.textAlign="left"});
-  x.fillStyle="#9aa0a9";x.font=F(500,26);x.fillText("Valores de cada R$ 100 gastos. Sem a rolagem da dívida.",80,960);
-  x.fillStyle="#2a2d33";x.fillRect(80,H-230,W-160,3);x.fillStyle="#9aa0a9";x.font=F(500,28);x.fillText("Fonte: Tesouro Nacional · SICONFI · RREO da União",80,H-170);
-  x.font=F(700,40);x.fillStyle="#ffdf00";x.fillText(location.host,80,H-95);
+  const cx=540,cy=640,R=210,r=128;let a=-Math.PI/2;g.top.forEach((t,i)=>{const s=t.v/g.total*2*Math.PI;x.beginPath();x.arc(cx,cy,R,a,a+s);x.arc(cx,cy,r,a+s,a,true);x.closePath();x.fillStyle=GCOR[i%GCOR.length];x.fill();x.strokeStyle="#101114";x.lineWidth=4;x.stroke();a+=s});
+  x.fillStyle="#eceef1";x.font=F(800,44);x.textAlign="center";x.fillText("R$ 100",cx,cy+16);x.fillStyle="#9aa0a9";x.font=F(500,26);x.fillText("de cada",cx,cy-30);x.textAlign="left";
+  g.top.slice(0,8).forEach((t,i)=>{const col=i<4?0:1,y=920+(i%4)*48,x0=80+col*470;x.fillStyle=GCOR[i];x.beginPath();x.arc(x0+10,y-9,11,0,7);x.fill();x.fillStyle="#eceef1";x.font=F(600,26);let n=t.l.replace(/ \(.*\)/,"").replace("Repasses a estados e municípios","Estados e municípios").replace("Juros e pagamento da dívida","Juros e dívida").replace("Aposentadorias e pensões","Aposentadorias");x.fillText(n,x0+34,y);x.textAlign="right";x.font=F(800,26);x.fillText("R$ "+nf(t.v/g.total*100,0),x0+420,y);x.textAlign="left"});
+  x.fillStyle="#9aa0a9";x.font=F(500,24);x.fillText("De cada R$ 100 gastos pelo governo federal. Sem a rolagem da dívida.",80,1145);
+  x.fillStyle="#2a2d33";x.fillRect(80,H-170,W-160,3);x.fillStyle="#9aa0a9";x.font=F(500,26);x.fillText("Fonte: Tesouro Nacional · SICONFI · RREO da União",80,H-120);
+  x.font=F(700,36);x.fillStyle="#ffdf00";x.fillText(location.host,80,H-60);
   const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-gastos-${g.ano}.png`,{type:"image/png"}),texto=`Com o que o governo federal gasta o seu dinheiro (${g.ano}): veja no Raio-X do Brasil ${location.origin}/gastos`;
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}const l=document.createElement("a");l.href=URL.createObjectURL(blob);l.download=arq.name;l.click()}catch(e){}}
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
