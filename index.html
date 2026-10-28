@@ -202,6 +202,14 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .an-line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.3s ease}
 .an-pie{transform-box:view-box;transform-origin:center;transform:scale(.3) rotate(-90deg);opacity:0;transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .5s}
 .an-dot{opacity:0;transition:opacity .25s}
+.an-col{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);transition:transform .8s cubic-bezier(.2,.8,.2,1)}svg.vis .an-col{transform:none}
+.kpi[data-hist]{cursor:pointer;transition:border-color .2s,transform .15s}.kpi[data-hist]:hover{border-color:var(--ok)}.kpi[data-hist]:active{transform:scale(.98)}.smh-ver{margin-top:8px;font-size:13.5px;font-weight:700;color:var(--ok)}button.smh-ver{background:none;border:0;padding:6px 0;cursor:pointer;font-family:inherit}
+.smh-share{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:600 14.5px Inter,system-ui,sans-serif;cursor:pointer}.smh-h4{font-size:16px;margin:14px 0 6px}.smh-t td small{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
+.smh-dlg{max-width:680px;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.smh-dlg h3{font-size:19px;margin:2px 0 8px}.smh-dlg .nd-x{position:sticky;top:0;float:right;margin:-8px -8px 0 8px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.25)}.smh-dlg h3{padding-right:0!important}
+.smh-sw{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px;margin:10px 0 4px;gap:2px}.smh-sw button{border:0;background:none;color:var(--muted);font:600 14px Inter,system-ui,sans-serif;padding:7px 13px;border-radius:999px;cursor:pointer}.smh-sw button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.smh-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.smh-t{width:100%;border-collapse:collapse;font-size:14.5px}.smh-t th,.smh-t td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}.smh-t th:first-child,.smh-t td:first-child{text-align:left}.smh-t th{color:var(--muted);font-weight:600;font-size:13px}.smh-t .pos{color:var(--ok);font-weight:700}.smh-t .neg{color:var(--bad);font-weight:700}
+@media (prefers-reduced-motion:reduce){.an-col{transition:none!important;transform:none!important}}
 svg.vis .an-bar{transform:scaleX(1)}svg.vis .an-line{stroke-dashoffset:0}svg.vis .an-pie{transform:none;opacity:1}svg.vis .an-dot{opacity:1}
 @media (prefers-reduced-motion:reduce){.an-bar,.an-line,.an-pie,.an-dot{transition:none!important;transform:none!important;stroke-dashoffset:0!important;opacity:1!important}}
 .impm{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;gap:10px;background:#111;color:#f3f3f3;font-size:13.5px;padding:6px 12px;flex-wrap:nowrap;white-space:nowrap}
@@ -289,7 +297,7 @@ details.cat>summary h2{margin-bottom:8px}
   <div class="card seu-uf" id="seu-uf"></div>
   <div class="card" id="cal" style="margin-top:12px"></div>
   <div class="grid c2">
-    <div class="card"><h3>Inflação em 12 meses</h3><p class="note">Quanto os preços subiram em 12 meses, mês a mês em 2026 · IPCA, IBGE</p><div id="g-ipca"></div></div>
+    <div class="card"><h3>Inflação em 12 meses</h3><p class="note">Quanto os preços subiram em 12 meses, mês a mês em 2026 · IPCA, IBGE</p><div id="g-ipca"></div><button class="smh-ver lnk" data-hist="ipca" type="button">Ver anos anteriores <span aria-hidden="true">›</span></button></div>
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
     <div class="card"><h3>Quanto o salário mínimo compra</h3><p class="note">Cesta básica de SP sobre o salário mínimo líquido (set/2026)</p><div id="g-pizza"></div></div>
     <div class="card"><h3>Cesta básica SP: o que mais subiu</h3><p class="note">Variação de preço em 12 meses (set/2026)</p><div id="g-cesta"></div></div>
@@ -422,6 +430,7 @@ details.cat>summary h2{margin-bottom:8px}
     <li><a href="https://www.camara.leg.br/noticias" target="_blank" rel="noopener">Agência Câmara de Notícias · feed de últimas notícias</a></li>
   </ul></div>
 </section>
+<dialog id="smh-dlg" class="not-dlg smh-dlg" onclick="if(event.target===this)this.close()"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><h3><span class="t"></span><button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt"></div><p class="oque"></p><div id="smh-c"></div></dialog>
 <dialog id="not-dlg" class="not-dlg"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="nd-corpo"></div></dialog>
 
 <section id="t-dossie" class="hidden">
@@ -463,7 +472,7 @@ async function carregar(){
   try{montarFiltro();painel();estados();dossie();}finally{window.__spFim&&__spFim()}
   impostometro();aoVivo();extrasEstados().then(seuEstado);seuEstado();calendario();noticias();setInterval(noticias,15*60000);
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
-  let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados()}},250)});
+  let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados();if(document.getElementById("smh-dlg").open)histDesenhar()}},250)});
 }
 
 /* ---------- políticos: deputados (Câmara), senadores (Senado), governadores (TSE + Assembleias) ---------- */
@@ -1041,10 +1050,10 @@ const KPI=["selic","salario_minimo","cesta_sp","desemprego","gasolina","dolar"];
 function painel(){
   const ind=Object.fromEntries(D.ind.map(i=>[i.chave,i]));
   const kpiDolar=()=>{const c=window.COMERCIAL,u=ult("dolar"),cl=Math.abs(c.p)<0.005?"eq":c.p>0?"up":"down";
-    return `<div class="card kpi"><button class="comp" data-k="dolar" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Dólar comercial</div><div class="v">R$ ${nf(c.v,2)}</div><div class="p note">${esc(c.h)}</div>${isNaN(c.p)?"":`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`}<div class="comerc">Oficial (PTAX): <b>${esc(u.valor_texto)}</b> · ${esc((u.periodo.split(", ")[1]||u.periodo).replace("fechamento às","fechou às"))}</div></div>`};
+    return `<div class="card kpi" data-hist="dolar" role="button" tabindex="0" aria-haspopup="dialog"><button class="comp" data-k="dolar" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Dólar comercial</div><div class="v">R$ ${nf(c.v,2)}</div><div class="p note">${esc(c.h)}</div>${isNaN(c.p)?"":`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`}<div class="smh-ver">Ver anos anteriores <span aria-hidden="true">›</span></div><div class="comerc">Oficial (PTAX): <b>${esc(u.valor_texto)}</b> · ${esc((u.periodo.split(", ")[1]||u.periodo).replace("fechamento às","fechou às"))}</div></div>`};
   const kpiIbov=()=>{const c=window.IBOV,cl=isNaN(c.p)?"":Math.abs(c.p)<0.005?"eq":c.p>0?"up":"down";
     return `<div class="card kpi ibov"><button class="comp" data-k="ibov" aria-label="Compartilhar">${ICONE_COMP}</button><div class="l">Ibovespa (bolsa de valores)</div><div class="v">${nf(c.v,0)} pontos</div><div class="p note">${esc(c.h)} · fonte: ${esc(c.fonte)}</div>${cl?`<span class="delta ${cl}">${cl==="eq"?"=":c.p>0?"▲":"▼"} ${nf(Math.abs(c.p),1)}% hoje</span>`:""}</div>`};
-  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>k==="dolar"&&window.COMERCIAL&&!cmp()?kpiDolar():`<div class="card kpi"><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}</div>`).join("")+(window.IBOV&&!cmp()?kpiIbov():"");
+  document.getElementById("kpis").innerHTML=KPI.filter(k=>ind[k]&&ult(k)).map(k=>k==="dolar"&&window.COMERCIAL&&!cmp()?kpiDolar():`<div class="card kpi"${HIST[k]?` data-hist="${k}" role="button" tabindex="0" aria-haspopup="dialog"`:""}><button class="comp" data-k="${k}" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg></button><div class="l">${esc(ind[k].nome)}</div><div class="v">${esc(ult(k).valor_texto)}</div><div class="p note">${esc(ult(k).periodo)}</div>${delta(k)}${HIST[k]?`<div class="smh-ver">Ver anos anteriores <span aria-hidden="true">›</span></div>`:""}</div>`).join("")+(window.IBOV&&!cmp()?kpiIbov():"");
   const mesL=p=>p.periodo.split("/")[0];
   document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%",w:LARG("g-ipca")});
   document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true,w:LARG("g-selic")});
@@ -1245,6 +1254,136 @@ document.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;c
 document.querySelectorAll(".card").forEach(dobra);
 new MutationObserver(ms=>{const vist=new Set();for(const m of ms){const c=m.target.closest&&m.target.closest(".card");if(c)vist.add(c);for(const n of m.addedNodes){if(n.nodeType!==1)continue;if(n.classList.contains("card"))vist.add(n);n.querySelectorAll(".card").forEach(x=>vist.add(x))}}vist.forEach(dobra)}).observe(document.body,{childList:true,subtree:true});
 /* impostômetro federal: total oficial do Tesouro até o último bimestre + ritmo médio por segundo */
+/* ---------- histórico ao clicar nos blocos (Banco Central SGS, ao vivo) ---------- */
+const GOVS=[["FHC",1995,2002],["Lula",2003,2010],["Dilma",2011,2016],["Temer",2017,2018],["Bolsonaro",2019,2022],["Lula",2023,2099]];
+const govDe=a=>GOVS.find(g=>a>=g[1]&&a<=g[2]);
+const sgsUrl=(n,de,ate)=>`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${n}/dados?formato=json&dataInicial=${de}${ate?"&dataFinal="+ate:""}`;
+const getJ=u=>fetch(u).then(r=>{if(!r.ok)throw 0;return r.json()});
+/* uma segunda tentativa: a API do Banco Central às vezes recusa pedidos em sequência */
+const getJ2=u=>getJ(u).catch(()=>new Promise(z=>setTimeout(z,800)).then(()=>getJ(u)));
+/* séries diárias: o Banco Central só entrega 10 anos por consulta, então busca em pedaços */
+async function sgsDiaria(n,ano0){const A=new Date().getFullYear(),R=[];for(let a=ano0;a<=A;a+=9){const u=sgsUrl(n,"01/01/"+a,"31/12/"+Math.min(A,a+8));let r;try{r=await getJ(u)}catch(e){await new Promise(z=>setTimeout(z,800));r=await getJ(u)}R.push(...r)}return R}
+const kMes=d=>d.slice(6)+"-"+d.slice(3,5);
+/* último valor de cada ano */
+const porAno=lista=>{const o={},hj=new Date().toISOString().slice(0,10);lista.forEach(x=>{if(x.data.slice(6)+"-"+x.data.slice(3,5)+"-"+x.data.slice(0,2)>hj)return;o[x.data.slice(6)]={v:+x.valor,d:x.data}});return Object.keys(o).sort().map(a=>({a:+a,v:o[a].v,d:o[a].d}))};
+const mesAno=d=>MESES[+d.slice(3,5)-1].slice(0,3)+"/"+d.slice(6);
+const HIST={
+  salario_minimo:{tit:"Salário mínimo ano a ano",oque:"o menor salário que pode ser pago a quem trabalha em tempo integral no Brasil. Também é o piso das aposentadorias do INSS.",
+    info:"Valor do salário mínimo nacional em cada ano desde 1995, primeiro ano inteiro do Real, pela série oficial do Banco Central (SGS 1619). \"Em dinheiro de hoje\" corrige cada valor pela inflação medida pelo INPC do IBGE (SGS 188), o índice usado nos reajustes do mínimo, até o mês em que começou a valer o mínimo atual. Assim dá para comparar o poder de compra de verdade. Quando muda mais de uma vez no ano, vale o último valor do ano. As faixas mostram quem era o presidente em cada ano. Atualiza sozinho.",
+    fonte:"Banco Central · SGS 1619 (salário mínimo) e 188 (INPC, IBGE)",
+    async carregar(){
+      const sm=await getJ2(sgsUrl(1619,"01/01/1995")),ip=await getJ2(sgsUrl(188,"01/01/1995"));
+      const I={};ip.forEach(x=>I[kMes(x.data)]=+x.valor);const M=Object.keys(I).sort();
+      const fat=(de,ate)=>{let f=1;for(const m of M){if(m>=de&&(!ate||m<ate))f*=1+I[m]/100}return f};
+      const hoje=new Date().toISOString().slice(0,7),mud=[];
+      sm.forEach(x=>{const v=+x.valor,m=kMes(x.data);if(m<=hoje&&(!mud.length||mud[mud.length-1].v!==v))mud.push({m,v})});
+      const anos={};mud.forEach(x=>anos[x.m.slice(0,4)]=x);
+      const L=Object.keys(anos).sort().map(a=>{const x=anos[a],ini=mud.find(y=>y.m.slice(0,4)===a),ant=mud.filter(y=>y.m<ini.m).pop();
+        return {a:+a,v:x.v,m:x.m,reaj:ant?x.v/ant.v-1:null,real:ant?(x.v/ant.v)/fat(ant.m,x.m)-1:null}});
+      const zb=L[L.length-1].m;L.forEach(x=>x.hoje=x.v*fat(x.m,zb));
+      /* por governo: do último valor antes do mandato até o último valor dentro dele */
+      const G=GOVS.map(([n,a0,a1])=>{const dentro=L.filter(x=>x.a>=a0&&x.a<=a1);if(!dentro.length)return null;const antes=L.filter(x=>x.a<a0).pop()||null,fim=dentro[dentro.length-1];
+        const base=antes||dentro[0],anosN=dentro.length-(antes?0:1);const real=fim.hoje/base.hoje-1;
+        return {n,per:a0+"–"+(a1>2090?"hoje":a1),de:base.v,ate:fim.v,real,porAno:anosN>0?Math.pow(1+real,1/anosN)-1:null,atual:a1>2090}}).filter(Boolean);
+      return {L,ref:zb.slice(5)+"/"+zb.slice(0,4),G};
+    },
+    modos:[["epoca","Valor da época"],["hoje","Em dinheiro de hoje"]],
+    pts(d,m){return d.L.map(x=>({a:x.a,v:m==="hoje"?x.hoje:x.v}))},
+    fmt:v=>"R$ "+nf(v,0),eixo:v=>nf(v,0),bandas:true,
+    nota(d,m){const r=MESES[+d.ref.slice(0,2)-1].slice(0,3)+"/"+d.ref.slice(3);return m==="hoje"?`Cada ano corrigido pela inflação (INPC) até ${r}, quando começou a valer o mínimo atual: dá para comparar o que o salário comprava`:"Quanto era o salário mínimo em cada ano, em reais"},
+    destaques(d){const p=d.L[0],z=d.L[d.L.length-1];return [["Em "+p.a,"R$ "+nf(p.v,0),"em dinheiro de "+z.a+": R$ "+nf(p.hoje,0)],["Em "+z.a,"R$ "+nf(z.v,0),"valor atual"],["Poder de compra",nf(z.v/p.hoje,1).replace(",0","")+" vezes","o de "+p.a+", já descontada a inflação"]]},
+    extra(d){const c=v=>v>=0.0005?"pos":v<=-0.0005?"neg":"",pc=v=>(v>=0?"+":"")+nf(v*100,1)+"%";
+      return `<h4 class="smh-h4">Quanto subiu acima da inflação em cada governo</h4><table class="smh-t"><thead><tr><th>Governo</th><th>Mínimo</th><th>Total</th><th>Por ano</th></tr></thead><tbody>${d.G.map(g=>`<tr><td><b>${g.n}</b><small>${g.per}</small></td><td>R$ ${nf(g.de,0)} → ${nf(g.ate,0)}</td><td class="${c(g.real)}">${pc(g.real)}</td><td class="${g.porAno==null?"":c(g.porAno)}">${g.porAno==null?"–":pc(g.porAno)}</td></tr>`).join("")}</tbody></table>
+      <p class="note">Conta feita só com os números oficiais: o mínimo do fim de cada governo comparado com o do fim do governo anterior, já descontada a inflação (INPC). ${d.G.some(g=>g.atual)?"O governo atual ainda está em andamento. ":""}Para FHC, a conta parte do mínimo de 1995 (R$ ${nf(d.L[0].v,0)}), primeiro ano inteiro do Real.</p>
+      <details class="abre"><summary>Ver ano a ano</summary><table class="smh-t"><thead><tr><th>Ano</th><th>Valor</th><th>Reajuste</th><th>Acima da inflação</th></tr></thead><tbody>${d.L.slice().reverse().map(x=>`<tr><td>${x.a}</td><td>R$ ${nf(x.v,0)}</td><td>${x.reaj==null?"–":"+"+nf(x.reaj*100,1)+"%"}</td><td class="${x.real==null?"":c(x.real)}">${x.real==null?"–":pc(x.real)}</td></tr>`).join("")}</tbody></table></details>`}
+  },
+  selic:{tit:"Taxa Selic desde 1999",oque:"a taxa básica de juros do país, definida pelo Copom do Banco Central. Quando sobe, empréstimos e financiamentos ficam mais caros e a poupança e a renda fixa rendem mais.",
+    info:"Meta da taxa Selic definida pelo Copom, ao fim de cada ano, desde 1999, quando o Banco Central passou a usar o sistema de metas. No ano atual, vale a taxa de hoje. Série oficial do Banco Central (SGS 432), atualiza sozinha a cada reunião do Copom.",
+    fonte:"Banco Central · SGS 432 (meta da Selic, Copom)",
+    async carregar(){const L=porAno(await sgsDiaria(432,1999));return {L}},
+    pts:d=>d.L.map(x=>({a:x.a,v:x.v})),fmt:v=>nf(v,2)+"%",eixo:v=>nf(v,0)+"%",nota:()=>"Taxa ao fim de cada ano, em % ao ano",
+    destaques(d){return maxMin(d.L,v=>nf(v,2)+"%")}
+  },
+  dolar:{tit:"Dólar desde 1995",oque:"quantos reais custa 1 dólar americano. Mexe no preço da gasolina, do pão (trigo importado), de eletrônicos e de viagens.",
+    info:"Cotação oficial de venda do dólar (PTAX) do último dia útil de cada ano, desde 1995. No ano atual, vale a última cotação. Série oficial do Banco Central (SGS 1), atualiza sozinha todo dia útil. É o valor de cada época, sem correção pela inflação.",
+    fonte:"Banco Central · SGS 1 (dólar PTAX, venda)",
+    async carregar(){const L=porAno(await sgsDiaria(1,1995));return {L}},
+    pts:d=>d.L.map(x=>({a:x.a,v:x.v})),fmt:v=>"R$ "+nf(v,2),eixo:v=>nf(v,2),nota:()=>"Cotação no fim de cada ano, em reais",
+    destaques(d){return maxMin(d.L,v=>"R$ "+nf(v,2))}
+  },
+  desemprego:{tit:"Desemprego desde 2012",oque:"a parte das pessoas que procuram trabalho e não encontram. Quem não está procurando, como estudantes e aposentados, não entra na conta.",
+    info:"Taxa de desocupação da PNAD Contínua do IBGE, no trimestre que termina em dezembro de cada ano, desde 2012, quando a pesquisa começou. No ano atual, vale o último trimestre divulgado. Série do Banco Central (SGS 24369), atualiza sozinha todo mês.",
+    fonte:"IBGE · PNAD Contínua, pela série 24369 do Banco Central",
+    async carregar(){const L=porAno(await getJ2(sgsUrl(24369,"01/01/2012")));return {L}},
+    pts:d=>d.L.map(x=>({a:x.a,v:x.v})),fmt:v=>nf(v,1)+"%",eixo:v=>nf(v,0)+"%",nota:()=>"Taxa no último trimestre de cada ano, em %",
+    destaques(d){return maxMin(d.L,v=>nf(v,1)+"%")}
+  },
+  ipca:{tit:"Inflação ano a ano",oque:"quanto os preços subiram no ano, em média, pelo IPCA do IBGE, o índice oficial de inflação do país.",
+    info:"IPCA acumulado em cada ano (de janeiro a dezembro), desde 1995. No ano atual, vale o acumulado em 12 meses até o último mês divulgado. Série do Banco Central (SGS 13522), atualiza sozinha todo mês.",
+    fonte:"IBGE · IPCA, pela série 13522 do Banco Central",
+    async carregar(){const L=porAno(await getJ2(sgsUrl(13522,"01/01/1995")));return {L}},
+    pts:d=>d.L.map(x=>({a:x.a,v:x.v})),fmt:v=>nf(v,1)+"%",eixo:v=>nf(v,0)+"%",nota:()=>"Inflação de cada ano, em %",
+    destaques(d){return maxMin(d.L,v=>nf(v,1)+"%")}
+  }
+};
+function maxMin(L,f){const z=L[L.length-1],mx=L.reduce((a,b)=>b.v>a.v?b:a),mn=L.reduce((a,b)=>b.v<a.v?b:a);
+  return [["Agora",f(z.v),mesAno(z.d)],["Mais alto",f(mx.v),mx.a===z.a?"agora":"em "+mx.a],["Mais baixo",f(mn.v),mn.a===z.a?"agora":"em "+mn.a]]}
+let HK=null,HM={},HD={},HP={};
+function abrirHist(k){const H=HIST[k];if(!H)return;HK=k;const d=document.getElementById("smh-dlg");
+  d.querySelector("h3 .t").textContent=H.tit;d.querySelector(".infotxt").textContent=H.info;d.querySelector(".infotxt").classList.remove("on");d.querySelector("h3 .info").classList.remove("on");
+  d.querySelector(".oque").innerHTML="<b>O que é:</b> "+esc(H.oque);d.scrollTop=0;if(!d.open)d.showModal();
+  if(HD[k])histDesenhar();else{document.getElementById("smh-c").innerHTML=`<p class="note">Carregando…</p>`;
+    if(!HP[k])HP[k]=H.carregar().then(r=>{HD[k]=r;if(HK===k)histDesenhar()}).catch(()=>{HP[k]=null;if(HK===k)document.getElementById("smh-c").innerHTML=`<p class="note">Não deu para carregar os dados agora. Tente de novo daqui a pouco.</p>`})}}
+document.addEventListener("click",e=>{const c=e.target.closest("[data-hist]");if(c&&!e.target.closest(".comp"))abrirHist(c.dataset.hist)});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".kpi[data-hist]")){e.preventDefault();abrirHist(e.target.dataset.hist)}});
+function colunas(pts,{w=LARG(),h=250,fmt=v=>nf(v,0),eixo=fmt,cor=css('--ok'),bandas=false}={}){
+  const P={l:58,r:8,t:bandas?58:28,b:30},n=pts.length,mx=Math.max(...pts.map(p=>p.v))*1.08,bw=(w-P.l-P.r)/n;
+  const Y=v=>P.t+(1-v/mx)*(h-P.t-P.b);let bd="";const abrev=[];
+  if(bandas){let i=0,k=0;while(i<n){const g=govDe(pts[i].a);let j=i;while(j+1<n&&govDe(pts[j+1].a)===g)j++;
+    const x0=P.l+i*bw,x1=P.l+(j+1)*bw,cx=(x0+x1)/2,larg=x1-x0;let nome=g[0],fs=Math.min(12,(larg-4)/(nome.length*.6));
+    if(fs<9.5){nome=g[0].slice(0,2);fs=Math.min(11,(larg-2)/(nome.length*.62));abrev.push(nome+" = "+g[0])}
+    bd+=`<rect x="${x0}" y="${P.t-34}" width="${larg}" height="${h-P.b-P.t+34}" fill="${k%2?css('--soft'):"transparent"}"/><text x="${cx}" y="${P.t-20}" font-size="${fs}" font-weight="700" text-anchor="middle" fill="${css('--muted')}">${nome}</text>`;i=j+1;k++}}
+  const g=[0,.5,1].map(f=>{const v=mx/1.08*f;return `<line x1="${P.l}" x2="${w-P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css('--line')}"/><text x="${P.l-6}" y="${Y(v)+4}" font-size="13" text-anchor="end" fill="${css('--muted')}">${eixo(v)}</text>`}).join("");
+  const passo=w<420?7:5;
+  const b=pts.map((p,i)=>{const x=P.l+i*bw+bw*.14,last=i===n-1;return `<rect class="an-col" style="transition-delay:${(i*18)}ms" x="${x}" y="${Y(p.v)}" width="${bw*.72}" height="${Math.max(0,h-P.b-Y(p.v))}" rx="${Math.min(3,bw*.2)}" fill="${last?cor:css('--muted')}" opacity="${last?1:.6}"><title>${p.a}: ${fmt(p.v)}</title></rect>`+((i%passo===0&&n-1-i>=4)||last?`<text x="${last?x+bw*.72:x+bw*.36}" y="${h-10}" font-size="13" text-anchor="${last?"end":"middle"}" fill="${css('--muted')}">${p.a}</text>`:"")}).join("");
+  const l=pts[n-1],xl=P.l+(n-1)*bw+bw*.86;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${bd}${g}${b}<text x="${xl}" y="${Y(l.v)-8}" font-size="15" font-weight="700" text-anchor="end" fill="${css('--ink')}" stroke="${css('--card')}" stroke-width="5" paint-order="stroke">${fmt(l.v)}</text></svg>`+(bandas?`<p class="note" style="font-size:12.5px;margin:0 0 6px">Faixas: quem era o presidente em cada ano${abrev.length?" · "+[...new Set(abrev)].join(" · "):""}</p>`:"")}
+function histDesenhar(){
+  const k=HK,H=HIST[k],d=HD[k];if(!H||!d)return;const m=HM[k]||(H.modos?H.modos[0][0]:"");
+  const box=document.getElementById("smh-c"),w=Math.max(280,Math.min(640,box.clientWidth||340));
+  const kp=(l,v,f)=>`<div class="uf-c"><div class="l">${l}</div><div class="v">${v}</div><p class="fonte">${f}</p></div>`;
+  box.innerHTML=`${H.modos?`<div class="smh-sw" role="group" aria-label="Como mostrar os valores">${H.modos.map(([id,n])=>`<button data-m="${id}" class="${id===m?"on":""}" aria-pressed="${id===m}">${n}</button>`).join("")}</div>`:""}
+  <p class="note">${H.nota(d,m)}</p>${colunas(H.pts(d,m),{w,fmt:H.fmt,eixo:H.eixo,bandas:H.bandas})}
+  <div class="smh-k">${H.destaques(d).map(x=>kp(...x)).join("")}</div>
+  <button class="smh-share" type="button">${ICONE_COMP} Compartilhar gráfico</button>
+  ${H.extra?H.extra(d):""}
+  <p class="fonte"><a href="https://www3.bcb.gov.br/sgspub/" target="_blank" rel="noopener">${esc(H.fonte)}</a> · ao vivo</p>`;
+  box.querySelectorAll(".smh-sw button").forEach(b=>b.onclick=()=>{HM[k]=b.dataset.m;histDesenhar()});
+  box.querySelector(".smh-share").onclick=()=>histCompartilhar();
+}
+/* imagem do gráfico para mandar no WhatsApp / redes */
+async function histCompartilhar(){
+  const k=HK,H=HIST[k],d=HD[k];if(!d)return;const m=HM[k]||(H.modos?H.modos[0][0]:""),pts=H.pts(d,m),n=pts.length;
+  const W=1080,Ht=1350,c=document.createElement("canvas");c.width=W;c.height=Ht;const g=c.getContext("2d");
+  const F=(w,px)=>`${w} ${px}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  g.fillStyle="#101114";g.fillRect(0,0,W,Ht);
+  g.save();g.beginPath();g.roundRect(80,80,110,110,28);g.clip();g.fillStyle="#009c3b";g.fillRect(80,80,110,110);g.fillStyle="#ffdf00";g.beginPath();g.moveTo(80,92);g.lineTo(178,135);g.lineTo(80,178);g.fill();g.fillStyle="#002776";g.beginPath();g.arc(80,135,33,0,7);g.fill();g.restore();
+  g.fillStyle="#eceef1";g.font=F(800,52);g.fillText("Raio-X do Brasil",220,148);
+  g.font=F(800,60);g.fillText(H.tit,80,310);
+  g.font=F(500,34);g.fillStyle="#9aa0a9";const nota=H.nota(d,m);let l="",y=370;for(const w of nota.split(" ")){const t=l?l+" "+w:w;if(g.measureText(t).width>920&&l){g.fillText(l,80,y);y+=44;l=w}else l=t}g.fillText(l,80,y);
+  const X0=80,X1=1000,Yb=1040,Yt=y+(H.bandas?190:110),mx=Math.max(...pts.map(p=>p.v))*1.08,bw=(X1-X0)/n,Y=v=>Yb-(v/mx)*(Yb-Yt);
+  if(H.bandas){let i=0,kk=0;while(i<n){const gv=govDe(pts[i].a);let j=i;while(j+1<n&&govDe(pts[j+1].a)===gv)j++;const x0=X0+i*bw,x1=X0+(j+1)*bw;
+    if(kk%2){g.fillStyle="#1d2025";g.fillRect(x0,Yt-120,x1-x0,Yb-Yt+120)}g.fillStyle="#9aa0a9";let fs=26;g.font=F(700,fs);while(g.measureText(gv[0]).width>x1-x0-6&&fs>14){fs--;g.font=F(700,fs)}g.textAlign="center";g.fillText(gv[0],(x0+x1)/2,Yt-88);g.textAlign="left";i=j+1;kk++}}
+  pts.forEach((p,i)=>{const last=i===n-1;g.fillStyle=last?"#3fbf73":"#5b6069";const x=X0+i*bw+bw*.14,h=Yb-Y(p.v);g.beginPath();g.roundRect(x,Y(p.v),bw*.72,h,4);g.fill()});
+  g.fillStyle="#9aa0a9";g.font=F(600,28);g.textAlign="left";g.fillText(String(pts[0].a),X0,Yb+44);g.textAlign="right";g.fillText(String(pts[n-1].a),X1,Yb+44);
+  g.fillStyle="#ffffff";g.font=F(800,44);g.fillText(H.fmt(pts[n-1].v),X1,Y(pts[n-1].v)-16);g.textAlign="left";if(H.bandas){g.fillStyle="#9aa0a9";g.font=F(700,34);g.fillText(H.fmt(pts[0].v),X0,Y(Math.max(...pts.slice(0,4).map(p=>p.v)))-16)}
+  g.fillStyle="#2a2d33";g.fillRect(80,Ht-220,W-160,3);g.fillStyle="#9aa0a9";g.font=F(500,30);g.fillText("Fonte: "+H.fonte,80,Ht-160);
+  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(location.host,80,Ht-90);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-${k}-historico.png`,{type:"image/png"});
+  const texto=`${H.tit}: veja o gráfico completo no Raio-X do Brasil: ${location.origin}/`;
+  try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click()}catch(e){}
+}
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
   const tic=()=>{const agora=Date.now();const val=j.ano===anoAtual?j.acumulado+j.porSegundo*Math.max(0,agora-j.fimBimestre)/1000:j.porSegundo*(agora-ini)/1000;
@@ -1254,7 +1393,7 @@ function contar(el){const fim=el.textContent,m=fim.match(/-?\d{1,3}(?:\.\d{3})+(
   const s=m[0],dec=(s.split(",")[1]||"").length,alvo=parseFloat(s.replace(/\./g,"").replace(",",".")),t0=performance.now();
   const passo=t=>{const k=Math.min(1,(t-t0)/900),e=1-Math.pow(1-k,3);el.textContent=k<1?fim.replace(s,(alvo*e).toLocaleString("pt-BR",{minimumFractionDigits:dec,maximumFractionDigits:dec})):fim;if(k<1)requestAnimationFrame(passo)};requestAnimationFrame(passo)}
 const obsVis="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;obsVis.unobserve(e.target);e.target.classList.add("vis");e.target.querySelectorAll(".an-num").forEach(contar)}),{threshold:.25}):null;
-function registrarGraficos(){document.querySelectorAll("svg:not([data-an])").forEach(sv=>{sv.dataset.an=1;if(!sv.querySelector(".an-bar,.an-line,.an-pie,.an-dot"))return;if(obsVis)obsVis.observe(sv);else sv.classList.add("vis")})}
+function registrarGraficos(){document.querySelectorAll("svg:not([data-an])").forEach(sv=>{sv.dataset.an=1;if(!sv.querySelector(".an-bar,.an-line,.an-pie,.an-dot,.an-col"))return;if(obsVis)obsVis.observe(sv);else sv.classList.add("vis")})}
 new MutationObserver(()=>registrarGraficos()).observe(document.body,{childList:true,subtree:true});
 carregar();
 </script>
