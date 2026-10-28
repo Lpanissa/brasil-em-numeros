@@ -217,6 +217,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .leis-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.leis-chips button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 13.5px Inter,system-ui,sans-serif;cursor:pointer}
 .lei{margin-bottom:10px}.lei .lt{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}.lei h4{font-size:16.5px;margin:4px 0 2px}.lei .ap{color:var(--ok);font-weight:700;font-size:14px;margin:2px 0}.lei p{margin:6px 0;font-size:15px;line-height:1.45}.lei .lk{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;font-weight:600}.lei .lk a{color:inherit}.lei .rv{background:var(--bad);color:#fff;border-radius:6px;padding:1px 7px;font-weight:700;font-size:12px}
 .ver-lei,.item .ver-lei{display:inline-flex;align-items:baseline;gap:6px;font-size:13.5px;font-weight:700;color:var(--ok)!important;text-decoration:none;margin:6px 12px 0 0}.ver-lei::before{content:"§";font-weight:800}
+.g-tot{font-size:32px;font-weight:800;color:var(--pt);letter-spacing:-.02em;margin:6px 0 0}.g-rosca{display:grid;place-items:center;margin:8px 0}.g-cem{background:var(--soft);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:15px}.g-leg div{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15px}.g-leg i{width:12px;height:12px;border-radius:50%;flex:none}.g-leg span{flex:1}.g-leg b{white-space:nowrap}.g-leg small{color:var(--muted);font-size:12.5px;margin-left:6px;font-weight:400}.g-mini{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.g-mini .g-leg{flex:1;min-width:170px}
 .smh-sw{display:inline-flex;background:var(--soft);border-radius:999px;padding:3px;margin:10px 0 4px;gap:2px}.smh-sw button{border:0;background:none;color:var(--muted);font:600 14px Inter,system-ui,sans-serif;padding:7px 13px;border-radius:999px;cursor:pointer}.smh-sw button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .smh-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
 .smh-t{width:100%;border-collapse:collapse;font-size:14.5px}.smh-t th,.smh-t td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:right}.smh-t th:first-child,.smh-t td:first-child{text-align:left}.smh-t th{color:var(--muted);font-weight:600;font-size:13px}.smh-t .pos{color:var(--ok);font-weight:700}.smh-t .neg{color:var(--bad);font-weight:700}
@@ -313,6 +314,7 @@ details.cat>summary h2{margin-bottom:8px}
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
     <div class="card"><h3>Quanto o salário mínimo compra</h3><p class="note">Cesta básica de SP sobre o salário mínimo líquido (set/2026)</p><div id="g-pizza"></div></div>
     <div class="card"><h3>Cesta básica SP: o que mais subiu</h3><p class="note">Variação de preço em 12 meses (set/2026)</p><div id="g-cesta"></div></div>
+    <div class="card"><h3>De cada R$ 100 do governo federal</h3><div id="gastos-mini"><p class="note">Buscando no Tesouro…</p></div></div>
   </div>
   <div id="cats"></div>
 </section>
@@ -493,7 +495,7 @@ async function carregar(){
     document.getElementById("origem").textContent="Banco indisponível no momento: mostrando a cópia salva no site.";
   }
   try{montarFiltro();painel();estados();dossie();}finally{window.__spFim&&__spFim()}
-  impostometro();aoVivo();extrasEstados().then(seuEstado);seuEstado();calendario();noticias();setInterval(noticias,15*60000);
+  impostometro();aoVivo();gastosMini();extrasEstados().then(seuEstado);seuEstado();calendario();noticias();setInterval(noticias,15*60000);
   /* anúncios: só o âncora fixo do AdSense (ligado no painel do AdSense; o script fica no <head>) */
   let lw0=LARG(),tmr;addEventListener("resize",()=>{clearTimeout(tmr);tmr=setTimeout(()=>{if(LARG()!==lw0){lw0=LARG();painel();estados();if(document.getElementById("smh-dlg").open)histDesenhar()}},250)});
 }
@@ -855,17 +857,7 @@ async function contas(){
       <div class="big" style="color:${p>0?css('--up'):css('--down')}">${p>0?"Déficit":"Superávit"} de ${nf(Math.abs(p),2)}% do PIB</div><p class="note">resultado primário em 12 meses, até ${mes(ul(pri).data)}</p>
       <p>Juros da dívida: <b>${nf(j,2)}% do PIB</b> em 12 meses.<br>Resultado com juros: <b>${n>0?"déficit":"superávit"} de ${nf(Math.abs(n),2)}% do PIB</b>.</p>
       <div id="g-pri"></div><p class="fonte"><a href="https://www3.bcb.gov.br/sgspub" target="_blank" rel="noopener">Banco Central · SGS 5793 e 5727</a></p></div>`}
-  let gastos="";
-  if(fin&&fin.items&&fin.items.length){
-    const col="DESPESAS LIQUIDADAS ATÉ O BIMESTRE (d)",it=fin.items.filter(i=>i.coluna===col&&i.cod_conta==="RREO2TotalDespesas"),v=n=>(it.find(i=>i.conta===n)||{}).valor||0;
-    const total=v("DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (I)"),per=fin.items[0].periodo;
-    const lin=Object.entries(FUNC_NOME).map(([k,l])=>({l,v:v(k)})).concat([{l:"Juros e pagamento da dívida",v:v("Serviço da Dívida Interna")+v("Serviço da Dívida Externa")},{l:"Repasses a estados e municípios",v:v("Transferências")+v("Transferências para a Educação Básica")}]).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-    const top=lin.slice(0,12),resto=total-top.reduce((s,x)=>s+x.v,0);if(resto>0)top.push({l:"Todo o resto",v:resto});
-    gastos=`<div class="card"><h3>Para onde vai o dinheiro do governo federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Despesas da União já pagas ou prontas para pagar (liquidadas) em ${ANO}, até o ${per}º bimestre, por área. Vem do Relatório Resumido da Execução Orçamentária (Anexo 2), entregue pelo governo ao Tesouro Nacional, pela API do SICONFI. "Juros e pagamento da dívida" é o serviço da dívida interna e externa. "Repasses a estados e municípios" inclui os fundos de participação e o Fundeb. Atualiza sozinho a cada dois meses.</div>
-      <p class="note">${ANO}, até o ${per}º bimestre · total de R$ ${nf(total/1e9,0)} bilhões</p>
-      ${barrasH(top.map(x=>({l:x.l,v:x.v/1e9,cor:/dívida/.test(x.l)?css('--up'):css('--acc')})),{fmt:x=>"R$ "+nf(x,0)+" bi · "+nf(x*1e9/total*100,0)+"%",w:LARG("contas")})}
-      <p class="fonte"><a href="https://siconfi.tesouro.gov.br" target="_blank" rel="noopener">Tesouro Nacional · SICONFI · RREO Anexo 2 da União</a></p></div>`}
-  el.innerHTML=h+`</div>`+gastos;
+  el.innerHTML=h+`</div><div class="card" id="gastos-card" style="margin-top:12px"></div>`;gastosCarregar().then(()=>gastosDesenhar("gastos-card"));
   if(div.length)document.getElementById("g-div").innerHTML=linha(div.slice(-24).map(x=>({l:mes(x.data),v:+x.valor})),{fmt:v=>nf(v,1)+"%",w:LARG("g-div"),h:170});
   if(pri.length)document.getElementById("g-pri").innerHTML=linha(pri.slice(-24).map(x=>({l:mes(x.data),v:-x.valor})),{fmt:v=>nf(v,2)+"%",w:LARG("g-pri"),h:170})+`<p class="note">Resultado primário em 12 meses (acima de zero = superávit)</p>`;
 }
@@ -1354,7 +1346,7 @@ function maxMin(L,f){const z=L[L.length-1],mx=L.reduce((a,b)=>b.v>a.v?b:a),mn=L.
   return [["Agora",f(z.v),mesAno(z.d)],["Mais alto",f(mx.v),mx.a===z.a?"agora":"em "+mx.a],["Mais baixo",f(mn.v),mn.a===z.a?"agora":"em "+mn.a]]}
 let HK=null,HM={},HD={},HP={};
 const SLUG={"salario-minimo":"salario_minimo",selic:"selic",dolar:"dolar",desemprego:"desemprego",inflacao:"ipca"},SLUG_DE=Object.fromEntries(Object.entries(SLUG).map(([a,b])=>[b,a]));
-(()=>{try{const v=new URLSearchParams(location.search).get("ver");if(!v||!SLUG[v])return;history.replaceState(null,"","/"+(location.hash||""));addEventListener("load",()=>setTimeout(()=>abrirHist(SLUG[v]),600))}catch(e){}})();
+(()=>{try{const v=new URLSearchParams(location.search).get("ver");if(v==="gastos"){history.replaceState(null,"","/#contas");addEventListener("load",()=>setTimeout(()=>{document.querySelector("nav button[data-t=contas]").click();const t=setInterval(()=>{const g=document.getElementById("gastos-card");if(g&&g.innerHTML){clearInterval(t);g.scrollIntoView({behavior:"smooth"})}},500);setTimeout(()=>clearInterval(t),20000)},400));return}if(!v||!SLUG[v])return;history.replaceState(null,"","/"+(location.hash||""));addEventListener("load",()=>setTimeout(()=>abrirHist(SLUG[v]),600))}catch(e){}})();
 function abrirHist(k){const H=HIST[k];if(!H)return;HK=k;const d=document.getElementById("smh-dlg");
   d.querySelector("h3 .t").textContent=H.tit;d.querySelector(".infotxt").textContent=H.info;d.querySelector(".infotxt").classList.remove("on");d.querySelector("h3 .info").classList.remove("on");
   d.querySelector(".oque").innerHTML="<b>O que é:</b> "+esc(H.oque);d.scrollTop=0;if(!d.open)d.showModal();
@@ -1467,6 +1459,69 @@ const LEI={
 const verLei=k=>(LEI[k]||[]).map(([n,u])=>`<a class="ver-lei" href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join("");
 /* base legal dos episódios de "Seus direitos" */
 const BASE_LEGAL={"1": [["CLT, arts. 129 a 145 (férias)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"], ["Constituição, art. 7º, XVII (um terço a mais)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"]], "2": [["Lei 4.090/1962 (13º salário)", "https://www.planalto.gov.br/ccivil_03/leis/l4090.htm"], ["Lei 4.749/1965 (pagamento em duas parcelas)", "https://www.planalto.gov.br/ccivil_03/leis/l4749.htm"]], "3": [["Lei 8.036/1990 (FGTS)", "https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm"], ["Lei 13.932/2019 (saque-aniversário)", "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13932.htm"]], "4": [["Constituição, art. 7º, XVI (hora extra de no mínimo 50%)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["CLT, art. 59 (horas extras) e art. 73 (adicional noturno)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"]], "5": [["CLT, art. 477 (prazo de 10 dias) e art. 484-A (acordo)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"], ["Lei 12.506/2011 (aviso prévio de até 90 dias)", "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12506.htm"], ["Lei 8.036/1990, art. 18 (multa do FGTS)", "https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm"]], "6": [["Lei 7.998/1990 (seguro-desemprego)", "https://www.planalto.gov.br/ccivil_03/leis/l7998.htm"]], "7": [["Constituição, art. 239, §3º (abono salarial)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["Emenda Constitucional 135/2024 (novo limite de renda)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc135.htm"], ["Lei 7.998/1990, art. 9º", "https://www.planalto.gov.br/ccivil_03/leis/l7998.htm"]], "8": [["Constituição, art. 7º, XVIII e XIX (licenças)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["Lei 15.371/2026 (nova licença-paternidade)", "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15371.htm"], ["Lei 11.770/2008 (Empresa Cidadã)", "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11770.htm"], ["Lei 8.213/1991, art. 60 (afastamento pelo INSS)", "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm"]], "9": [["Código de Defesa do Consumidor, art. 49 (arrependimento), art. 18 (defeito) e art. 26 (prazos)", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"]], "10": [["Código de Defesa do Consumidor, art. 42 (cobrança e devolução em dobro) e art. 43 (cadastro de devedores)", "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"]], "11": [["Emenda Constitucional 103/2019 (reforma da Previdência)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm"]], "12": [["Emenda Constitucional 141/2026 (fim da escala 6x1)", "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc141.htm"], ["Constituição, art. 7º, XIII e XV (jornada e descanso)", "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"], ["CLT, arts. 66, 67 e 71 (descansos e intervalo)", "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"]]};
+/* ---------- com o que o governo federal gasta: rosca por área (Tesouro/SICONFI, RREO Anexos 1 e 2) ---------- */
+let GASTOS=null,GASTOS_P=null,GASTOS_ANO=null;
+const GCOR=["#ef5a54","#f08a5d","#e6a72e","#c9a227","#5b93f0","#35b8a5","#3fbf73","#8d7bd6","#7d828b","#9aa0a9","#b8bcc4","#4a4f58"];
+function gastosCarregar(){if(GASTOS_P)return GASTOS_P;
+  const per=Math.max(1,Math.floor(new Date().getMonth()/2));
+  const q=(ano,p,anx)=>fetch(`/api/siconfi?rel=rreo&an_exercicio=${ano}&nr_periodo=${p}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%20${anx}&id_ente=1`).then(r=>r.json()).catch(()=>null);
+  const monta=(ano,p,a2,a1)=>{if(!a2||!a2.items||!a2.items.length)return null;
+    const col="DESPESAS LIQUIDADAS ATÉ O BIMESTRE (d)",it=a2.items.filter(i=>i.coluna===col&&i.cod_conta==="RREO2TotalDespesas"),v=n=>(it.find(i=>i.conta===n)||{}).valor||0;
+    const total=v("DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (I)");if(!total)return null;
+    const div=v("Serviço da Dívida Interna")+v("Serviço da Dívida Externa"),rep=v("Transferências")+v("Transferências para a Educação Básica");
+    const nomes={...FUNC_NOME,"Previdência Social":"Aposentadorias e pensões (INSS e servidores)","Judiciária":"Judiciário"};
+    const lin=Object.entries(nomes).map(([k,l])=>({l,v:v(k)})).concat([{l:"Juros e pagamento da dívida",v:div},{l:"Repasses a estados e municípios",v:rep},{l:"Outros encargos (subsídios, ressarcimentos…)",v:v("Outros Encargos Especiais")}]).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    const top=lin.slice(0,11),resto=total-top.reduce((s,x)=>s+x.v,0);if(resto>0)top.push({l:`Todo o resto (${lin.length-11} áreas)`,v:resto});
+    let refin=0;if(a1&&a1.items){const r=a1.items.find(i=>/LIQUIDADAS AT/i.test(i.coluna)&&/^AMORTIZAÇÃO DA DÍVIDA \/ REFINANCIAMENTO/.test(i.conta));refin=r?r.valor:0}
+    return {ano,per:p,total,top,refin}};
+  GASTOS_P=Promise.all([q(ANO-1,6,"02"),q(ANO-1,6,"01"),q(ANO,per,"02"),q(ANO,per,"01")]).then(([a,b,c,d])=>{
+    GASTOS={};const x=monta(ANO-1,6,a,b),y=monta(ANO,per,c,d);if(x)GASTOS[ANO-1]=x;if(y)GASTOS[ANO]=y;
+    GASTOS_ANO=x?ANO-1:y?ANO:null});return GASTOS_P}
+const bi=v=>v>=1e12?"R$ "+nf(v/1e12,2)+" tri":"R$ "+nf(v/1e9,0)+" bi";
+function rosca(top,total,{tam=260,centro="",sub=""}={}){
+  const R=tam/2-30,r=R*.62,c=tam/2;let a=-Math.PI/2,out="";
+  top.forEach((x,i)=>{const g=x.v/total*2*Math.PI;if(g<=0)return;const a2=a+g,big=g>Math.PI?1:0,p=(rr,t)=>`${(c+rr*Math.cos(t)).toFixed(1)},${(c+rr*Math.sin(t)).toFixed(1)}`;
+    out+=`<path class="an-pie" d="M${p(R,a)}A${R},${R} 0 ${big} 1 ${p(R,a2)}L${p(r,a2)}A${r},${r} 0 ${big} 0 ${p(r,a)}Z" fill="${GCOR[i%GCOR.length]}" stroke="${css('--card')}" stroke-width="2"><title>${esc(x.l)}: ${nf(x.v/total*100,1)}%</title></path>`;
+    if(x.v/total>.07){const m=(a+a2)/2;out+=`<text x="${(c+(R+17)*Math.cos(m)).toFixed(1)}" y="${(c+(R+17)*Math.sin(m)+5).toFixed(1)}" font-size="13" font-weight="800" fill="${css('--ink')}" text-anchor="middle">${nf(x.v/total*100,0)}%</text>`}a=a2});
+  return `<svg viewBox="0 0 ${tam} ${tam}" width="${tam}" height="${tam}" style="max-width:100%">${out}<text x="${c}" y="${c-2}" font-size="21" font-weight="800" fill="${css('--ink')}" text-anchor="middle">${centro}</text><text x="${c}" y="${c+18}" font-size="11.5" fill="${css('--muted')}" text-anchor="middle">${sub}</text></svg>`}
+function gastosDesenhar(id){
+  const box=document.getElementById(id);if(!box)return;
+  if(!GASTOS||GASTOS_ANO==null){box.innerHTML=`<p class="note">Não deu para buscar os gastos no Tesouro agora.</p>`;return}
+  const g=GASTOS[GASTOS_ANO],anos=Object.keys(GASTOS).map(Number).sort(),pct=x=>x.v/g.total*100,cem=l=>{const x=g.top.find(t=>t.l.startsWith(l));return x?nf(pct(x),0):"0"};
+  const mesFim=MESES[g.per*2-1];const inteiro=g.per===6;
+  box.innerHTML=`<h3>Com o que o governo federal gasta o seu dinheiro<button class="info" aria-label="Sobre este dado">i</button></h3>
+  <div class="infotxt">Despesas da União já pagas ou prontas para pagar (liquidadas), por área (função de governo), no Relatório Resumido da Execução Orçamentária que o governo entrega ao Tesouro Nacional (Anexo 2), pela API oficial do SICONFI. "Juros e pagamento da dívida" é o serviço da dívida interna e externa. "Repasses a estados e municípios" inclui os fundos de participação e o Fundeb. Não inclui a rolagem da dívida (títulos vencidos trocados por títulos novos)${g.refin?`, que ${inteiro?"em "+g.ano+" somou":"até "+mesFim+" de "+g.ano+" somava"} ${bi(g.refin)} no mesmo relatório (Anexo 1)`:""}. Atualiza sozinho a cada dois meses.</div>
+  ${anos.length>1?`<div class="smh-sw" role="group" aria-label="Ano">${anos.map(a=>`<button data-a="${a}" class="${a===GASTOS_ANO?"on":""}" aria-pressed="${a===GASTOS_ANO}">${a}${GASTOS[a].per===6?" (ano inteiro)":" (até "+MESES[GASTOS[a].per*2-1].slice(0,3)+")"}</button>`).join("")}</div>`:""}
+  <p class="note">Tudo o que o governo federal gastou em ${g.ano}${inteiro?"":", até "+mesFim}, por área</p>
+  <div class="g-tot">${bi(g.total).replace(" tri"," trilhões").replace(" bi"," bilhões")}</div>
+  <div class="g-rosca">${rosca(g.top,g.total,{centro:bi(g.total),sub:"TOTAL "+(inteiro?"EM "+g.ano:"ATÉ "+mesFim.slice(0,3).toUpperCase()+"/"+g.ano)})}</div>
+  <div class="g-cem"><b>De cada R$ 100</b> que o governo gastou: R$ ${cem("Aposentadorias")} foram para aposentadorias e pensões, R$ ${cem("Juros")} para juros e dívida, R$ ${cem("Saúde")} para saúde e R$ ${cem("Educação")} para educação.</div>
+  <div class="g-leg">${g.top.map((x,i)=>`<div><i style="background:${GCOR[i%GCOR.length]}"></i><span>${esc(x.l)}</span><b>${nf(pct(x),1)}%<small>${bi(x.v)}</small></b></div>`).join("")}</div>
+  <button class="smh-share" type="button" id="${id}-share">${ICONE_COMP} Compartilhar gráfico</button>
+  <p class="fonte">Fontes: <a href="https://siconfi.tesouro.gov.br" target="_blank" rel="noopener">Tesouro Nacional · SICONFI · Relatório Resumido da Execução Orçamentária da União, Anexos 1 e 2</a> · <a href="https://portaldatransparencia.gov.br/funcoes" target="_blank" rel="noopener">Portal da Transparência</a> · <a href="https://www1.siop.planejamento.gov.br/QvAJAXZfc/opendoc.htm?document=IAS%2FExecucao_Orcamentaria.qvw&host=QVS%40pqlk04&anonymous=true" target="_blank" rel="noopener">Painel do Orçamento Federal</a></p>`;
+  box.querySelectorAll(".smh-sw button").forEach(b=>b.onclick=()=>{GASTOS_ANO=+b.dataset.a;document.querySelectorAll("#gastos-card,#gastos-mini").forEach(e=>e.id==="gastos-card"?gastosDesenhar("gastos-card"):gastosMini())});
+  document.getElementById(id+"-share").onclick=()=>gastosCompartilhar();
+}
+/* resumo no Painel */
+function gastosMini(){const box=document.getElementById("gastos-mini");if(!box)return;
+  gastosCarregar().then(()=>{if(!GASTOS||GASTOS_ANO==null){box.closest(".card").classList.add("hidden");return}
+    const g=GASTOS[GASTOS_ANO],inteiro=g.per===6;
+    box.innerHTML=`<p class="note">${g.ano}${inteiro?"":", até "+MESES[g.per*2-1]} · ${bi(g.total)} · Tesouro Nacional</p><div class="g-mini">${rosca(g.top,g.total,{tam:180,centro:"R$ 100",sub:"de cada"})}<div class="g-leg">${g.top.slice(0,5).map((x,i)=>`<div><i style="background:${GCOR[i]}"></i><span>${esc(x.l.replace(/ \(.*\)/,""))}</span><b>R$ ${nf(x.v/g.total*100,0)}</b></div>`).join("")}</div></div><button class="smh-ver lnk" type="button" onclick="document.querySelector('nav button[data-t=contas]').click();setTimeout(()=>document.getElementById('gastos-card')?.scrollIntoView({behavior:'smooth'}),900)">Ver todas as áreas ›</button>`})}
+async function gastosCompartilhar(){
+  const g=GASTOS[GASTOS_ANO],W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const F=(w,px)=>`${w} ${px}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;x.fillStyle="#101114";x.fillRect(0,0,W,H);
+  x.save();x.beginPath();x.roundRect(80,70,90,90,22);x.clip();x.fillStyle="#009c3b";x.fillRect(80,70,90,90);x.fillStyle="#ffdf00";x.beginPath();x.moveTo(80,80);x.lineTo(160,115);x.lineTo(80,150);x.fill();x.fillStyle="#002776";x.beginPath();x.arc(80,115,27,0,7);x.fill();x.restore();
+  x.fillStyle="#eceef1";x.font=F(800,44);x.fillText("Raio-X do Brasil",192,128);
+  x.font=F(800,54);x.fillText("Com o que o governo federal",80,250);x.fillStyle="#ef5a54";x.fillText("gasta o seu dinheiro",80,314);
+  x.fillStyle="#9aa0a9";x.font=F(500,32);x.fillText(`${g.ano}${g.per===6?"":" (até "+MESES[g.per*2-1]+")"} · total ${bi(g.total)}`,80,370);
+  const cx=300,cy=640,R=210,r=128;let a=-Math.PI/2;g.top.forEach((t,i)=>{const s=t.v/g.total*2*Math.PI;x.beginPath();x.arc(cx,cy,R,a,a+s);x.arc(cx,cy,r,a+s,a,true);x.closePath();x.fillStyle=GCOR[i%GCOR.length];x.fill();x.strokeStyle="#101114";x.lineWidth=4;x.stroke();a+=s});
+  x.fillStyle="#eceef1";x.font=F(800,40);x.textAlign="center";x.fillText("R$ 100",cx,cy+4);x.fillStyle="#9aa0a9";x.font=F(500,24);x.fillText("de cada",cx,cy-40);x.textAlign="left";
+  g.top.slice(0,8).forEach((t,i)=>{const y=470+i*44;x.fillStyle=GCOR[i];x.beginPath();x.arc(560,y-10,11,0,7);x.fill();x.fillStyle="#eceef1";x.font=F(600,27);x.fillText(t.l.replace(/ \(.*\)/,""),584,y);x.textAlign="right";x.font=F(800,27);x.fillText("R$ "+nf(t.v/g.total*100,0),1000,y);x.textAlign="left"});
+  x.fillStyle="#9aa0a9";x.font=F(500,26);x.fillText("Valores de cada R$ 100 gastos. Sem a rolagem da dívida.",80,960);
+  x.fillStyle="#2a2d33";x.fillRect(80,H-230,W-160,3);x.fillStyle="#9aa0a9";x.font=F(500,28);x.fillText("Fonte: Tesouro Nacional · SICONFI · RREO da União",80,H-170);
+  x.font=F(700,40);x.fillStyle="#ffdf00";x.fillText(location.host,80,H-95);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-gastos-${g.ano}.png`,{type:"image/png"}),texto=`Com o que o governo federal gasta o seu dinheiro (${g.ano}): veja no Raio-X do Brasil ${location.origin}/gastos`;
+  try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}const l=document.createElement("a");l.href=URL.createObjectURL(blob);l.download=arq.name;l.click()}catch(e){}}
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
   const tic=()=>{const agora=Date.now();const val=j.ano===anoAtual?j.acumulado+j.porSegundo*Math.max(0,agora-j.fimBimestre)/1000:j.porSegundo*(agora-ini)/1000;
