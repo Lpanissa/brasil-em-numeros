@@ -1210,7 +1210,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)re
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
   if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
 /* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
-const SERIES=[{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."}];
+const SERIES=[{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."},{nome:"Raio-X da Semana",desc:"O que mudou nos impostos e nas contas públicas esta semana, em menos de 1 minuto."}];
 const VIDEOS=[
   {id:"2FzphWKf_9E",ep:1,titulo:"Quem manda no Brasil? Os 3 poderes",fonte:"Constituição Federal, arts. 2º, 44, 76 e 92"},
   {id:"KxTq93ADE9M",ep:2,titulo:"Deputado ou senador: qual a diferença?",fonte:"Constituição Federal, arts. 45, 46, 51, 52 e 65; Decreto Legislativo 172/2022"},
@@ -1223,6 +1223,9 @@ const VIDEOS=[
   {id:"k9RmFE2JAwE",ep:9,titulo:"Como se tira um presidente do cargo? O impeachment",fonte:"Constituição Federal, arts. 51, 52, 85 e 86; Lei 1.079/1950"},
   {id:"pNrdlWiE0SY",ep:10,titulo:"Votou e acabou? 5 jeitos de cobrar um político",fonte:"Lei 12.527/2011; Portal da Transparência; e-Cidadania (Senado)"},
   {id:"pmn3D9QhGZY",ep:"Especial",titulo:"O fim da escala 6x1: o que muda e quando",fonte:"Emenda Constitucional 141/2026; Câmara dos Deputados; Agência Senado; Ministério do Trabalho"},
+  {id:"n9Wh6jcXlJ8",ep:1,serie:"Raio-X da Semana",titulo:"O gás e o diesel vão subir em fevereiro",fonte:"ICL Notícias (30/10/2026)"},
+  {id:"uwfnaQBq-ik",ep:2,serie:"Raio-X da Semana",titulo:"O Brasil vai ter o maior imposto sobre consumo do mundo?",fonte:"GP1 (29/10/2026)"},
+  {id:"ttZGbBQ3zXM",ep:3,serie:"Raio-X da Semana",titulo:"O governo nunca arrecadou tanto",fonte:"DGABC (22/10/2026); Receita Federal"},
 ];
 function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span><span class="ve">${typeof v.ep==="number"?"Ep. "+v.ep:v.ep}</span></button>`;
   const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
