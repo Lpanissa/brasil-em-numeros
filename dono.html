@@ -21,7 +21,9 @@ button.pri{background:var(--acc);color:var(--bg);border-color:var(--acc)}
 .v{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.v:first-child{border-top:0}
 .v img{width:54px;height:96px;object-fit:cover;border-radius:8px;background:var(--soft);flex:none}
 .v .t{flex:1;min-width:0}.v .t b{display:block;font-size:15px}.v .t span{font-size:13px;color:var(--muted)}
-.v button{padding:8px 12px;font-size:14px}
+.v button{padding:8px 12px;font-size:14px}.v .bt{display:flex;flex-direction:column;gap:6px}
+#prev{display:flex;gap:12px;align-items:center;margin-top:10px}#prev[hidden]{display:none}#prev img{width:54px;height:96px;object-fit:cover;border-radius:8px;background:var(--soft)}#prev span{font-size:14px;color:var(--muted)}
+h3.serie{font-size:16px;margin:18px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--line)}h3.serie:first-child{margin-top:0}h3.serie small{font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 a{color:inherit}
 </style></head><body><div class="wrap">
@@ -29,16 +31,17 @@ a{color:inherit}
 
 <div class="card" id="entrar" hidden>
   <h2>Entrar</h2>
-  <p class="sub">Só a conta lpanissa@gmail.com pode cadastrar vídeos.</p>
+  <p class="sub">Acesso restrito ao dono do site.</p>
   <button class="pri" id="btn-google">Entrar com Google</button>
   <div class="msg" id="msg-login"></div>
 </div>
 
 <div id="painel" hidden>
   <div class="card">
-    <h2>Adicionar vídeo</h2>
+    <h2 id="form-titulo">Adicionar vídeo</h2>
     <label for="link">Link do YouTube</label>
     <input id="link" placeholder="https://youtube.com/shorts/..." inputmode="url" autocomplete="off">
+    <div id="prev" hidden><img id="prev-img" alt=""><span id="prev-txt"></span></div>
     <label for="titulo">Título no site</label>
     <input id="titulo" placeholder="Ex.: ICMS: o imposto que está em quase tudo">
     <div class="row">
@@ -51,18 +54,18 @@ a{color:inherit}
     </div>
     <label for="fonte">Fontes (opcional)</label>
     <input id="fonte" placeholder="Ex.: Constituição Federal, art. 155">
-    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="pri" id="btn-salvar">Salvar vídeo</button><button id="btn-limpar">Limpar</button></div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="pri" id="btn-salvar">Salvar vídeo</button><button id="btn-limpar">Limpar</button><button id="btn-cancelar" hidden>Cancelar edição</button></div>
     <div class="msg" id="msg"></div>
   </div>
-  <div class="card"><h2>Vídeos cadastrados aqui</h2><div id="lista"><p class="sub">Carregando...</p></div></div>
-  <p class="sub">Conectado como <span id="quem"></span> · <a href="#" id="sair">Sair</a></p>
+  <div class="card"><h2>Vídeos cadastrados</h2><div id="lista"><p class="sub">Carregando...</p></div></div>
+  <p class="sub">Conectado · <a href="#" id="sair">Sair</a></p>
 </div>
 </div>
 <script>
-const DONO="lpanissa@gmail.com",SB_URL="https://fyxksvydxwvygjebanno.supabase.co",SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
+const DONO="f56c168e-213a-4a3d-84e4-7f1efffc7169",SB_URL="https://fyxksvydxwvygjebanno.supabase.co",SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
 const $=id=>document.getElementById(id);
 const SERIES=["Como funciona o Brasil","Impostos"];
-let TOKEN=null;
+let TOKEN=null,DADOS=[],EDIT=null,TAUTO="";
 // login com Google pelo Supabase (o token volta no endereço depois do login)
 (function(){const h=new URLSearchParams(location.hash.slice(1));if(h.get("access_token")){try{localStorage.setItem("raiox-dono",JSON.stringify({t:h.get("access_token"),exp:Date.now()+(+h.get("expires_in")||3600)*1000}))}catch(e){}history.replaceState(null,"",location.pathname)}
  try{const o=JSON.parse(localStorage.getItem("raiox-dono")||"null");if(o&&o.exp>Date.now()+60000)TOKEN=o.t}catch(e){}})();
@@ -73,13 +76,39 @@ const ytId=u=>{u=(u||"").trim();const m=u.match(/(?:shorts\/|v=|youtu\.be\/|embe
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function agoraLocal(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
 function msg(t,ok){const m=$("msg");m.textContent=t;m.className="msg "+(ok?"ok":"err")}
-function limpar(){["link","titulo","serie-nova","ep","fonte"].forEach(i=>$(i).value="");$("quando").value=agoraLocal()}
+function limpar(){["link","titulo","serie-nova","ep","fonte"].forEach(i=>$(i).value="");$("quando").value=agoraLocal();EDIT=null;TAUTO="";$("prev").hidden=true;$("form-titulo").textContent="Adicionar vídeo";$("btn-salvar").textContent="Salvar vídeo";$("btn-cancelar").hidden=true}
+// ao colar o link, o site reconhece o vídeo: mostra a capa, preenche o título e sugere o próximo episódio
+let tLink;
+async function reconhece(){
+  const id=ytId($("link").value),p=$("prev");
+  if(!id){p.hidden=true;return}
+  $("prev-img").src="https://i.ytimg.com/vi/"+id+"/hqdefault.jpg";p.hidden=false;
+  const ja=DADOS.find(v=>v.youtube_id===id&&v.id!==EDIT);
+  $("prev-txt").textContent=ja?"Esse vídeo já está cadastrado ("+ja.titulo+"). Se salvar, os dados dele serão atualizados.":"Lendo o vídeo...";
+  if(ja)return;
+  try{const r=await fetch("https://www.youtube.com/oembed?format=json&url="+encodeURIComponent("https://www.youtube.com/shorts/"+id));if(!r.ok)throw 0;const d=await r.json();
+    const t=(d.title||"").replace(/\s*#\S+/g,"").replace(/\s+/g," ").trim();
+    if(t&&(!$("titulo").value.trim()||$("titulo").value===TAUTO)){$("titulo").value=t;TAUTO=t}
+    $("prev-txt").textContent="Vídeo reconhecido"+(d.author_name?" · canal "+d.author_name:"")+(t?"":". Escreva o título.");
+    if(!$("ep").value.trim()&&!EDIT)sugereEp()}
+  catch(e){$("prev-txt").textContent="Não consegui ler o título sozinho. Escreva o título abaixo."}
+}
+function sugereEp(){const se=$("serie-nova").value.trim()||$("serie").value;const ns=DADOS.filter(v=>v.serie===se).map(v=>Number(v.ep)).filter(n=>!isNaN(n)&&n>0);if(ns.length)$("ep").value=Math.max(...ns)+1}
+function editar(id){const v=DADOS.find(x=>x.id===id);if(!v)return;EDIT=id;TAUTO="";
+  $("link").value="https://youtube.com/shorts/"+v.youtube_id;$("titulo").value=v.titulo||"";$("serie-nova").value="";
+  if(![...$("serie").options].some(o=>o.value===v.serie)){const o=document.createElement("option");o.textContent=v.serie;$("serie").appendChild(o)}
+  $("serie").value=v.serie;$("ep").value=v.ep||"";$("fonte").value=v.fonte||"";
+  const d=new Date(v.publicar_em);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());$("quando").value=d.toISOString().slice(0,16);
+  $("prev-img").src="https://i.ytimg.com/vi/"+v.youtube_id+"/hqdefault.jpg";$("prev-txt").textContent="Editando este vídeo";$("prev").hidden=false;
+  $("form-titulo").textContent="Editar vídeo";$("btn-salvar").textContent="Salvar alterações";$("btn-cancelar").hidden=false;msg("");scrollTo({top:0,behavior:"smooth"})}
 async function carregar(){
   let data;try{data=await api("/rest/v1/site_videos?select=*&order=serie.asc,ordem.asc.nullslast,publicar_em.asc")}catch(e){$("lista").innerHTML='<p class="msg err">Erro ao carregar: '+esc(e.message)+'</p>';return}
-  const series=[...new Set([...SERIES,...data.map(v=>v.serie)])];
+  DADOS=data;const series=[...new Set([...SERIES,...data.map(v=>v.serie)])];
   $("serie").innerHTML=series.map(s=>`<option>${esc(s)}</option>`).join("");
   const agora=Date.now();
-  $("lista").innerHTML=data.length?data.map(v=>`<div class="v"><img src="https://i.ytimg.com/vi/${esc(v.youtube_id)}/hqdefault.jpg" alt=""><div class="t"><b>${esc(v.titulo)}</b><span>${esc(v.serie)}${v.ep?" · Ep. "+esc(v.ep):""} · ${new Date(v.publicar_em).getTime()>agora?"aparece em "+new Date(v.publicar_em).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"no ar"}</span></div><button data-del="${v.id}">Remover</button></div>`).join(""):'<p class="sub">Nenhum vídeo cadastrado por aqui ainda. Os vídeos antigos da série continuam no site.</p>';
+  const linha=v=>`<div class="v"><img src="https://i.ytimg.com/vi/${esc(v.youtube_id)}/hqdefault.jpg" alt=""><div class="t"><b>${esc(v.titulo)}</b><span>${v.ep?"Ep. "+esc(v.ep)+" · ":""}${new Date(v.publicar_em).getTime()>agora?"aparece em "+new Date(v.publicar_em).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"no ar"}</span></div><div class="bt"><button data-ed="${v.id}">Editar</button><button data-del="${v.id}">Remover</button></div></div>`;
+  const ord=(a,b)=>(a.ordem??1e9)-(b.ordem??1e9)||new Date(a.publicar_em)-new Date(b.publicar_em);
+  $("lista").innerHTML=data.length?series.filter(se=>data.some(v=>v.serie===se)).map(se=>{const vs=data.filter(v=>v.serie===se).sort(ord);return `<h3 class="serie">${esc(se)} <small>${vs.length} ${vs.length===1?"vídeo":"vídeos"}</small></h3>`+vs.map(linha).join("")}).join(""):'<p class="sub">Nenhum vídeo cadastrado por aqui ainda.</p>';
 }
 async function salvar(){
   const id=ytId($("link").value);if(!id)return msg("Cole um link do YouTube válido.");
@@ -88,22 +117,25 @@ async function salvar(){
   const ep=$("ep").value.trim()||null;const n=Number(ep);
   const quando=$("quando").value?new Date($("quando").value).toISOString():new Date().toISOString();
   $("btn-salvar").disabled=true;msg("Salvando...",true);
-  try{await api("/rest/v1/site_videos?on_conflict=youtube_id",{method:"POST",headers:{Prefer:"resolution=merge-duplicates"},body:JSON.stringify({youtube_id:id,titulo,serie,ep,fonte:$("fonte").value.trim()||null,ordem:(ep&&!isNaN(n))?n:null,publicar_em:quando})});
-    msg("Salvo. O vídeo aparece na aba Vídeos do site.",true);limpar();carregar()}catch(e){msg("Não salvou: "+e.message)}
+  const corpo={youtube_id:id,titulo,serie,ep,fonte:$("fonte").value.trim()||null,ordem:(ep&&!isNaN(n))?n:null,publicar_em:quando};
+  try{if(EDIT)await api("/rest/v1/site_videos?id=eq."+EDIT,{method:"PATCH",body:JSON.stringify(corpo)});
+    else await api("/rest/v1/site_videos?on_conflict=youtube_id",{method:"POST",headers:{Prefer:"resolution=merge-duplicates"},body:JSON.stringify(corpo)});
+    const foi=EDIT;limpar();await carregar();msg(foi?"Alterações salvas.":"Salvo. O vídeo aparece na aba Vídeos do site.",true)}catch(e){msg("Não salvou: "+e.message)}
   $("btn-salvar").disabled=false;
 }
-async function apagar(id){if(!confirm("Remover este vídeo do site? (Ele continua no YouTube.)"))return;try{await api("/rest/v1/site_videos?id=eq."+id,{method:"DELETE"});msg("Removido do site.",true);carregar()}catch(e){msg("Não removeu: "+e.message)}}
+async function apagar(id){const v=DADOS.find(x=>x.id===id);if(!confirm("Remover do site"+(v?" o vídeo \""+v.titulo+"\"":" este vídeo")+"? (Ele continua no YouTube.)"))return;try{await api("/rest/v1/site_videos?id=eq."+id,{method:"DELETE"});await carregar();msg("Removido do site.",true)}catch(e){msg("Não removeu: "+e.message)}}
 function sair(){try{localStorage.removeItem("raiox-dono")}catch(e){}TOKEN=null;$("entrar").hidden=false;$("painel").hidden=true}
 async function iniciar(){
   if(!TOKEN){$("entrar").hidden=false;return}
   let u;try{u=await api("/auth/v1/user")}catch(e){$("msg-login").className="msg err";$("msg-login").textContent=e.message;return}
-  if(!u||u.email!==DONO){sair();$("msg-login").className="msg err";$("msg-login").textContent="A conta "+(u&&u.email)+" não tem acesso. Entre com "+DONO+".";return}
-  $("entrar").hidden=true;$("painel").hidden=false;$("quem").textContent=u.email;limpar();carregar();
+  if(!u||u.id!==DONO){sair();$("msg-login").className="msg err";$("msg-login").textContent="Essa conta não tem acesso. Escolha a conta do dono do site.";return}
+  $("entrar").hidden=true;$("painel").hidden=false;limpar();carregar();
 }
-$("btn-google").onclick=()=>{location.href=SB_URL+"/auth/v1/authorize?provider=google&redirect_to="+encodeURIComponent(location.origin+"/dono")+"&login_hint="+encodeURIComponent(DONO)};
-$("btn-salvar").onclick=salvar;$("btn-limpar").onclick=limpar;
+$("btn-google").onclick=()=>{location.href=SB_URL+"/auth/v1/authorize?provider=google&redirect_to="+encodeURIComponent(location.origin+"/dono")};
+$("btn-salvar").onclick=salvar;$("btn-limpar").onclick=limpar;$("btn-cancelar").onclick=()=>{limpar();msg("")};
+$("link").oninput=()=>{clearTimeout(tLink);tLink=setTimeout(reconhece,300)};$("serie").onchange=()=>{if(!EDIT&&!$("ep").value.trim())sugereEp()};
 $("sair").onclick=e=>{e.preventDefault();sair()};
-$("lista").onclick=e=>{const b=e.target.closest("[data-del]");if(b)apagar(b.dataset.del)};
+$("lista").onclick=e=>{const b=e.target.closest("[data-del]");if(b)return apagar(b.dataset.del);const c=e.target.closest("[data-ed]");if(c)editar(c.dataset.ed)};
 $("serie").innerHTML=SERIES.map(s=>`<option>${esc(s)}</option>`).join("");
 iniciar();
 </script></body></html>
