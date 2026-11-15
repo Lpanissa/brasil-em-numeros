@@ -493,6 +493,7 @@ details.cat>summary h2{margin-bottom:8px}
 
 <script>
 const SB_URL="https://fyxksvydxwvygjebanno.supabase.co", SB_KEY="sb_publishable_HA-Ez2aumnGCLZt2rf-bsQ_MqipvpWK";
+const SITE_HOST="raioxdobrasil.com.br", SITE_URL="https://raioxdobrasil.com.br";
 const D={ind:[],val:[],uf:[],dcol:[],dind:[],col:[],snap:[]},CMP={a:null,b:null};
 function fz(s){return semAc(s).replace(/ph/g,"f").replace(/k/g,"c").replace(/y/g,"i").replace(/w/g,"v").replace(/z/g,"s").replace(/h/g,"").replace(/([a-z])\1/g,"$1")}
 function semAc(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
@@ -801,7 +802,7 @@ async function calendario(){
 const sgsSerie=async(n,ini)=>{const d=`${String(ini.getDate()).padStart(2,"0")}/${String(ini.getMonth()+1).padStart(2,"0")}/${ini.getFullYear()}`;
   return (await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${n}/dados?formato=json&dataInicial=${d}`)).json()};
 const numBR=s=>+String(s||"").replace(/[^\d,]/g,"").replace(",",".")||0;
-function compTexto(t){const url=location.origin+"/";const txt=t+` Faça a sua conta no Raio-X do Brasil: ${url}`;
+function compTexto(t){const url=SITE_URL+"/";const txt=t+` Faça a sua conta no Raio-X do Brasil: ${url}`;
   if(navigator.share)navigator.share({text:txt}).catch(()=>{});else open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener")}
 function calculadoras(){
   const el=document.getElementById("calcs");if(!el||el.dataset.ok)return;el.dataset.ok=1;
@@ -1007,12 +1008,12 @@ function cartaoImagem(t){
   if(t.delta)y=quebra(t.delta,46,700,y+30,920,t.cor||"#eceef1");
   g.fillStyle="#2a2d33";g.fillRect(80,H-260,W-160,3);
   quebra("Fonte: "+t.fonte,36,500,H-190,920,"#9aa0a9");
-  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(location.host,80,H-90);
+  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(SITE_HOST,80,H-90);
   return new Promise(r=>c.toBlob(r,"image/png"));
 }
 async function compartilhar(k){
   if(k==="ibov"&&window.IBOV){const c=IBOV,dt=isNaN(c.p)?"":Math.abs(c.p)<0.005?"Igual a ontem":(c.p>0?"Subiu ":"Caiu ")+nf(Math.abs(c.p),1)+"% hoje",v=nf(c.v,0)+" pontos";
-    const texto=`Ibovespa: ${v} (${c.h}).${dt?" "+dt+".":""} Fonte: ${c.fonte}. Compare mês a mês no Raio-X do Brasil: ${location.origin}/`;
+    const texto=`Ibovespa: ${v} (${c.h}).${dt?" "+dt+".":""} Fonte: ${c.fonte}. Compare mês a mês no Raio-X do Brasil: ${SITE_URL}/`;
     try{const blob=await cartaoImagem({nome:"Ibovespa (bolsa de valores)",valor:v,periodo:c.h,delta:dt,cor:isNaN(c.p)||Math.abs(c.p)<0.005?null:c.p>0?css('--up'):css('--down'),fonte:c.fonte}),arq=new File([blob],"raio-x-ibovespa.png",{type:"image/png"});
       if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
       if(navigator.share){await navigator.share({text:texto});return}
@@ -1023,7 +1024,7 @@ async function compartilhar(k){
   const tmp=document.createElement("div");tmp.innerHTML=delta(k);const el=tmp.firstElementChild,cl=el?(el.classList.contains("up")?"up":el.classList.contains("down")?"down":"eq"):"";
   const dt=el?el.textContent.trim().replace(/^[▲▼=]\s*/,"").replace(/^igual/,"Igual").replace(/^(?=\d)/,cl==="up"?"Subiu ":cl==="down"?"Caiu ":""):"",dc0=cl==="up"?css('--up'):cl==="down"?css('--down'):null;
   let dtx=dt,dc=dc0;if(k==="dolar"&&window.COMERCIAL&&!isNaN(COMERCIAL.p)){const p=COMERCIAL.p;dtx=Math.abs(p)<0.005?"Igual a ontem":(p>0?"Subiu ":"Caiu ")+nf(Math.abs(p),1)+"% hoje";dc=p>0?css('--up'):p<0?css('--down'):null}
-  const url=location.origin+"/";
+  const url=SITE_URL+"/";
   const texto=`${i.nome}: ${u.valor_texto} (${u.periodo}).${dtx?" "+dtx+".":""} Fonte: ${i.fonte}. Compare mês a mês no Raio-X do Brasil: ${url}`;
   try{const blob=await cartaoImagem({nome:i.nome,valor:u.valor_texto,periodo:u.periodo,delta:dtx,cor:dc||null,fonte:i.fonte});
     const arq=new File([blob],`raio-x-${k}.png`,{type:"image/png"});
@@ -1400,9 +1401,9 @@ async function histCompartilhar(){
   g.fillStyle="#9aa0a9";g.font=F(600,28);g.textAlign="left";g.fillText(String(pts[0].a),X0,Yb+44);g.textAlign="right";g.fillText(String(pts[n-1].a),X1,Yb+44);
   g.fillStyle="#ffffff";g.font=F(800,44);g.fillText(H.fmt(pts[n-1].v),X1,Y(pts[n-1].v)-16);g.textAlign="left";if(H.bandas){g.fillStyle="#9aa0a9";g.font=F(700,34);g.fillText(H.fmt(pts[0].v),X0,Y(Math.max(...pts.slice(0,4).map(p=>p.v)))-16)}
   g.fillStyle="#2a2d33";g.fillRect(80,Ht-220,W-160,3);g.fillStyle="#9aa0a9";g.font=F(500,30);g.fillText("Fonte: "+H.fonte,80,Ht-160);
-  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(location.host,80,Ht-90);
+  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(SITE_HOST,80,Ht-90);
   const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-${k}-historico.png`,{type:"image/png"});
-  const texto=`${H.tit}: veja o gráfico completo no Raio-X do Brasil: ${location.origin}/${SLUG_DE[k]||""}`;
+  const texto=`${H.tit}: veja o gráfico completo no Raio-X do Brasil: ${SITE_URL}/${SLUG_DE[k]||""}`;
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click()}catch(e){}
 }
@@ -1523,8 +1524,8 @@ async function gastosCompartilhar(){
   g.top.slice(0,8).forEach((t,i)=>{const col=i<4?0:1,y=920+(i%4)*48,x0=80+col*470;x.fillStyle=GCOR[i];x.beginPath();x.arc(x0+10,y-9,11,0,7);x.fill();x.fillStyle="#eceef1";x.font=F(600,26);let n=t.l.replace(/ \(.*\)/,"").replace("Repasses a estados e municípios","Estados e municípios").replace("Juros e pagamento da dívida","Juros e dívida").replace("Aposentadorias e pensões","Aposentadorias");x.fillText(n,x0+34,y);x.textAlign="right";x.font=F(800,26);x.fillText("R$ "+nf(t.v/g.total*100,0),x0+420,y);x.textAlign="left"});
   x.fillStyle="#9aa0a9";x.font=F(500,24);x.fillText("De cada R$ 100 gastos pelo governo federal. Sem a rolagem da dívida.",80,1145);
   x.fillStyle="#2a2d33";x.fillRect(80,H-170,W-160,3);x.fillStyle="#9aa0a9";x.font=F(500,26);x.fillText("Fonte: Tesouro Nacional · SICONFI · RREO da União",80,H-120);
-  x.font=F(700,36);x.fillStyle="#ffdf00";x.fillText(location.host,80,H-60);
-  const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-gastos-${g.ano}.png`,{type:"image/png"}),texto=`Com o que o governo federal gasta o seu dinheiro (${g.ano}): veja no Raio-X do Brasil ${location.origin}/gastos`;
+  x.font=F(700,36);x.fillStyle="#ffdf00";x.fillText(SITE_HOST,80,H-60);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png")),arq=new File([blob],`raio-x-gastos-${g.ano}.png`,{type:"image/png"}),texto=`Com o que o governo federal gasta o seu dinheiro (${g.ano}): veja no Raio-X do Brasil ${SITE_URL}/gastos`;
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}const l=document.createElement("a");l.href=URL.createObjectURL(blob);l.download=arq.name;l.click()}catch(e){}}
 async function impostometro(){try{const j=await (await fetch("/api/impostos")).json();if(!j.acumulado)return;const el=document.getElementById("impm"),v=document.getElementById("impm-v");
   const anoAtual=new Date().getFullYear(),ini=Date.UTC(anoAtual,0,1,3);el.classList.remove("hidden");
