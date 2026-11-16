@@ -174,6 +174,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .not-dlg{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:18px;max-width:560px;width:calc(100% - 32px)}
 .not-dlg::backdrop{background:rgba(0,0,0,.55)}
 .not-dlg img{width:100%;max-height:280px;object-fit:cover;border-radius:10px;margin-bottom:8px}
+.not-dlg .nd-comp{display:flex;margin:4px auto 8px}
 .not-dlg h3{font-size:19px;line-height:1.3;margin:6px 0 8px}.not-dlg p{font-size:15.5px;line-height:1.5}
 .nd-x{position:absolute;right:10px;top:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
 .nd-ler{display:block;text-align:center;margin:12px 0 6px;padding:12px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none}
@@ -187,6 +188,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .bt{display:inline-block;padding:10px 14px;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700;text-decoration:none;font-size:14.5px}
 .prom{display:grid;gap:10px;margin-top:10px}.prom-i{border-top:1px solid var(--line);padding-top:10px}
 .prom-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;font-size:15.5px}
+.card.vot .prom-h{padding-right:42px}.card.vot>.comp-vot{top:12px;right:10px;width:32px;height:32px}.card.vot.vot-destaque{outline:2px solid #ffdf00;box-shadow:0 0 0 6px rgba(255,223,0,.18)}
 .seu-uf{margin-top:12px}.uf-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.uf-top h3{margin:0}.uf-top .sel-uf{margin-top:0;max-width:260px}
 .uf-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}@media (min-width:760px){.uf-grid{grid-template-columns:repeat(4,1fr)}}
 .uf-c{background:var(--soft);border-radius:12px;padding:10px 12px}.uf-c .l{font-size:13.5px;color:var(--muted)}.uf-c .v{font-size:20px;font-weight:800;margin:2px 0}.uf-c .fonte{margin:4px 0 0;font-size:12.5px}
@@ -648,11 +650,17 @@ function senadoresGastos(){bancadas();
 
 /* ---------- notícias: IBGE, Agência Brasil, Agência Senado, Agência Câmara (pela ponte /api/noticias) ---------- */
 let NOT=[],NOTF={fonte:"todas",uf:""};
+const notId=n=>{let h=2166136261;for(const c of String(n.link||n.titulo)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
+let NOT_LINK=new URLSearchParams(location.search).get("n");
 const quando=t=>{if(!t)return "";const m=Math.round((Date.now()-t)/60000);if(m<60)return m<=1?"agora":`há ${m} min`;const h=Math.round(m/60);if(h<24)return `há ${h} h`;
   return new Date(t).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};
 async function noticias(){
   try{const j=await (await fetch("/api/noticias")).json();NOT=(j.itens||[]).filter(n=>n.titulo)}catch(e){NOT=[]}
   faixa();if(!document.getElementById("t-noticias").classList.contains("hidden"))abaNoticias();
+  /* link compartilhado (?n=...): abre a notícia aqui no site; se ela já saiu da lista, mostra a aba Notícias */
+  if(NOT_LINK){const id=NOT_LINK;NOT_LINK=null;const n=NOT.find(x=>notId(x)===id);
+    try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+    if(n)abrirNot(n);else{const b=document.querySelector('nav button[data-t="noticias"]');if(b)b.click()}}
 }
 function cardNot(n,i,cls){return `<button class="${cls}" data-n="${i}">${n.img?`<img src="${esc(n.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}<span class="nt-txt"><span class="nt-tit">${esc(n.titulo)}</span><span class="nt-meta">${esc(n.fonte)} · ${quando(n.data)}${n.uf&&n.uf.length?" · "+n.uf.slice(0,3).join(", "):""}</span></span></button>`}
 let tFaixa;
@@ -672,8 +680,15 @@ function abrirNot(n){
     <p class="nt-meta">${esc(n.fonte)} · ${n.data?new Date(n.data).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):""}</p>
     <h3>${esc(n.titulo)}</h3><p>${esc(n.resumo||"")}</p>
     <a class="nd-ler" href="${esc(n.link)}" target="_blank" rel="noopener">Ler a notícia completa em ${esc(n.fonte)}</a>
+    <button class="smh-share nd-comp" type="button">${ICONE_COMP} Compartilhar esta notícia</button>
     <p class="fonte">Título e resumo reproduzidos da fonte oficial, com link, conforme a Lei 9.610/98, art. 46.</p>`;
+  d.querySelector(".nd-comp").onclick=()=>compartilharNot(n);
   d.showModal();
+}
+async function compartilharNot(n){
+  const url=`${SITE_URL}/?n=${notId(n)}`,texto=`${n.titulo}\n\nLeia no Raio-X do Brasil: ${url}`;
+  try{if(navigator.share){await navigator.share({title:n.titulo,text:texto});return}}catch(e){if(e&&e.name==="AbortError")return}
+  open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener");
 }
 function abaNoticias(){
   const fontes=["todas",...new Set(NOT.map(n=>n.fonte))];
@@ -891,13 +906,50 @@ async function votacoes(){
   const dt=d=>d.split("-").reverse().join("/");
   el.innerHTML=L.map(v=>{const s=v.placar["Sim"]||0,n=v.placar["Não"]||0,t=s+n||1;
     const pp=Object.entries(v.partidos).map(([p,c])=>({p,s:c["Sim"]||0,n:c["Não"]||0,tot:Object.values(c).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.tot-a.tot);
-    return `<div class="card vot"><div class="prom-h"><b>${esc(v.prop||"Votação")} · ${dt(v.data)}</b><span class="badge" style="color:${v.aprovada?"#2f9e63":"#e05252"};background:color-mix(in srgb,${v.aprovada?"#2f9e63":"#e05252"} 14%,transparent)">${v.aprovada?"aprovada":"rejeitada"}</span></div>
+    return `<div class="card vot" data-vid="${esc(String(v.id))}"><button class="comp comp-vot" type="button" data-vid="${esc(String(v.id))}" aria-label="Compartilhar">${ICONE_COMP}</button><div class="prom-h"><b>${esc(v.prop||"Votação")} · ${dt(v.data)}</b><span class="badge" style="color:${v.aprovada?"#2f9e63":"#e05252"};background:color-mix(in srgb,${v.aprovada?"#2f9e63":"#e05252"} 14%,transparent)">${v.aprovada?"aprovada":"rejeitada"}</span></div>
       <p class="note">${esc((v.ementa||v.descricao).slice(0,220))}${(v.ementa||v.descricao).length>220?"…":""}</p><p class="note" style="font-size:13px">${esc(v.descricao)}</p>
       <div class="placar"><span style="width:${s/t*100}%;background:#2f9e63"></span><span style="width:${n/t*100}%;background:#e05252"></span></div>
       <p class="note"><b style="color:#2f9e63">Sim: ${s}</b> · <b style="color:#e05252">Não: ${n}</b>${Object.entries(v.placar).filter(([k])=>k!=="Sim"&&k!=="Não").map(([k,c])=>` · ${esc(k)}: ${c}`).join("")}</p>
       <details><summary>Como cada partido votou</summary><ul class="vot-p">${pp.map(x=>`<li><span>${esc(x.p)}</span><span class="placar mini"><span style="width:${x.s/x.tot*100}%;background:#2f9e63"></span><span style="width:${x.n/x.tot*100}%;background:#e05252"></span></span><span class="note">${x.s} sim · ${x.n} não${x.tot-x.s-x.n?` · ${x.tot-x.s-x.n} outros`:""}</span></li>`).join("")}</ul></details>
       ${v.idProp?`<p class="fonte"><a href="https://www.camara.leg.br/propostas-legislativas/${v.idProp}" target="_blank" rel="noopener">Câmara dos Deputados · ver o projeto</a></p>`:""}</div>`}).join("");
+  el.querySelectorAll(".comp-vot").forEach(b=>b.onclick=e=>{e.stopPropagation();const v=L.find(x=>String(x.id)===b.dataset.vid);if(v)compartilharVot(v)});
 }
+/* compartilhar uma votação: imagem com o placar e como cada partido votou + link que abre o site nessa votação */
+async function compartilharVot(v){
+  const s=v.placar["Sim"]||0,n=v.placar["Não"]||0,t=s+n||1,dt=v.data.split("-").reverse().join("/"),ok=v.aprovada,verde="#2f9e63",verm="#e05252";
+  const pp=Object.entries(v.partidos).map(([p,c])=>({p,s:c["Sim"]||0,n:c["Não"]||0,tot:Object.values(c).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.tot-a.tot).slice(0,8);
+  const W=1080,c=document.createElement("canvas");c.width=W;c.height=2200;const g=c.getContext("2d");
+  const F=(w,px)=>`${w} ${px}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  const quebra=(t,f,max)=>{g.font=f;const out=[];let l="";for(const w of String(t).split(" ")){const x=l?l+" "+w:w;if(g.measureText(x).width>max&&l){out.push(l);l=w}else l=x}if(l)out.push(l);return out};
+  g.fillStyle="#101114";g.fillRect(0,0,W,2200);
+  g.save();g.beginPath();g.roundRect(80,70,96,96,24);g.clip();g.fillStyle="#009c3b";g.fillRect(80,70,96,96);g.fillStyle="#ffdf00";g.beginPath();g.moveTo(80,81);g.lineTo(165,118);g.lineTo(80,155);g.fill();g.fillStyle="#002776";g.beginPath();g.arc(80,118,29,0,7);g.fill();g.restore();
+  g.fillStyle="#eceef1";g.font=F(800,46);g.fillText("Raio-X do Brasil",200,133);
+  g.fillStyle="#9aa0a9";g.font=F(700,28);g.fillText("VOTAÇÃO NO PLENÁRIO DA CÂMARA · "+dt,80,240);
+  g.fillStyle="#ffffff";g.font=F(800,64);g.fillText(v.prop||"Votação",80,320);
+  const bt=ok?"APROVADA":"REJEITADA";g.font=F(800,30);const bw=g.measureText(bt).width+40;g.fillStyle=ok?verde:verm;g.beginPath();g.roundRect(80,346,bw,52,12);g.fill();g.fillStyle="#fff";g.fillText(bt,100,382);
+  let y=460;const em=quebra(v.ementa||v.descricao||"",F(500,32),920);g.fillStyle="#d4d7dc";em.slice(0,5).forEach((l,i)=>{g.fillText(i===4&&em.length>5?l+"…":l,80,y);y+=44});
+  y+=36;g.font=F(800,56);g.fillStyle=verde;g.fillText("Sim "+s,80,y);g.fillStyle=verm;g.textAlign="right";g.fillText("Não "+n,1000,y);g.textAlign="left";
+  y+=26;g.fillStyle="#2a2d33";g.beginPath();g.roundRect(80,y,920,30,10);g.fill();g.save();g.beginPath();g.roundRect(80,y,920,30,10);g.clip();g.fillStyle=verde;g.fillRect(80,y,920*s/t,30);g.fillStyle=verm;g.fillRect(80+920*s/t,y,920*n/t,30);g.restore();
+  y+=80;g.fillStyle="#9aa0a9";g.font=F(700,28);g.fillText("Como os maiores partidos votaram",80,y);y+=22;
+  for(const x of pp){y+=48;g.fillStyle="#eceef1";g.font=F(700,28);g.fillText(x.p,80,y);
+    const bx=330,bwid=450;g.fillStyle="#2a2d33";g.beginPath();g.roundRect(bx,y-22,bwid,24,8);g.fill();g.save();g.beginPath();g.roundRect(bx,y-22,bwid,24,8);g.clip();g.fillStyle=verde;g.fillRect(bx,y-22,bwid*x.s/(x.tot||1),24);g.fillStyle=verm;g.fillRect(bx+bwid*x.s/(x.tot||1),y-22,bwid*x.n/(x.tot||1),24);g.restore();
+    g.fillStyle="#9aa0a9";g.font=F(600,24);g.fillText(`${x.s} sim · ${x.n} não`,bx+bwid+16,y)}
+  const H=Math.max(1350,y+210),c2=document.createElement("canvas");c2.width=W;c2.height=H;const g2=c2.getContext("2d");g2.drawImage(c,0,0);
+  g2.fillStyle="#2a2d33";g2.fillRect(80,H-170,W-160,3);g2.fillStyle="#9aa0a9";g2.font=F(500,26);g2.fillText("Fonte: Câmara dos Deputados · Dados Abertos",80,H-118);
+  g2.font=F(700,40);g2.fillStyle="#ffdf00";g2.fillText(SITE_HOST,80,H-60);
+  const blob=await new Promise(r=>c2.toBlob(r,"image/png")),arq=new File([blob],`raio-x-votacao-${semAc(v.prop||"camara").replace(/[^a-z0-9]+/g,"-")}.png`,{type:"image/png"});
+  const url=`${SITE_URL}/?v=${encodeURIComponent(v.id)}`,texto=`${v.prop||"Votação"} foi ${ok?"aprovada":"rejeitada"} na Câmara (${dt}): ${s} sim × ${n} não. Veja como cada partido votou no Raio-X do Brasil: ${url}`;
+  try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
+    if(navigator.share){await navigator.share({text:texto});return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click();open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+  catch(e){if(e&&e.name!=="AbortError")open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+}
+/* link compartilhado (?v=...): abre a aba Políticos e rola até essa votação */
+(function(){const id=new URLSearchParams(location.search).get("v");if(!id)return;try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+  let n=0;const tenta=()=>{const b=document.querySelector('nav button[data-t="politicos"]');if(b&&!b.classList.contains("on"))b.click();
+    const c=document.querySelector(`.card.vot[data-vid="${CSS.escape(id)}"]`)||(n>40?document.getElementById("votacoes"):null);
+    if(c){c.scrollIntoView({behavior:"smooth",block:"center"});if(c.classList.contains("vot")){c.classList.add("vot-destaque");setTimeout(()=>c.classList.remove("vot-destaque"),4000)}return}
+    if(++n<60)setTimeout(tenta,400)};setTimeout(tenta,600)})();
 async function votosDoDeputado(id){const L=await carregarVot();const r=L.filter(v=>v.votos[id]);if(!r.length)return "";
   return `<div class="pol-gasto" style="margin-top:10px">Como votou nas últimas votações do Plenário:</div><ul class="pol-tipos">${r.slice(0,8).map(v=>`<li>${esc(v.prop||"Votação")} (${v.data.split("-").reverse().join("/")}): <b>${VOTO_N[v.votos[id]]}</b></li>`).join("")}</ul>`}
 
