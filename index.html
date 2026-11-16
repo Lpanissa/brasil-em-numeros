@@ -138,6 +138,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .kpi,.item{position:relative}
 .comp{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--muted);display:grid;place-items:center;cursor:pointer;padding:0}
 .comp:hover{color:var(--ink)}
+.card{position:relative}.comp.comp-card{top:12px;right:40px;width:32px;height:32px}.card:not(:has(>h3.tog))>.comp.comp-card{right:10px}.card.tem-comp>h3{padding-right:78px}.card.tem-comp:not(:has(>h3.tog))>h3{padding-right:44px}
 .kpi .l,.item .top{padding-right:40px}
 .kpi.ibov{grid-column:1/-1}
 .comerc{font-size:14px;color:var(--muted);margin-top:6px;border-top:1px solid var(--line);padding-top:6px}
@@ -1265,6 +1266,7 @@ function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(
 function dobra(card){
   if(!card||!card.classList||!card.classList.contains("card"))return;
   const h=card.querySelector(":scope>h3");if(!h)return;
+  if(!card.querySelector(":scope>.comp,.smh-share,.comp-t")&&card.id!=="gastos-card"&&card.closest('section[id^="t-"]')&&[...card.querySelectorAll("svg")].some(v=>!v.closest("button,.info"))){const b=document.createElement("button");b.className="comp comp-card";b.type="button";b.setAttribute("aria-label","Compartilhar");b.innerHTML=ICONE_COMP;card.appendChild(b);card.classList.add("tem-comp")}
   if(card.id==="gastos-card"||card.querySelector("#busca,#mapa,#not-uf,#d-bar,#leis-f")){if(card.dataset.dobra){card.classList.remove("fecha");h.classList.remove("tog")}return}
   if(!card.dataset.dobra){card.dataset.dobra=1;card.classList.add("fecha")}
   if(!h.classList.contains("tog")){h.classList.add("tog");h.setAttribute("role","button");h.tabIndex=0}
@@ -1407,6 +1409,55 @@ async function histCompartilhar(){
   try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click()}catch(e){}
 }
+/* compartilhar um quadro de gráfico (barras ou mapa) como imagem, no mesmo padrão escuro das outras imagens do site */
+async function compartilharCard(card){
+  const svg=card.querySelector('[id^="vs-"] svg')||[...card.querySelectorAll("svg")].find(v=>!v.closest("button,.info"));if(!svg)return;
+  const sec=card.closest('section[id^="t-"]'),aba=sec?sec.id.slice(2):"",agrupa=aba==="estados"&&!!svg.closest('[id^="vs-"],[id^="pz-"]');
+  const h3=card.querySelector(":scope>h3"),tit=(h3?[...h3.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join(""):"").trim()||(document.getElementById("mapa-tit")||{}).textContent||"Raio-X do Brasil";
+  const ehMapa=!agrupa,modo=(document.getElementById("mapa-tit")||{}).textContent||"";
+  const oque=((card.querySelector(".oque")||{}).textContent||"").replace(/^O que é:\s*/,"").trim();
+  const un=agrupa?((card.querySelector('[id^="vs-"] .note')||{}).textContent||"").trim():"";
+  const fonte=([...card.querySelectorAll("p.fonte,p.note,.note")].map(e=>e.textContent.trim()).find(t=>/fonte|ibge|banco central|tse|tesouro|fbsp|dieese|senado|câmara|sgs|anp|copom|assembleias/i.test(t))||"");
+  const ink=css('--ink'),mut=css('--muted'),cardc=css('--card'),line=css('--line'),soft=css('--soft');
+  const PW=920,W=1080,troca=(t,a,b)=>a?t.split(a).join(b):t;
+  const irmaos=[...svg.parentElement.children].filter(v=>v.tagName.toLowerCase()==="svg"),todos=irmaos.length>1?irmaos:[svg];
+  const imgs=await Promise.all(todos.map(async v=>{let src=new XMLSerializer().serializeToString(v);
+    const r=v.getBoundingClientRect(),vb=(v.getAttribute("viewBox")||`0 0 ${+v.getAttribute("width")||r.width||600} ${+v.getAttribute("height")||r.height||400}`).split(/[\s,]+/).map(Number);
+    const larg=Math.min(PW,vb[2]*3.2),alt=Math.round(larg*vb[3]/vb[2]);
+    src=troca(troca(troca(troca(troca(src,ink,"#eceef1"),mut,"#9aa0a9"),cardc,"#16181c"),soft,"#2a2d33"),line,"#2a2d33");
+    src=src.replace(/<svg[^>]*?>/,m=>m.replace(/\swidth="[^"]*"/,"").replace(/\sheight="[^"]*"/,"").replace(/\sstyle="[^"]*"/,"").replace("<svg",`<svg xmlns="http://www.w3.org/2000/svg" width="${larg}" height="${alt}" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif"`));
+    const im=new Image();im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(src);await im.decode().catch(()=>{});return {im,larg,alt}}));
+  const ph=imgs.reduce((t,x)=>t+x.alt+20,-20);
+  const leg=[...svg.parentElement.querySelectorAll("div")].filter(d=>{const f=d.firstElementChild;return f&&/^(span|i)$/i.test(f.tagName)&&f.style.background&&!f.textContent.trim()}).map(d=>({cor:d.firstElementChild.style.background,txt:[...d.childNodes].slice(1).map(n=>n.textContent.trim()).filter(Boolean).join(" ").replace(/\s+/g," ")}));
+  const F=(w,px)=>`${w} ${px}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  const meas=document.createElement("canvas").getContext("2d");
+  const quebra=(t,f,max)=>{meas.font=f;const out=[];let l="";for(const w of t.split(" ")){const x=l?l+" "+w:w;if(meas.measureText(x).width>max&&l){out.push(l);l=w}else l=x}if(l)out.push(l);return out};
+  const lT=quebra(tit,F(800,58),920),lM=(!ehMapa&&modo)?quebra("Estados agrupados por: "+modo.charAt(0).toLowerCase()+modo.slice(1),F(600,30),920):[],lO=oque?quebra(oque.charAt(0).toUpperCase()+oque.slice(1),F(500,30),920).slice(0,4):[],lU=un?quebra(un,F(600,28),920):[];
+  const lLeg=leg.map(x=>({cor:x.cor,ls:quebra(x.txt,F(600,30),860)}));const hLeg=lLeg.reduce((t,x)=>t+x.ls.length*40+12,0);
+  const aviso=quebra("Cada número é a média dos estados de cada grupo. Mostra onde cada partido ganhou, não que ele seja responsável pelos números.",F(500,26),920),lF=fonte?quebra(/fonte/i.test(fonte)?fonte:"Fonte: "+fonte,F(500,26),920).slice(0,3):[];
+  const topo=240,Hc=topo+lT.length*66+(lM.length?16+lM.length*40:0)+(lO.length?20+lO.length*40:0)+(lU.length?24+lU.length*36:0)+30+ph+40+(hLeg?hLeg+20:0)+(agrupa?aviso.length*36:0)+30+lF.length*36+140;
+  const H=Math.max(1080,Math.min(2200,Hc)),c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  g.fillStyle="#101114";g.fillRect(0,0,W,H);
+  g.save();g.beginPath();g.roundRect(80,80,96,96,24);g.clip();g.fillStyle="#009c3b";g.fillRect(80,80,96,96);g.fillStyle="#ffdf00";g.beginPath();g.moveTo(80,91);g.lineTo(165,128);g.lineTo(80,165);g.fill();g.fillStyle="#002776";g.beginPath();g.arc(80,128,29,0,7);g.fill();g.restore();
+  g.fillStyle="#eceef1";g.font=F(800,46);g.fillText("Raio-X do Brasil",200,143);
+  let y=topo+52;g.font=F(800,58);g.fillStyle="#ffffff";lT.forEach(l=>{g.fillText(l,80,y);y+=66});
+  if(lM.length){y+=6;g.font=F(600,30);g.fillStyle="#ffdf00";lM.forEach(l=>{g.fillText(l,80,y);y+=40})}
+  if(lO.length){y+=14;g.font=F(500,30);g.fillStyle="#b9bec7";lO.forEach(l=>{g.fillText(l,80,y);y+=40})}
+  if(lU.length){y+=14;g.font=F(600,28);g.fillStyle="#9aa0a9";lU.forEach(l=>{g.fillText(l,80,y);y+=36})}
+  y+=20;for(const x of imgs){if(x.im.naturalWidth||x.im.width)g.drawImage(x.im,80+(PW-x.larg)/2,y,x.larg,x.alt);y+=x.alt+20}y+=26;
+  for(const x of lLeg){g.fillStyle=x.cor;g.beginPath();g.roundRect(80,y-26,30,30,6);g.fill();g.font=F(600,30);g.fillStyle="#eceef1";x.ls.forEach((l,j)=>{g.fillText(l,128,y+j*40)});y+=x.ls.length*40+12}if(lLeg.length)y+=20;
+  if(!ehMapa){g.font=F(500,26);g.fillStyle="#9aa0a9";aviso.forEach(l=>{g.fillText(l,80,y);y+=36})}
+  g.fillStyle="#2a2d33";g.fillRect(80,H-120-lF.length*36,W-160,3);
+  let yf=H-80-lF.length*36;g.font=F(500,26);g.fillStyle="#9aa0a9";lF.forEach(l=>{g.fillText(l,80,yf);yf+=36});
+  g.font=F(700,40);g.fillStyle="#ffdf00";g.fillText(SITE_HOST,80,H-60);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png")),nome=semAc(tit).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),arq=new File([blob],`raio-x-${nome||"grafico"}.png`,{type:"image/png"});
+  const texto=`${tit}${agrupa&&!/estado/i.test(tit)?" por estado":""}: veja no Raio-X do Brasil: ${SITE_URL}/${aba?"#"+aba:""}`;
+  try{if(navigator.canShare&&navigator.canShare({files:[arq]})){await navigator.share({files:[arq],text:texto});return}
+    if(navigator.share){await navigator.share({text:texto});return}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=arq.name;a.click();open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+  catch(e){if(e&&e.name!=="AbortError")open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+}
+document.addEventListener("click",e=>{const b=e.target.closest(".comp-card");if(!b)return;e.stopPropagation();e.preventDefault();compartilharCard(b.closest(".card"))},true);
 /* ---------- aba Leis: busca no índice estático gerado do projeto ctresb/leis ---------- */
 const LX={meta:null,sh:{},ch:{},res:[],n:30};
 const lxNorm=t=>t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
