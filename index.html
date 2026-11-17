@@ -146,6 +146,7 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .pizza{display:flex;gap:14px 24px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
 .pizza svg{flex:none}
 .pizza-leg{font-size:15px;display:grid;gap:8px;max-width:100%}
+.ad-faixa{text-align:center;margin:16px 0;min-height:50px;overflow:hidden}.ad-fx{display:inline-block;width:320px;height:50px}@media(min-width:500px){.ad-fx{width:468px;height:60px}}@media(min-width:760px){.ad-fx{width:728px;height:90px}}
 .anuncio{margin:28px 0 8px;border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;background:var(--card);text-align:center}
 .anuncio small{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .anuncio .adsbygoogle{display:block;min-height:90px}
@@ -243,6 +244,7 @@ nav{top:31px}
 .vid-dlg::backdrop{background:rgba(0,0,0,.8)}.vid-leis{margin-top:10px;color:#fff;font-size:13.5px;display:flex;flex-direction:column;gap:6px;background:#16181d;border-radius:12px;padding:10px 12px}.vid-dlg.com-leis .yt{max-height:64vh}.vid-leis:empty{display:none}.vid-leis a{color:#9fe0b4}
 .yt{position:relative;width:100%;aspect-ratio:9/16;max-height:86vh;border-radius:14px;overflow:hidden;background:#000}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid-acoes{display:flex;justify-content:center;align-items:center;gap:16px;margin:10px 0 0;flex-wrap:wrap}.vid-comp{background:#fff!important;color:#111!important;border-color:#fff!important}
 .vid-dlg .nd-x{position:absolute;top:-40px;right:0;background:none;border:0;color:#fff;font-size:30px;cursor:pointer}
 footer{color:var(--muted);font-size:14px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
 details.abre>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-weight:700;padding:10px 16px;margin:6px 0;border:1px solid var(--line,#ccc);border-radius:999px;user-select:none}
@@ -309,14 +311,8 @@ details.cat>summary h2{margin-bottom:8px}
 <section id="t-painel">
   <div class="card" id="filtro" style="margin-bottom:10px"></div>
   <div class="grid kpis" id="kpis"></div>
-  <!-- Anúncio AdSense: Painel - Banner Responsivo -->
-  <ins class="adsbygoogle"
-       style="display:block;margin:12px 0"
-       data-ad-client="ca-pub-1546406246556926"
-       data-ad-slot="1592899138"
-       data-ad-format="horizontal"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <!-- Anúncio AdSense: Painel - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1592899138"></ins></div>
   <p class="note media-aviso">Preços, aluguéis, juros e salários mostrados aqui são <b>médias</b> das pesquisas oficiais (por exemplo, a média dos postos pesquisados pela ANP ou dos mercados pesquisados pelo DIEESE). O valor no seu bairro ou no seu banco pode ser diferente.</p>
   <div class="card seu-uf" id="seu-uf"></div>
   <div class="card" id="cal" style="margin-top:12px"></div>
@@ -350,14 +346,8 @@ details.cat>summary h2{margin-bottom:8px}
       <div class="card"><h3>Violência: mortes violentas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="oque"><b>O que é:</b> quantas pessoas foram mortas de forma violenta a cada 100 mil habitantes no ano. Ex.: 42,5 = umas 42 mortes em cada grupo de 100 mil pessoas. Usa essa conta para comparar estados grandes e pequenos. Maior é pior.</p><p class="note">Por 100 mil habitantes, média de cada grupo · FBSP, dado de 2025, divulgado em 23/07/2026</p><div id="vs-mvi"></div></div>
     </div>
   </div>
-  <!-- Anúncio AdSense: Estados - Banner Responsivo -->
-  <ins class="adsbygoogle"
-       style="display:block;margin:12px 0"
-       data-ad-client="ca-pub-1546406246556926"
-       data-ad-slot="1574531928"
-       data-ad-format="horizontal"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <!-- Anúncio AdSense: Estados - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1574531928"></ins></div>
   <div class="grid c3">
     <div class="card"><h3>Os 10 maiores PIB por pessoa<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2023</b>, o mais recente que existe. Divulgado pelo IBGE em <b>14/11/2025</b> (Contas Regionais). O IBGE publica o PIB dos estados com cerca de 2 anos de atraso: o de 2024 deve sair em <b>novembro de 2026</b> e entra aqui na coleta seguinte.</div><p class="oque"><b>O que é:</b> toda a riqueza produzida no estado em um ano, dividida pelo número de habitantes. Mostra quanto a economia do estado produz por pessoa, não quanto cada um ganha.</p><p class="note">De que grupo são</p><div id="pz-ricos"></div></div>
     <div class="card"><h3>As 10 maiores rendas<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="oque"><b>O que é:</b> quanto cada morador tem por mês, somando salário, aposentadoria e benefícios da casa e dividindo por quem mora nela. É o mais perto do bolso das pessoas.</p><p class="note">De que grupo são</p><div id="pz-renda"></div></div>
@@ -390,7 +380,7 @@ details.cat>summary h2{margin-bottom:8px}
 
 <section id="t-politicos" class="hidden">
   <a class="vid-link" href="#videos" onclick="document.querySelector('nav button[data-t=videos]').click();return false"><span>Entenda em 1 minuto: vídeos da série "Como funciona o Brasil"</span><span class="vl-seta"></span></a>
-<dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p style="text-align:center;margin:8px 0 0"><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p><div id="vid-leis" class="vid-leis"></div></dialog>
+<dialog id="vid-dlg" class="vid-dlg" onclick="if(event.target===this)this.close()" onclose="this.querySelector('.yt').innerHTML=''"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="yt"></div><p class="vid-acoes"><button id="vid-comp" class="smh-share vid-comp" type="button">Compartilhar este vídeo</button><a id="vid-yt" style="color:#fff" target="_blank" rel="noopener">Ver no YouTube</a></p><div id="vid-leis" class="vid-leis"></div></dialog>
   <h2>Presidente eleito</h2>
   <div class="grid" id="pres" style="gap:10px"></div>
   <h2>Governadores eleitos em 2026: planos de governo</h2>
@@ -410,6 +400,8 @@ details.cat>summary h2{margin-bottom:8px}
     <div class="card"><h3>Câmara dos Deputados<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos deputados federais em exercício cada partido tem hoje, contados ao vivo na lista oficial da Câmara. São 513 cadeiras; para aprovar um projeto de lei comum basta a maioria dos presentes, e para mudar a Constituição são 308 votos, em dois turnos. Os deputados eleitos em outubro de 2026 tomam posse em 01/02/2027, e a lista muda sozinha nesse dia.</div><p class="note" id="banc-dep-sub"></p><div id="banc-dep"></div></div>
     <div class="card"><h3>Senado Federal<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Quantos senadores em exercício cada partido tem hoje, contados ao vivo na lista oficial do Senado. São 81 cadeiras, 3 por estado; para mudar a Constituição são 49 votos, em dois turnos. Os senadores eleitos em outubro de 2026 tomam posse em 01/02/2027.</div><p class="note" id="banc-sen-sub"></p><div id="banc-sen"></div></div>
   </div>
+  <!-- Anúncio AdSense: Políticos - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1592899138"></ins></div>
   <h2>Últimas votações no Plenário da Câmara<button class="info" aria-label="Sobre as votações" data-alvo="vot-info">i</button></h2>
   <div class="infotxt" id="vot-info">Votações nominais (com o voto de cada deputado registrado) dos últimos meses, direto dos Dados Abertos da Câmara. Ficam de fora os requerimentos, que são votações de procedimento. Toque em um deputado na busca acima para ver como ele votou. Atualiza sozinho a cada 6 horas.</div>
   <div class="grid c2" id="votacoes"></div>
@@ -436,15 +428,21 @@ details.cat>summary h2{margin-bottom:8px}
 
 <section id="t-videos" class="hidden">
   <div id="vids-todos"></div>
+  <!-- Anúncio AdSense: Vídeos - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1574531928"></ins></div>
 </section>
 
 <section id="t-contas" class="hidden">
   <div id="contas"></div>
+  <!-- Anúncio AdSense: Contas do governo - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1592899138"></ins></div>
 </section>
 
 <section id="t-calc" class="hidden">
   <p class="note" style="margin:0 2px 10px">Faça a conta com os números oficiais de hoje. Nada do que você digita sai do seu aparelho.</p>
   <div class="grid c3" id="calcs"></div>
+  <!-- Anúncio AdSense: Calculadoras - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1574531928"></ins></div>
 </section>
 
 <section id="t-leis" class="hidden">
@@ -457,6 +455,8 @@ details.cat>summary h2{margin-bottom:8px}
     <div class="leis-chips" id="leis-chips"></div>
   </div>
   <div id="leis-res" style="margin-top:12px"></div>
+  <!-- Anúncio AdSense: Leis - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1592899138"></ins></div>
 </section>
 <section id="t-noticias" class="hidden">
   <div class="card">
@@ -473,6 +473,8 @@ details.cat>summary h2{margin-bottom:8px}
     <li><a href="https://www12.senado.leg.br/noticias" target="_blank" rel="noopener">Agência Senado · feed de notícias</a></li>
     <li><a href="https://www.camara.leg.br/noticias" target="_blank" rel="noopener">Agência Câmara de Notícias · feed de últimas notícias</a></li>
   </ul></div>
+  <!-- Anúncio AdSense: Notícias - faixa fina (320x50 no celular, 468x60 no tablet, 728x90 no computador) -->
+  <div class="ad-faixa"><ins class="ad-fx" data-ad-client="ca-pub-1546406246556926" data-ad-slot="1574531928"></ins></div>
 </section>
 <dialog id="smh-dlg" class="not-dlg smh-dlg" onclick="if(event.target===this)this.close()"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><h3><span class="t"></span><button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt"></div><p class="oque"></p><div id="smh-c"></div></dialog>
 <dialog id="not-dlg" class="not-dlg"><button class="nd-x" aria-label="Fechar" onclick="this.closest('dialog').close()">×</button><div class="nd-corpo"></div></dialog>
@@ -1269,7 +1271,7 @@ function dossie(){
 }
 
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
-  ["painel","estados","politicos","videos","contas","calc","leis","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="leis")abaLeis();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
+  ["painel","estados","politicos","videos","contas","calc","leis","noticias","dossie"].forEach(t=>document.getElementById("t-"+t).classList.toggle("hidden",t!==b.dataset.t));scrollTo({top:0});anuncios();if(b.dataset.t==="estados")estados();if(b.dataset.t==="painel")painel();if(b.dataset.t==="politicos")politicos();if(b.dataset.t==="noticias")abaNoticias();if(b.dataset.t==="calc")calculadoras();if(b.dataset.t==="leis")abaLeis();if(b.dataset.t==="contas")contas();try{localStorage.setItem("aba",b.dataset.t)}catch(e){}if(location.hash.slice(1)!==b.dataset.t)history.replaceState(null,"","#"+b.dataset.t)});
 /* volta para a última aba aberta (pelo endereço #aba ou pelo que ficou salvo) e para o ponto da página */
 function voltaAba(){let t=location.hash.slice(1);try{t=t||localStorage.getItem("aba")}catch(e){}const b=t&&document.querySelector(`nav button[data-t="${t}"]`);if(b&&t!=="painel"){b.click()}
   let y=0;try{y=+sessionStorage.getItem("rolagem")||0}catch(e){}if(y)setTimeout(()=>scrollTo({top:y}),400)}
@@ -1294,8 +1296,22 @@ listaVideos();
 function abreVideo(id){const d=document.getElementById("vid-dlg"),v=VIDEOS.find(x=>x.id===id)||{},yt=document.getElementById("vid-yt");
   d.querySelector(".yt").innerHTML=v.mp4?`<video src="${v.mp4}" poster="${v.capa||""}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;background:#000"></video>`:`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>`;
   yt.style.display=v.mp4?"none":"";if(!v.mp4)yt.href="https://youtube.com/shorts/"+id;
+  const cb=document.getElementById("vid-comp");cb.innerHTML=ICONE_COMP+" Compartilhar este vídeo";cb.onclick=e=>{e.stopPropagation();compartilharVideo(id)};
   const bl=v.serie==="Seus direitos"&&BASE_LEGAL[v.ep];d.classList.toggle("com-leis",!!bl);document.getElementById("vid-leis").innerHTML=bl?`<b>Base legal</b>${bl.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join("")}`:"";d.showModal()}
 
+/* anúncios em faixa fina: só pede o anúncio quando a aba dele está na tela (em aba escondida o Google não preenche) */
+function anuncios(){document.querySelectorAll("ins.ad-fx:not(.adsbygoogle)").forEach(i=>{if(!i.offsetWidth)return;i.classList.add("adsbygoogle");try{(window.adsbygoogle=window.adsbygoogle||[]).push({})}catch(e){}})}
+addEventListener("load",()=>setTimeout(anuncios,300));
+/* compartilhar um vídeo: o link abre o Raio-X já com o vídeo tocando na página do site */
+async function compartilharVideo(id){const v=VIDEOS.find(x=>x.id===id)||{},tmp=document.createElement("textarea");tmp.innerHTML=v.titulo||"";
+  const tit=tmp.value||"Vídeo do Raio-X do Brasil",url=`${SITE_URL}/?video=${id}`,texto=`${tit}${v.serie?` (${v.serie}${v.ep?", ep. "+v.ep:""})`:""}\n\nAssista no Raio-X do Brasil: ${url}`;
+  try{if(navigator.share){await navigator.share({title:tit,text:texto});return}}catch(e){if(e&&e.name==="AbortError")return}
+  open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
+/* link compartilhado (?video=...): abre a aba Vídeos e o vídeo */
+(function(){const id=new URLSearchParams(location.search).get("video");if(!id||!/^[\w-]{11}$/.test(id))return;try{history.replaceState(null,"",location.pathname+"#videos")}catch(e){}
+  let n=0;const tenta=()=>{const b=document.querySelector('nav button[data-t="videos"]');if(b&&!b.classList.contains("on"))b.click();
+    if(typeof VIDEOS!=="undefined"&&VIDEOS.some(x=>x.id===id)){abreVideo(id);return}
+    if(++n<40)setTimeout(tenta,400);else abreVideo(id)};setTimeout(tenta,500)})();
 /* estado da pessoa, escolhido no topo do site: vale para o Painel e para os destaques de Políticos */
 (function(){const sel=document.getElementById("uf-head");if(!sel)return;
   const UFS={AC:"Acre",AL:"Alagoas",AP:"Amapá",AM:"Amazonas",BA:"Bahia",CE:"Ceará",DF:"Distrito Federal",ES:"Espírito Santo",GO:"Goiás",MA:"Maranhão",MT:"Mato Grosso",MS:"Mato Grosso do Sul",MG:"Minas Gerais",PA:"Pará",PB:"Paraíba",PR:"Paraná",PE:"Pernambuco",PI:"Piauí",RJ:"Rio de Janeiro",RN:"Rio Grande do Norte",RS:"Rio Grande do Sul",RO:"Rondônia",RR:"Roraima",SC:"Santa Catarina",SP:"São Paulo",SE:"Sergipe",TO:"Tocantins"};
