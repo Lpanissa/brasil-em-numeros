@@ -1025,10 +1025,10 @@ async function aoVivo(){
 }
 const cmp=()=>CMP.a&&CMP.b&&CMP.a!==CMP.b;
 const snap=(d,k)=>D.snap.find(x=>x.data_coleta===d&&x.chave===k);
-const ult=k=>{if(cmp()){const x=snap(CMP.b,k);if(x)return x}const s=serie(k);return s[s.length-1]};
+const ult=k=>{if(cmp()&&CMP.b!=="hoje"){const x=snap(CMP.b,k);if(x)return x}const s=serie(k);return s[s.length-1]};
 const ant=k=>{const s=serie(k);return s[s.length-2]};
 function delta(k){let a=ant(k),u=ult(k),rot=a&&a.periodo;
-  if(cmp()){a=snap(CMP.a,k);u=snap(CMP.b,k);rot=(D.col.find(c=>c.data_coleta===CMP.a)||{}).rotulo}if(!a||a.valor==null||u.valor==null)return "";
+  if(cmp()){a=snap(CMP.a,k);u=CMP.b==="hoje"?ult(k):snap(CMP.b,k);rot=(D.col.find(c=>c.data_coleta===CMP.a)||{}).rotulo}if(!a||!u||a.valor==null||u.valor==null)return "";
   const i=D.ind.find(x=>x.chave===k)||{},pp=(i.unidade||"").includes("%");
   const d=pp?(u.valor-a.valor):(u.valor-a.valor)/Math.abs(a.valor)*100;const cls=Math.abs(d)<0.005?"eq":d>0?"up":"down";
   const seta=cls==="eq"?"=":d>0?"▲":"▼";const txt=cls==="eq"?"igual":pp?nf(Math.abs(d),2)+(Math.abs(d)>=2?" pontos":" ponto"):nf(Math.abs(d),1)+"%";
@@ -1036,10 +1036,10 @@ function delta(k){let a=ant(k),u=ult(k),rot=a&&a.periodo;
 const fData=d=>new Date(d+"T12:00").toLocaleDateString("pt-BR");
 function montarFiltro(){
   const el=document.getElementById("filtro");if(!D.col.length){el.classList.add("hidden");return}
-  const base=D.col.find(c=>c.base)||D.col[0],ultc=D.col[D.col.length-1];CMP.a=base.data_coleta;CMP.b=ultc.data_coleta;
+  const base=D.col.find(c=>c.base)||D.col[0],ultc=D.col[D.col.length-1];CMP.a=base.data_coleta;CMP.b="hoje";
   const op=sel=>D.col.map(c=>`<option value="${c.data_coleta}" ${c.data_coleta===sel?"selected":""}>${esc(c.rotulo)}</option>`).join("");
   const prox=new Date(ultc.data_coleta+"T12:00");prox.setMonth(prox.getMonth()+(prox.getDate()>=15?1:0));prox.setDate(15);
-  el.innerHTML=`<h3>Comparar as coletas<button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button></h3><div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). A coleta automática roda todo <b>dia 15</b> e guarda o que estiver mais recente. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><div class="f-sel"><select id="cA" aria-label="Coleta inicial">${op(CMP.a)}</select><span>com</span><select id="cB" aria-label="Coleta final">${op(CMP.b)}</select></div></div>
+  el.innerHTML=`<h3>Comparar as coletas<button class="info" aria-label="Como os dados são atualizados" data-alvo="info-geral">i</button></h3><div class="infotxt" id="info-geral">Os números são atualizados <b>conforme as fontes oficiais publicam</b>: cada órgão tem seu calendário (o IBGE solta a inflação por volta do dia 10, o DIEESE a cesta básica entre os dias 8 e 10, a ANP os combustíveis toda semana, e alguns dados são anuais). Em <b>Hoje (ao vivo)</b> os números se atualizam sozinhos, direto das fontes oficiais, toda vez que a página abre. A coleta mensal automática roda todo <b>dia 15</b> e guarda uma foto para comparar os meses. Em cada indicador aparece o período a que o dado se refere; toque nele para ver o histórico e a fonte.</div><div class="filtro"><div class="f-sel"><select id="cA" aria-label="Coleta inicial">${op(CMP.a)}</select><span>com</span><select id="cB" aria-label="Coleta final">${op(CMP.b)}<option value="hoje" ${CMP.b==="hoje"?"selected":""}>Hoje (ao vivo)</option></select></div></div>
   <p class="note">${D.col.length<2?`Hoje existe só a coleta base. A próxima coleta automática é em ${prox.toLocaleDateString("pt-BR")}; a partir dela dá para comparar os meses.`:"Os números e as setas mostram a mudança entre as duas coletas escolhidas."}</p>`;
   document.getElementById("cA").onchange=e=>{CMP.a=e.target.value;painel()};
   document.getElementById("cB").onchange=e=>{CMP.b=e.target.value;painel()};
