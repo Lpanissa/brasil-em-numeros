@@ -319,8 +319,8 @@ details.cat>summary h2{margin-bottom:8px}
   <div class="grid c2">
     <div class="card"><h3>Inflação em 12 meses</h3><p class="note">Quanto os preços subiram em 12 meses, mês a mês em 2026 · IPCA, IBGE</p><div id="g-ipca"></div><button class="smh-ver lnk" data-hist="ipca" type="button">Ver anos anteriores <span aria-hidden="true">›</span></button></div>
     <div class="card"><h3>Taxa Selic</h3><p class="note">Decisões do Copom</p><div id="g-selic"></div></div>
-    <div class="card"><h3>Quanto o salário mínimo compra</h3><p class="note">Cesta básica de SP sobre o salário mínimo líquido (set/2026)</p><div id="g-pizza"></div></div>
-    <div class="card"><h3>Cesta básica SP: o que mais subiu</h3><p class="note">Variação de preço em 12 meses (set/2026)</p><div id="g-cesta"></div></div>
+    <div class="card"><h3>Quanto o salário mínimo compra</h3><p class="note">Cesta básica de SP sobre o salário mínimo líquido (<span id="pz-mes">out/2026</span>)</p><div id="g-pizza"></div></div>
+    <div class="card"><h3>Cesta básica SP: o que mais subiu</h3><p class="note">Variação de preço em 12 meses (<span id="ce-mes">out/2026</span>)</p><div id="g-cesta"></div></div>
     <div class="card"><h3>De cada R$ 100 do governo federal</h3><div id="gastos-mini"><p class="note">Buscando no Tesouro…</p></div></div>
   </div>
   <div id="cats"></div>
@@ -1148,7 +1148,9 @@ function painel(){
   const mesL=p=>p.periodo.split("/")[0];
   document.getElementById("g-ipca").innerHTML=linha(serie("ipca_12m").map(p=>({l:mesL(p),v:+p.valor})),{fmt:v=>nf(v)+"%",w:LARG("g-ipca")});
   document.getElementById("g-selic").innerHTML=linha(serie("selic").map(p=>({l:p.periodo,v:+p.valor})),{fmt:v=>nf(v)+"%",step:true,w:LARG("g-selic")});
-  const pct=61.52;
+  /* % da cesta de SP sobre o salário mínimo líquido (desconta 7,5% de INSS); usa os dados mais recentes do painel */
+  const smV=+(ult("salario_minimo")||{}).valor,csV=+(ult("cesta_sp")||{}).valor,pct=smV&&csV?Math.round(csV/(smV*0.925)*10000)/100:61.52;
+  {const a=document.getElementById("pz-mes"),b=document.getElementById("ce-mes"),c=ult("cesta_sp"),v=ult("var12_arroz");if(a&&c&&c.periodo)a.textContent=c.periodo;if(b&&v&&v.periodo)b.textContent=v.periodo}
   document.getElementById("g-pizza").innerHTML=pizza([{l:"Cesta básica",v:pct,cor:css('--up')},{l:"Sobra para o resto",v:100-pct,cor:css('--soft')}],{centro:nf(pct,1)+"%"})+`<p class="note">Fonte: DIEESE. Salário mínimo necessário: ${esc(ult("salario_necessario")?.valor_texto||"")}.</p>`;
   const it=D.ind.filter(i=>i.chave.startsWith("var12_")).map(i=>({l:i.nome,v:+ult(i.chave).valor})).sort((a,b)=>b.v-a.v).map(o=>({...o,cor:o.v>=0?css('--up'):css('--down')}));
   document.getElementById("g-cesta").innerHTML=barrasH(it,{fmt:v=>(v>0?"+":"")+nf(v,1)+"%",w:LARG("g-cesta")})+`<div class="legend"><span><span class="sw" style="background:var(--up)"></span>Subiu</span><span><span class="sw" style="background:var(--down)"></span>Caiu</span></div>`;
