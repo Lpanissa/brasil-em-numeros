@@ -1290,7 +1290,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)re
 /* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
 const SERIES=[{nome:"Raio-X da Semana",desc:"O que mudou nos impostos e nas contas públicas esta semana, em menos de 1 minuto."},{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."}];
 const VIDEOS=[]; // os vídeos ficam na tabela site_videos (Supabase) e são gerenciados pela página /dono
-function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span><span class="ve">${typeof v.ep==="number"?"Ep. "+v.ep:v.ep}</span></button>`;
+function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span>${v.serie==="Raio-X da Semana"?"":`<span class="ve">${typeof v.ep==="number"?"Ep. "+v.ep:v.ep}</span>`}</button>`;
   const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
   const t=document.getElementById("vids-todos");if(t)t.innerHTML=SERIES.map(se=>{const vs=VIDEOS.filter(v=>(v.serie||"Como funciona o Brasil")===se.nome);return vs.length?`<section class="serie"><h2 style="margin-top:4px">${se.nome}</h2><p class="note" style="margin:-4px 0 12px">${se.desc} ${vs.length} episódios. Toque num vídeo para assistir.</p><div class="vgrade">${vs.map(card).join("")}</div></section>`:""}).join("")}
 listaVideos();
@@ -1310,7 +1310,7 @@ function anuncios(){document.querySelectorAll("ins.ad-fx:not(.adsbygoogle)").for
 addEventListener("load",()=>setTimeout(anuncios,300));
 /* compartilhar um vídeo: o link abre o Raio-X já com o vídeo tocando na página do site */
 async function compartilharVideo(id){const v=VIDEOS.find(x=>x.id===id)||{},tmp=document.createElement("textarea");tmp.innerHTML=v.titulo||"";
-  const tit=tmp.value||"Vídeo do Raio-X do Brasil",url=`${SITE_URL}/?video=${id}`,texto=`${tit}${v.serie?` (${v.serie}${v.ep?", ep. "+v.ep:""})`:""}\n\nAssista no Raio-X do Brasil: ${url}`;
+  const tit=tmp.value||"Vídeo do Raio-X do Brasil",url=`${SITE_URL}/?video=${id}`,texto=`${tit}${v.serie?` (${v.serie}${v.ep&&v.serie!=="Raio-X da Semana"?", ep. "+v.ep:""})`:""}\n\nAssista no Raio-X do Brasil: ${url}`;
   try{if(navigator.share){await navigator.share({title:tit,text:texto});return}}catch(e){if(e&&e.name==="AbortError")return}
   open("https://wa.me/?text="+encodeURIComponent(texto),"_blank","noopener")}
 /* link compartilhado (?video=...): abre a aba Vídeos e o vídeo */
