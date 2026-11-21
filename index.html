@@ -1288,7 +1288,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".info");if(!b)re
   const t=b.dataset.alvo?document.getElementById(b.dataset.alvo):(b.closest("h3")||b.parentElement).nextElementSibling;
   if(t&&t.classList.contains("infotxt")){t.classList.toggle("on");b.classList.toggle("on")}});
 /* vídeos da série: para um episódio novo, basta acrescentar uma linha aqui */
-const SERIES=[{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."},{nome:"Raio-X da Semana",desc:"O que mudou nos impostos e nas contas públicas esta semana, em menos de 1 minuto."}];
+const SERIES=[{nome:"Raio-X da Semana",desc:"O que mudou nos impostos e nas contas públicas esta semana, em menos de 1 minuto."},{nome:"Como funciona o Brasil",desc:"Vídeos de 1 minuto explicando quem faz o quê no país, com a fonte oficial de cada número."},{nome:"Impostos",desc:"O que é cada imposto, para que serve e para onde vai o dinheiro."}];
 const VIDEOS=[]; // os vídeos ficam na tabela site_videos (Supabase) e são gerenciados pela página /dono
 function listaVideos(){const card=v=>`<button class="vcard" onclick="abreVideo('${v.id}')" aria-label="Assistir: ${v.titulo}" title="Fonte: ${v.fonte}"><span class="vthumb" style="background-image:url(${v.capa||`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`})"></span><span class="vt">${v.titulo}</span><span class="ve">${typeof v.ep==="number"?"Ep. "+v.ep:v.ep}</span></button>`;
   const el=document.getElementById("vids");if(el)el.innerHTML=VIDEOS.slice().reverse().map(card).join("");
