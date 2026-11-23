@@ -1008,7 +1008,7 @@ async function aoVivo(){
   const sidra=async(k,t,vr,fmt)=>{try{const j=await (await fetch(`https://apisidra.ibge.gov.br/values/t/${t}/n1/all/v/${vr}/p/last%201`)).json();const x=j[1];if(!x||isNaN(+x.V))return;
       const p=x.D3C,aa=p.slice(0,4),mm=p.slice(4,6),v=+x.V;poe(k,`${aa}-${mm}-01`,`tri. até ${MES[+mm-1]}/${aa}`,v,fmt(v))}catch(e){}};
   /* cotações de mercado (AwesomeAPI, gratuita): dólar comercial, euro e bitcoin */
-  const mercado=async()=>{try{const j=await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,BTC-BRL")).json();
+  const mercado=async()=>{try{const j=await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,BTC-BRL?t="+Date.now(),{cache:"no-store"})).json();
       const quando=c=>{const [dt,hr]=c.split(" ");return (dt===hojeISO?"hoje":dt.split("-").reverse().join("/"))+" às "+hr.slice(0,5).replace(":","h")};
       if(j.USDBRL){const u=j.USDBRL;window.COMERCIAL={v:+u.ask,p:+u.pctChange,h:quando(u.create_date)};mudou=true}
       if(j.EURBRL){const e=j.EURBRL,v=Math.round(+e.ask*100)/100;poe("euro",e.create_date.slice(0,10),quando(e.create_date),v,"R$ "+nf(v,2))}
@@ -1068,7 +1068,7 @@ function cartaoImagem(t){
 }
 async function compartilhar(k){
   /* antes de compartilhar o dólar, busca a cotação de novo para sair o mais atual possível */
-  if(k==="dolar"){try{const j=await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL",{cache:"no-store"})).json(),u=j.USDBRL;
+  if(k==="dolar"){try{const j=await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL?t="+Date.now(),{cache:"no-store"})).json(),u=j.USDBRL;
     if(u&&+u.ask>0){const [dt,hr]=u.create_date.split(" "),hj=new Date().toLocaleDateString("sv-SE",{timeZone:"America/Sao_Paulo"});
       window.COMERCIAL={v:+u.ask,p:+u.pctChange,h:(dt===hj?"hoje":dt.split("-").reverse().join("/"))+" às "+hr.slice(0,5).replace(":","h")}}}catch(e){}}
   if(k==="ibov"&&window.IBOV){const c=IBOV,dt=isNaN(c.p)?"":Math.abs(c.p)<0.005?"Igual a ontem":(c.p>0?"Subiu ":"Caiu ")+nf(Math.abs(c.p),1)+"% hoje",v=nf(c.v,0)+" pontos";
