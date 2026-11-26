@@ -165,6 +165,12 @@ details.rk summary{cursor:pointer;font-weight:600;font-size:15px;margin:14px 0 8
 .faixa-tit{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .faixa-trilho{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .faixa-trilho::-webkit-scrollbar{display:none}
+.faixa-wrap{position:relative}
+.fx-seta{display:none;position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:38px;height:38px;border:0;border-radius:50%;background:rgba(15,23,42,.45);color:#fff;cursor:pointer;align-items:center;justify-content:center;opacity:0;transition:opacity .2s,background .2s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.fx-seta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fx-seta.ant{left:6px}.fx-seta.prox{right:6px}
+.fx-seta:hover{background:rgba(15,23,42,.75)}
+@media (hover:hover) and (pointer:fine){.fx-seta{display:flex}.faixa-wrap:hover .fx-seta{opacity:1}.faixa-wrap .fx-seta[disabled]{opacity:0!important;pointer-events:none}}
 .nt{flex:0 0 min(340px,82%);scroll-snap-align:start;display:flex;gap:10px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer;min-height:76px}
 .nt img{width:60px;height:60px;border-radius:8px;object-fit:cover;flex:none;background:var(--soft)}
 .nt-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
@@ -295,7 +301,7 @@ details.cat>summary h2{margin-bottom:8px}
     <label class="uf-head">Seu estado <select id="uf-head" aria-label="Escolher o seu estado"></select></label></div>
   <button class="tema" id="tema" aria-label="Tema: automático" title="Tema: automático"></button>
 </header>
-<div class="faixa hidden" id="faixa" aria-label="Últimas notícias"><div class="faixa-tit">Últimas notícias</div><div class="faixa-trilho" id="faixa-trilho"></div></div>
+<div class="faixa hidden" id="faixa" aria-label="Últimas notícias"><div class="faixa-tit">Últimas notícias</div><div class="faixa-wrap"><button class="fx-seta ant" type="button" aria-label="Notícias anteriores"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="faixa-trilho" id="faixa-trilho"></div><button class="fx-seta prox" type="button" aria-label="Próximas notícias"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
 <nav>
   <button data-t="painel" class="on">Painel</button>
   <button data-t="estados">Estados</button>
@@ -673,6 +679,12 @@ function faixa(){
   tr.querySelectorAll(".nt").forEach(b=>b.onclick=()=>abrirNot(NOT[+b.dataset.n]));
   /* passa sozinho a cada 5 s; para 12 s quando a pessoa toca ou passa o mouse */
   let pausa=0;const parar=()=>{pausa=Date.now()+12000};["pointerdown","wheel","touchstart","mouseenter"].forEach(ev=>tr.addEventListener(ev,parar,{passive:true}));
+  const ant=el.querySelector(".fx-seta.ant"),prox=el.querySelector(".fx-seta.prox");
+  const passoX=()=>{const c=tr.firstElementChild;return c?c.offsetWidth+10:300};
+  const estado=()=>{ant.disabled=tr.scrollLeft<=2;prox.disabled=tr.scrollLeft>=tr.scrollWidth-tr.clientWidth-2};
+  ant.onclick=()=>{parar();tr.scrollBy({left:-passoX(),behavior:"smooth"})};
+  prox.onclick=()=>{parar();tr.scrollBy({left:passoX(),behavior:"smooth"})};
+  tr.addEventListener("scroll",estado,{passive:true});estado();
   clearInterval(tFaixa);tFaixa=setInterval(()=>{if(Date.now()<pausa||document.hidden)return;const c=tr.firstElementChild;if(!c)return;const passo=c.offsetWidth+10;
     tr.scrollTo({left:tr.scrollLeft+passo>=tr.scrollWidth-tr.clientWidth+4?0:tr.scrollLeft+passo,behavior:"smooth"})},5000);
 }
