@@ -364,7 +364,7 @@ details.cat>summary h2{margin-bottom:8px}
     <div class="card"><h3>Ranking: renda per capita<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo IBGE em <b>27/02/2026</b> (PNAD Contínua: renda de todas as fontes, como salário, aposentadoria e benefícios, dividida pelos moradores). O dado de 2026 deve sair no início de 2027.</div><p class="oque"><b>O que é:</b> quanto cada morador tem por mês, somando salário, aposentadoria e benefícios da casa e dividindo por quem mora nela. É o mais perto do bolso das pessoas.</p><p class="fonte">IBGE · dado de 2025 · divulgado em 27/02/2026</p><div id="rk-renda"></div></div>
     <div class="card"><h3>Ranking: assassinatos<button class="info" aria-label="Sobre este dado">i</button></h3><div class="infotxt">Dado de <b>2025</b>. Divulgado pelo Fórum Brasileiro de Segurança Pública em <b>23/07/2026</b>, no 20º Anuário. O número é a taxa: quantos assassinatos aconteceram a cada 100 mil habitantes do estado, para dar para comparar estados grandes e pequenos. Inclui homicídios, latrocínios, lesões seguidas de morte e mortes por intervenção policial. O próximo anuário sai por volta de julho de 2027.</div><p class="oque"><b>O que é:</b> quantos assassinatos aconteceram a cada 100 mil habitantes no ano. Ex.: 42,5 = uns 42 assassinatos em cada grupo de 100 mil pessoas. Usa essa conta para comparar estados grandes e pequenos. Maior é pior.</p><p class="fonte">FBSP · dado de 2025 · divulgado em 23/07/2026</p><div id="rk-mvi"></div></div>
   </div>
-  <h2>Trabalho, estudo, saúde, dinheiro do estado e governador</h2>
+  <h2>Trabalho, estudo, saúde, verba do estado e governador</h2>
   <div class="grid c2" id="mais-comp"></div>
   <h2>Fontes desta aba</h2>
   <div class="card fontes"><h3>Ver as fontes</h3><ul>
@@ -377,7 +377,7 @@ details.cat>summary h2{margin-bottom:8px}
     <li>Analfabetismo, 2025 (divulgado em 19/06/2026): <a href="https://sidra.ibge.gov.br/tabela/7113" target="_blank" rel="noopener">IBGE · PNAD Contínua Educação, tabela 7113</a></li>
     <li>Bolsa Família nos domicílios, 2025 (divulgado em 08/05/2026): <a href="https://sidra.ibge.gov.br/tabela/7449" target="_blank" rel="noopener">IBGE · PNAD Contínua, tabelas 7449 e 7450</a></li>
     <li>Expectativa de vida, 2024 (divulgado em 22/08/2024): <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html" target="_blank" rel="noopener">IBGE · Projeções da População, revisão 2024</a></li>
-    <li>Dinheiro do estado (receita corrente líquida, ao vivo): <a href="https://apidatalake.tesouro.gov.br/docs/siconfi/" target="_blank" rel="noopener">Tesouro Nacional · API do SICONFI (RREO, Anexo 3)</a>; população: <a href="https://servicodados.ibge.gov.br/api/docs/agregados?versao=3" target="_blank" rel="noopener">IBGE · estimativas da população (tabela 6579)</a></li>
+    <li>Verba do estado (receita corrente líquida, ao vivo): <a href="https://apidatalake.tesouro.gov.br/docs/siconfi/" target="_blank" rel="noopener">Tesouro Nacional · API do SICONFI (RREO, Anexo 3)</a>; população: <a href="https://servicodados.ibge.gov.br/api/docs/agregados?versao=3" target="_blank" rel="noopener">IBGE · estimativas da população (tabela 6579)</a></li>
     <li>Salário dos governadores: Assembleias Legislativas, conforme <a href="https://forbes.com.br/carreira/2026/09/quanto-ganham-os-politicos-no-brasil/" target="_blank" rel="noopener">levantamento Forbes Brasil, set/2026</a></li>
     <li>Fronteiras do mapa: <a href="https://github.com/giuliano-oliveira/geodata-br-states" target="_blank" rel="noopener">geodata-br-states</a> (licença MIT)</li>
   </ul></div>
@@ -799,11 +799,11 @@ async function seuEstado(){
   const c=(l,v,p,f,url)=>`<div class="uf-c"><div class="l">${l}</div><div class="v">${v}</div><div class="note">${p}</div><p class="fonte">${url?`<a href="${url}" target="_blank" rel="noopener">${f}</a>`:f}</p></div>`;
   const cards=[
     d.des[u.uf]&&c("Desemprego",nf(d.des[u.uf].v,1)+"%",esc(d.des[u.uf].p),"IBGE · PNAD Contínua (ao vivo)","https://sidra.ibge.gov.br/tabela/4099"),
-    d.ren[u.uf]&&c("Salário médio de quem trabalha",rs(d.ren[u.uf].v),"por mês, média · "+esc(d.ren[u.uf].p),"IBGE · PNAD Contínua (ao vivo)","https://sidra.ibge.gov.br/tabela/5436"),
+    d.ren[u.uf]&&c("Salário médio do trabalhador",rs(d.ren[u.uf].v),"por mês, média · "+esc(d.ren[u.uf].p),"IBGE · PNAD Contínua (ao vivo)","https://sidra.ibge.gov.br/tabela/5436"),
     ip?c(`Inflação em 12 meses (${il[2]})`,nf(ip.v,2)+"%","até "+esc(ip.p),"IBGE · IPCA por região (ao vivo)","https://sidra.ibge.gov.br/tabela/7060")
       :c("Inflação em 12 meses",esc(ult("ipca_12m")?.valor_texto||"—"),"média do Brasil: o IBGE não mede a inflação separada deste estado","IBGE · IPCA","https://sidra.ibge.gov.br/tabela/7060"),
-    c("Renda por pessoa na casa",rs(u.renda_pc_2025),"por mês, média de 2025","IBGE · PNAD Contínua"),
-    u.rcl_pc&&c("Dinheiro do estado por habitante",rs(u.rcl_pc),"arrecadado em 12 meses","Tesouro Nacional · SICONFI (ao vivo)","https://siconfi.tesouro.gov.br"),
+    c("Renda per capita",rs(u.renda_pc_2025),"por mês, média de 2025","IBGE · PNAD Contínua"),
+    u.rcl_pc&&c("Verba do estado por habitante",rs(u.rcl_pc),"arrecadado em 12 meses","Tesouro Nacional · SICONFI (ao vivo)","https://siconfi.tesouro.gov.br"),
     c("Assassinatos",nf(u.mvi_2025,1),"por 100 mil habitantes, 2025","Fórum Brasileiro de Segurança Pública"),
     c("Governador",esc(u.gov_2022||"—"),`${esc(u.gov_2022_partido||"")} · salário ${GOV_SAL[u.uf]?rs(GOV_SAL[u.uf]):"—"} · eleito(a) em 2026: ${esc(u.gov_2026||"—")} (${esc(u.gov_2026_partido||"")})`,"TSE e Assembleia Legislativa")].filter(Boolean);
   document.getElementById("uf-cards").innerHTML=cards.join("")+`<p class="note uf-obs">Gasolina e cesta básica de cada estado entram na coleta automática do dia 15. Até lá, os destaques acima mostram a média do Brasil e São Paulo.</p>`;
